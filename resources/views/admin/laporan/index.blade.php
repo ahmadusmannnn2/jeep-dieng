@@ -17,7 +17,6 @@
             <input type="date" name="tanggal_selesai" value="{{ $tanggal_selesai }}" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition font-medium text-gray-800">
         </div>
         
-        @if(Auth::user()->role === 'super_admin')
         <div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Komunitas</label>
             <select name="komunitas_id" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition font-bold text-gray-800">
@@ -27,9 +26,8 @@
                 @endforeach
             </select>
         </div>
-        @endif
 
-        <div class="flex gap-2 {{ Auth::user()->role !== 'super_admin' ? 'md:col-span-2' : '' }}">
+        <div class="flex gap-2">
             <button type="submit" class="flex-1 px-5 py-2.5 bg-gray-900 text-white font-bold rounded-xl hover:bg-emerald-500 transition text-center shadow-md">Filter Data</button>
             
             <a href="{{ route('admin.laporan.cetak', ['tanggal_mulai' => $tanggal_mulai, 'tanggal_selesai' => $tanggal_selesai, 'komunitas_id' => $komunitas_id]) }}" target="_blank" class="px-5 py-2.5 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20">

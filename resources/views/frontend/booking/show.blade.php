@@ -17,7 +17,7 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 flex flex-col md:flex-row">
+    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 flex flex-col md:flex-row relative">
         
         <div class="flex-1 p-8 md:p-10">
             <div class="flex justify-between items-start mb-6">
@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-y-6 gap-x-4 text-sm border-t border-b border-gray-100 py-6 my-6">
+            <div class="grid grid-cols-2 gap-y-6 gap-x-4 text-sm border-t border-gray-100 pt-6 mt-6">
                 <div>
                     <p class="text-gray-400 text-xs font-bold uppercase mb-1">Nama Penumpang</p>
                     <p class="font-extrabold text-gray-800 text-base">{{ $pesanan->user->name }}</p>
@@ -51,19 +51,36 @@
                     <p class="font-extrabold text-gray-900 text-base tracking-wider">#BKG-{{ str_pad($pesanan->id, 5, '0', STR_PAD_LEFT) }}</p>
                 </div>
                 <div>
-                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Tanggal & Waktu Trip</p>
-                    <p class="font-bold text-gray-800">
-                        {{ $pesanan->jadwal ? \Carbon\Carbon::parse($pesanan->jadwal->tanggal)->translatedFormat('l, d M Y') : '-' }}
-                        <span class="block text-xs text-emerald-600 font-black mt-0.5">{{ $pesanan->jadwal ? \Carbon\Carbon::parse($pesanan->jadwal->jam)->format('H:i') . ' WIB' : '-' }}</span>
+                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Tanggal Tour</p>
+                    <p class="font-bold text-emerald-600 text-base">
+                        {{ \Carbon\Carbon::parse($pesanan->tanggal_jadwal)->translatedFormat('l, d F Y') }}
                     </p>
                 </div>
                 <div>
                     <p class="text-gray-400 text-xs font-bold uppercase mb-1">Jumlah Peserta</p>
-                    <p class="font-bold text-gray-800 text-base">{{ $pesanan->jumlah_pengunjung }} Orang <span class="text-xs text-gray-400 font-normal">(1 Armada Jeep)</span></p>
+                    <p class="font-bold text-gray-800 text-base">{{ $pesanan->jumlah_pengunjung }} Orang <span class="text-xs text-gray-400 font-normal">(1 Armada)</span></p>
                 </div>
             </div>
 
-            <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+            <div class="mt-6 border-t border-gray-100 pt-6">
+                <p class="text-gray-400 text-xs font-bold uppercase mb-2">Lokasi Penjemputan (Titik Kumpul)</p>
+                <p class="font-extrabold text-gray-900 text-lg flex items-start gap-2">
+                    <svg class="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    {{ $pesanan->titik_jemput }}
+                </p>
+                
+                @if($pesanan->catatan)
+                <div class="mt-4 text-sm text-gray-700 bg-amber-50 p-4 rounded-xl border border-amber-100 whitespace-pre-line leading-relaxed">
+                    <span class="font-bold text-amber-800 flex items-center gap-2 mb-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Waktu Jemput & Catatan:
+                    </span> 
+                    {{ $pesanan->catatan }}
+                </div>
+                @endif
+            </div>
+
+            <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100 mt-6">
                 <h4 class="font-black text-gray-900 text-sm mb-3 uppercase tracking-wider text-emerald-500">Informasi Armada & Driver</h4>
                 @if($pesanan->jeep_id && $pesanan->supir_id)
                     <div class="grid grid-cols-2 gap-4 text-sm">
@@ -79,15 +96,13 @@
                         </div>
                     </div>
                 @else
-                    <p class="text-sm text-gray-500 italic">Armada Jeep dan Supir sedang dipersiapkan oleh pihak pengelola komunitas.</p>
+                    <p class="text-sm text-gray-500 italic flex items-center gap-2">
+                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Armada Jeep dan Supir akan diinformasikan menjelang hari keberangkatan.
+                    </p>
                 @endif
             </div>
             
-            @if($pesanan->catatan)
-            <div class="mt-4 text-xs text-gray-500 bg-amber-50 p-3 rounded-xl border border-amber-100">
-                <span class="font-bold text-amber-700">Catatan Anda:</span> "{{ $pesanan->catatan }}"
-            </div>
-            @endif
         </div>
 
         <div class="bg-gray-900 text-white p-8 md:p-10 md:w-80 flex flex-col justify-between items-center text-center relative border-t-2 md:border-t-0 md:border-l-2 border-dashed border-gray-700">
@@ -115,7 +130,7 @@
 
             <div class="w-full text-xs text-gray-400">
                 <p class="font-bold text-white mb-1">Metode Verifikasi</p>
-                <p>Tunjukkan halaman e-tiket digital ini kepada pengelola/supir di lokasi titik kumpul (*meeting point*).</p>
+                <p>Tunjukkan halaman e-tiket digital ini kepada pengelola/supir di lokasi titik kumpul.</p>
             </div>
         </div>
 

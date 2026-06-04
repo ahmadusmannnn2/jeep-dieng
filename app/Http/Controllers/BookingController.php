@@ -16,75 +16,96 @@ class BookingController extends Controller
     {
         // Cari jadwal yang tersedia sesuai komunitas paket ini, dan tanggalnya belum lewat
         $jadwal = JadwalKeberangkatan::where('komunitas_id', $paketWisata->komunitas_id)
-                    ->where('tanggal', '>=', now()->toDateString())
-                    ->orderBy('tanggal')
-                    ->orderBy('jam')
-                    ->get();
+            ->where('tanggal', '>=', now()->toDateString())
+            ->orderBy('tanggal')
+            ->orderBy('jam')
+            ->get();
 
         return view('frontend.booking.create', compact('paketWisata', 'jadwal'));
     }
 
     // 2. Memproses Data Booking
-    public function store(Request $request, PaketWisata $paketWisata)
+    public function store(Request $request, \App\Models\PaketWisata $paketWisata)
     {
+        // 1. Validasi input, tambahkan jumlah_pengunjung (Maksimal 6)
         $request->validate([
-            'jadwal_id' => 'required|exists:jadwal_keberangkatan,id',
-            'jumlah_pengunjung' => 'required|integer|min:1|max:6', // Maksimal 6 orang per Jeep
+            'tanggal_jadwal' => 'required|date|after_or_equal:today',
+            'waktu_jemput' => 'required',
+            'titik_jemput' => 'required|string|max:255',
+            'jumlah_pengunjung' => 'required|integer|min:1|max:6',
             'catatan' => 'nullable|string'
         ]);
 
-        // Harga tetap per paket (per Jeep), jumlah pengunjung hanya untuk informasi
-        $totalHarga = $paketWisata->harga;
+        // 2. Gabungkan catatan dan jam jemput untuk mempermudah admin
+        $catatanAkhir = "Jam Jemput: " . $request->waktu_jemput . "\n" . "Catatan Tambahan: " . $request->catatan;
 
+        // 3. Simpan ke Database
         Pesanan::create([
             'user_id' => Auth::id(),
-            'komunitas_id' => $paketWisata->komunitas_id,
             'paket_wisata_id' => $paketWisata->id,
-            'jadwal_id' => $request->jadwal_id,
-            'jumlah_pengunjung' => $request->jumlah_pengunjung,
-            'total_harga' => $totalHarga,
+            'komunitas_id' => $paketWisata->komunitas_id,
+            'tanggal_jadwal' => $request->tanggal_jadwal,
+            'titik_jemput' => $request->titik_jemput,
+            'jumlah_pengunjung' => $request->jumlah_pengunjung, // <- Kolom ini sudah ditambahkan
+            'catatan' => $catatanAkhir,
+            'total_harga' => $paketWisata->harga,
             'status' => 'Pending',
-            'catatan' => $request->catatan,
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Booking berhasil dibuat! Menunggu persetujuan admin sebelum Anda melakukan pembayaran.');
+        // 4. Arahkan ke Riwayat dengan animasi sukses
+        return redirect()->route('dashboard')->with('booking_success', true);
     }
 
     // 3. Menampilkan Form Upload Pembayaran
-    public function payment(Pesanan $pesanan)
+    // HALAMAN UPLOAD BUKTI BAYAR
+    public function payment(\App\Models\Pesanan $pesanan)
     {
-        // Pastikan pesanan ini milik user yang login dan statusnya disetujui
-        if ($pesanan->user_id !== Auth::id() || $pesanan->status !== 'Disetujui') {
-            abort(403);
+        // 1. Keamanan: Pastikan hanya pemilik pesanan yang bisa mengakses halamannya
+        if ($pesanan->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+            abort(403, 'Akses Ditolak: Anda tidak dapat melihat tagihan orang lain.');
         }
+
+        // 2. Cegah akses jika pesanan sudah dibayar atau dibatalkan
+        if ($pesanan->status !== 'Pending') {
+            return redirect()->route('dashboard')->with('error', 'Pesanan ini sudah diproses atau dibatalkan.');
+        }
+
+        // Muat relasi paket agar bisa ditampilkan di ringkasan
+        $pesanan->load('paketWisata');
 
         return view('frontend.booking.payment', compact('pesanan'));
     }
 
-    // 4. Memproses Upload Bukti Bayar
-    public function paymentStore(Request $request, Pesanan $pesanan)
+    // PROSES SIMPAN BUKTI BAYAR
+    public function paymentStore(\Illuminate\Http\Request $request, \App\Models\Pesanan $pesanan)
     {
-        if ($pesanan->user_id !== Auth::id() || $pesanan->status !== 'Disetujui') {
-            abort(403);
+        // 1. Keamanan
+        if ($pesanan->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+            abort(403, 'Akses Ditolak.');
         }
 
+        // 2. Validasi file gambar yang diunggah
         $request->validate([
+            'bukti_pembayaran' => 'required|image|mimes:jpeg,png,jpg,webp|max:3072',
             'metode_pembayaran' => 'required|string',
-            'bukti_bayar' => 'required|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        $path = $request->file('bukti_bayar')->store('pembayaran', 'public');
+        // 3. Simpan gambar ke folder storage/app/public/bukti_pembayaran
+        $path = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
 
+        // 4. Masukkan ke tabel pembayaran
         Pembayaran::create([
             'pesanan_id' => $pesanan->id,
-            'metode_pembayaran' => $request->metode_pembayaran,
-            'tanggal_bayar' => now(),
             'jumlah_bayar' => $pesanan->total_harga,
-            'bukti_bayar' => $path,
-            'status' => 'Menunggu Verifikasi'
+            'bukti_pembayaran' => $path,
+            'metode_pembayaran' => $request->metode_pembayaran,
+            'status' => 'Pending', // Menunggu validasi admin
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Bukti pembayaran berhasil diunggah! Admin akan segera memverifikasinya.');
+        // (Opsional) Boleh mengubah status pesanan, namun karena strukturnya admin yang memvalidasi,
+        // Kita biarkan statusnya tetap 'Pending' agar Admin yang mengubahnya jadi 'Lunas'
+
+        return redirect()->route('dashboard')->with('success', 'Bukti pembayaran berhasil diunggah! Mohon tunggu konfirmasi dari Admin kami.');
     }
 
     // 5. TAMBAHAN UTUH: Menampilkan Halaman Detail Riwayat Pesanan / E-Tiket Customer
@@ -111,5 +132,5 @@ class BookingController extends Controller
         return view('frontend.booking.print', compact('pesanan'));
     }
 
-    
+
 }

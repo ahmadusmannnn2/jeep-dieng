@@ -14,7 +14,7 @@
         .booking-code h2 { margin: 0; font-size: 28px; font-family: 'Courier New', Courier, monospace; }
         .booking-code p { margin: 0; font-size: 12px; text-transform: uppercase; }
         .content { display: table; width: 100%; margin-bottom: 20px; }
-        .col { display: table-cell; width: 50%; padding-right: 20px; }
+        .col { display: table-cell; width: 50%; padding-right: 20px; vertical-align: top; }
         .field { margin-bottom: 15px; }
         .label { font-size: 11px; font-weight: bold; text-transform: uppercase; color: #555; display: block; margin-bottom: 3px; }
         .value { font-size: 16px; font-weight: bold; margin: 0; }
@@ -55,24 +55,31 @@
                 <div class="field">
                     <span class="label">Jadwal Keberangkatan</span>
                     <p class="value">
-                        {{ $pesanan->jadwal ? \Carbon\Carbon::parse($pesanan->jadwal->tanggal)->translatedFormat('l, d F Y') : '-' }} <br>
-                        JAM {{ $pesanan->jadwal ? \Carbon\Carbon::parse($pesanan->jadwal->jam)->format('H:i') . ' WIB' : '-' }}
+                        {{ \Carbon\Carbon::parse($pesanan->tanggal_jadwal)->translatedFormat('l, d F Y') }}
                     </p>
                 </div>
                 <div class="field">
-                    <span class="label">Jumlah Peserta</span>
-                    <p class="value">{{ $pesanan->jumlah_pengunjung }} Orang (1 Armada)</p>
+                    <span class="label">Lokasi Penjemputan</span>
+                    <p class="value" style="font-size: 14px;">{{ $pesanan->titik_jemput }}</p>
+                </div>
+                <div class="field">
+                    <span class="label">Catatan & Waktu:</span>
+                    <p class="value" style="font-size: 12px; font-weight: normal; white-space: pre-line;">{{ $pesanan->catatan ?? '-' }}</p>
                 </div>
             </div>
 
             <div class="col">
+                <div class="field">
+                    <span class="label">Jumlah Peserta</span>
+                    <p class="value">{{ $pesanan->jumlah_pengunjung }} Orang (1 Armada)</p>
+                </div>
                 <div class="field">
                     <span class="label">Komunitas Penyelenggara</span>
                     <p class="value">{{ $pesanan->komunitas->nama_komunitas ?? 'Umum' }}</p>
                 </div>
                 <div class="field">
                     <span class="label">Armada Jeep & Driver</span>
-                    <p class="value">
+                    <p class="value" style="font-size: 14px;">
                         Jeep: {{ $pesanan->jeep->nama_jeep ?? 'Menunggu Konfirmasi' }} ({{ $pesanan->jeep->nomor_polisi ?? '-' }})<br>
                         Driver: {{ $pesanan->supir->nama_supir ?? 'Menunggu Konfirmasi' }}
                     </p>
@@ -90,7 +97,7 @@
         <div class="footer">
             <strong>Syarat & Ketentuan:</strong><br>
             1. Harap menunjukkan E-Tiket ini (digital atau cetak) kepada petugas / driver di Basecamp titik kumpul.<br>
-            2. Peserta diharapkan berkumpul 30 menit sebelum jadwal keberangkatan yang tertera.<br>
+            2. Peserta diharapkan berkumpul sesuai dengan waktu jemput yang telah disepakati.<br>
             3. Tiket ini sah dan dikeluarkan secara resmi oleh sistem manajemen komunitas Jeep Dieng area Wonosobo/Banjarnegara.
         </div>
     </div>

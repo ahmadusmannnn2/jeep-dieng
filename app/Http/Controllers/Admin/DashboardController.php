@@ -8,26 +8,19 @@ use App\Models\Jeep;
 use App\Models\Supir;
 use App\Models\Komunitas;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $user = Auth::user();
-        
         // 1. Ambil Parameter Filter (Default: Tahun ini)
         $tahun = $request->input('tahun', date('Y'));
-        $komunitasId = $request->input('komunitas_id'); // Khusus Super Admin
-
-        // Jika login sebagai admin komunitas, paksa data hanya untuk komunitasnya
-        if ($user->role === 'admin_komunitas') {
-            $komunitasId = $user->komunitas_id;
-        }
+        
+        // Komunitas ID murni diambil dari pilihan dropdown, bebas untuk semua admin
+        $komunitasId = $request->input('komunitas_id'); 
 
         // 2. Siapkan Query Dasar dengan Filter
-        // Kita filter pesanan berdasarkan tahun pembuatannya
         $pesananQuery = Pesanan::query()->whereYear('created_at', $tahun);
         $jeepQuery = Jeep::query();
         $supirQuery = Supir::query();
@@ -47,7 +40,6 @@ class DashboardController extends Controller
         $totalJeep = $jeepQuery->count();
         $totalSupir = $supirQuery->count();
         
-        // Ambil 5 riwayat pesanan terbaru
         $pesananTerbaru = (clone $pesananQuery)->with(['user', 'paketWisata', 'komunitas'])->latest()->take(5)->get();
 
         // 4. DATA GRAFIK: Hitung Total Pendapatan per Bulan di Tahun Terpilih
@@ -61,16 +53,12 @@ class DashboardController extends Controller
             ->pluck('total', 'bulan')
             ->toArray();
 
-        // Susun data agar genap 12 bulan (Januari - Desember)
         $dataGrafik = [];
         for ($i = 1; $i <= 12; $i++) {
             $dataGrafik[] = $grafikPendapatan[$i] ?? 0;
         }
 
-        // Ambil daftar komunitas untuk dropdown filter (Hanya berguna untuk Super Admin)
         $daftarKomunitas = Komunitas::all();
-        
-        // Nama Komunitas yang sedang difilter (untuk judul)
         $namaKomunitasFilter = $komunitasId ? Komunitas::find($komunitasId)->nama_komunitas : 'Semua Komunitas';
 
         return view('admin.dashboard', compact(

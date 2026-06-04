@@ -17,6 +17,17 @@ class Pengaturan extends Model
         'no_telp',
         'email',
         'alamat',
-        'deskripsi_footer'
+        'deskripsi_footer',
+        'hero_badge',
+        'hero_title',
+        'hero_title_highlight',
+        'hero_subtitle',
+        'hero_images',
+        'gallery_images' // <- Tambahan baru di sini
+    ];
+
+    protected $casts = [
+        'hero_images' => 'array',
+        'gallery_images' => 'array', // <- Tambahan baru di sini
     ];
 }

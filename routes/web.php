@@ -19,8 +19,14 @@ use App\Http\Controllers\Admin\PengaturanController;
 // --- RUTE HALAMAN DEPAN (CUSTOMER) ---
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/paket-wisata', [HomeController::class, 'paket'])->name('paket');
+
+Route::get('/paket-wisata/{paketWisata}', [HomeController::class, 'showPaket'])->name('paket.show'); 
+Route::get('/rute-trip', [HomeController::class, 'rute'])->name('rute');
+
+
 Route::get('/rute-trip', [HomeController::class, 'rute'])->name('rute');
 Route::get('/info-promo', [HomeController::class, 'promo'])->name('promo');
+Route::get('/galeri', [HomeController::class, 'galeri'])->name('galeri');
 
 // Dashboard Bawaan Breeze (Menampilkan daftar pesanan Customer)
 Route::get('/dashboard', function () {

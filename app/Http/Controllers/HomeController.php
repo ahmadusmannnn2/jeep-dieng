@@ -12,8 +12,12 @@ class HomeController extends Controller
     // Halaman Beranda (Bisa menampilkan ringkasan atau hero banner saja)
     public function index()
     {
-        $paket = PaketWisata::with('komunitas')->latest()->take(3)->get(); // Tampilkan 3 saja di home
-        return view('frontend.home', compact('paket'));
+        // Ambil data terbatas untuk ringkasan (etalase) di Home
+        $paket = PaketWisata::with('komunitas')->latest()->take(3)->get();
+        $rute = RuteWisata::latest()->take(4)->get();
+        $promo = KontenInformasi::latest()->take(3)->get();
+        
+        return view('frontend.home', compact('paket', 'rute', 'promo'));
     }
 
     // Halaman Khusus Daftar Paket Wisata

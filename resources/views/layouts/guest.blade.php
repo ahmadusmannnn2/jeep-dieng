@@ -19,10 +19,14 @@
         
         <div class="flex justify-center mb-8">
             <a href="/" class="flex items-center gap-2">
-                <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                </div>
-                <span class="text-3xl font-extrabold text-gray-900 tracking-tight">JEEP<span class="text-emerald-500">DIENG</span></span>
+                @if(isset($pengaturan_website) && $pengaturan_website->logo)
+                    <img src="{{ asset('storage/' . $pengaturan_website->logo) }}" alt="Logo" class="w-12 h-12 rounded-xl object-contain bg-emerald-500 p-1 shadow-lg shadow-emerald-500/30">
+                @else
+                    <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                    </div>
+                @endif
+                <span class="text-3xl font-extrabold text-gray-900 tracking-tight uppercase">{{ $pengaturan_website->nama_website ?? 'JEEP DIENG' }}</span>
             </a>
         </div>
         

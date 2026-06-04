@@ -10,9 +10,11 @@ use App\Http\Controllers\Admin\RuteWisataController;
 use App\Http\Controllers\Admin\JadwalKeberangkatanController;
 use App\Http\Controllers\Admin\KontenInformasiController;
 use App\Http\Controllers\Admin\PesananController;
+use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Admin\PengaturanController;
 
 // --- RUTE HALAMAN DEPAN (CUSTOMER) ---
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -45,6 +47,9 @@ Route::middleware('auth')->group(function () {
     
     // DETAIL RIWAYAT PESANAN / E-TIKET CUSTOMER
     Route::get('/pesanan-saya/{pesanan}', [BookingController::class, 'show'])->name('booking.show');
+    // RUTE CETAK TIKET
+    Route::get('/pesanan-saya/{pesanan}/cetak', [BookingController::class, 'printTicket'])->name('booking.print');
+
 });
 
 // RUTE KHUSUS ADMIN
@@ -62,6 +67,17 @@ Route::middleware(['auth', 'role:super_admin,admin_komunitas'])->prefix('admin')
     Route::get('/pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
     Route::get('/pesanan/{pesanan}/edit', [PesananController::class, 'edit'])->name('pesanan.edit');
     Route::put('/pesanan/{pesanan}', [PesananController::class, 'update'])->name('pesanan.update');
+
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
+
+
+    // PENGATURAN UMUM WEBSITE
+    Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
+    Route::put('/pengaturan', [PengaturanController::class, 'update'])->name('pengaturan.update');
+
+    
+
 });
 
 require __DIR__.'/auth.php';

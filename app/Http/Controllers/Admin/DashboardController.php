@@ -3,38 +3,80 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Pesanan;
 use App\Models\Jeep;
 use App\Models\Supir;
-use App\Models\User;
+use App\Models\Komunitas;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         
-        $queryPesanan = Pesanan::query();
-        $queryJeep = Jeep::query();
-        $querySupir = Supir::query();
+        // 1. Ambil Parameter Filter (Default: Tahun ini)
+        $tahun = $request->input('tahun', date('Y'));
+        $komunitasId = $request->input('komunitas_id'); // Khusus Super Admin
 
-        // LOGIKA MULTI-TENANT: Jika dia admin komunitas, filter data hanya milik komunitasnya
+        // Jika login sebagai admin komunitas, paksa data hanya untuk komunitasnya
         if ($user->role === 'admin_komunitas') {
-            $queryPesanan->where('komunitas_id', $user->komunitas_id);
-            $queryJeep->where('komunitas_id', $user->komunitas_id);
-            $querySupir->where('komunitas_id', $user->komunitas_id);
+            $komunitasId = $user->komunitas_id;
         }
 
-        $totalPesanan = $queryPesanan->count();
-        $totalJeep = $queryJeep->count();
-        $totalSupir = $querySupir->count();
-        $totalCustomer = User::where('role', 'customer')->count();
+        // 2. Siapkan Query Dasar dengan Filter
+        // Kita filter pesanan berdasarkan tahun pembuatannya
+        $pesananQuery = Pesanan::query()->whereYear('created_at', $tahun);
+        $jeepQuery = Jeep::query();
+        $supirQuery = Supir::query();
+        
+        if ($komunitasId) {
+            $pesananQuery->where('komunitas_id', $komunitasId);
+            $jeepQuery->where('komunitas_id', $komunitasId);
+            $supirQuery->where('komunitas_id', $komunitasId);
+        }
+        
+        // 3. Hitung Metrik Data Statistik (Card)
+        $totalPesanan = (clone $pesananQuery)->count();
+        $pesananPending = (clone $pesananQuery)->where('status', 'Pending')->count();
+        $pesananLunas = (clone $pesananQuery)->whereIn('status', ['Lunas', 'Selesai'])->count();
+        $totalPendapatan = (clone $pesananQuery)->whereIn('status', ['Lunas', 'Selesai'])->sum('total_harga');
+                            
+        $totalJeep = $jeepQuery->count();
+        $totalSupir = $supirQuery->count();
+        
+        // Ambil 5 riwayat pesanan terbaru
+        $pesananTerbaru = (clone $pesananQuery)->with(['user', 'paketWisata', 'komunitas'])->latest()->take(5)->get();
 
-        // Kita juga kirim nama komunitas ke tampilan
-        $namaKomunitas = $user->role === 'super_admin' ? 'Semua Komunitas (Super Admin)' : $user->komunitas->nama_komunitas;
+        // 4. DATA GRAFIK: Hitung Total Pendapatan per Bulan di Tahun Terpilih
+        $grafikPendapatan = (clone $pesananQuery)
+            ->select(
+                DB::raw('MONTH(created_at) as bulan'),
+                DB::raw('SUM(total_harga) as total')
+            )
+            ->whereIn('status', ['Lunas', 'Selesai'])
+            ->groupBy('bulan')
+            ->pluck('total', 'bulan')
+            ->toArray();
 
-        return view('admin.dashboard', compact('totalPesanan', 'totalJeep', 'totalSupir', 'totalCustomer', 'namaKomunitas'));
+        // Susun data agar genap 12 bulan (Januari - Desember)
+        $dataGrafik = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $dataGrafik[] = $grafikPendapatan[$i] ?? 0;
+        }
+
+        // Ambil daftar komunitas untuk dropdown filter (Hanya berguna untuk Super Admin)
+        $daftarKomunitas = Komunitas::all();
+        
+        // Nama Komunitas yang sedang difilter (untuk judul)
+        $namaKomunitasFilter = $komunitasId ? Komunitas::find($komunitasId)->nama_komunitas : 'Semua Komunitas';
+
+        return view('admin.dashboard', compact(
+            'totalPesanan', 'pesananPending', 'pesananLunas', 'totalPendapatan', 
+            'totalJeep', 'totalSupir', 'pesananTerbaru',
+            'dataGrafik', 'tahun', 'komunitasId', 'daftarKomunitas', 'namaKomunitasFilter'
+        ));
     }
 }

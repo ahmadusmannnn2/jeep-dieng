@@ -1,54 +1,190 @@
 @extends('admin.layouts.app')
 
 @section('title', 'Dashboard Admin - Jeep Dieng')
-@section('header_title', 'Overview Dashboard')
-@section('header_subtitle', $namaKomunitas)
+@section('header_title', 'Ringkasan Sistem')
+@section('header_subtitle', 'Analisis performa data reservasi dan armada secara real-time')
 
 @section('content')
-    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl p-8 text-white shadow-lg shadow-emerald-500/20">
-        <h3 class="text-3xl font-bold mb-2">Selamat Datang, {{ explode(' ', Auth::user()->name)[0] }}! 👋</h3>
-        <p class="text-emerald-100 max-w-xl">Pantau pesanan Jeep dan atur ketersediaan supir dengan mudah. Semoga harimu menyenangkan dan penyewaan hari ini ramai!</p>
+
+<form method="GET" action="{{ route('admin.dashboard') }}" class="mb-8 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 items-end">
+    <div>
+        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Pilih Tahun</label>
+        <select name="tahun" class="w-full md:w-40 px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 font-bold text-gray-800 transition">
+            @for($i = date('Y'); $i >= 2024; $i--)
+                <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
+            @endfor
+        </select>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center gap-6 hover:shadow-md transition">
-            <div class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-            </div>
-            <div>
-                <p class="text-sm font-medium text-gray-500 mb-1">Total Pesanan</p>
-                <h4 class="text-3xl font-bold text-gray-900">{{ $totalPesanan }}</h4>
-            </div>
-        </div>
+    @if(Auth::user()->role === 'super_admin')
+    <div>
+        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Filter Komunitas</label>
+        <select name="komunitas_id" class="w-full md:w-64 px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 font-bold text-gray-800 transition">
+            <option value="">-- Semua Komunitas --</option>
+            @foreach($daftarKomunitas as $kom)
+                <option value="{{ $kom->id }}" {{ $komunitasId == $kom->id ? 'selected' : '' }}>{{ $kom->nama_komunitas }}</option>
+            @endforeach
+        </select>
+    </div>
+    @endif
 
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center gap-6 hover:shadow-md transition">
-            <div class="w-16 h-16 rounded-2xl bg-gray-50 text-gray-700 flex items-center justify-center">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"></path></svg>
-            </div>
-            <div>
-                <p class="text-sm font-medium text-gray-500 mb-1">Armada Jeep</p>
-                <h4 class="text-3xl font-bold text-gray-900">{{ $totalJeep }}</h4>
-            </div>
-        </div>
+    <div class="flex gap-2">
+        <button type="submit" class="px-6 py-2.5 bg-gray-900 text-white font-bold rounded-xl hover:bg-emerald-500 transition shadow-md">Terapkan Filter</button>
+        @if(request()->has('tahun') || request()->has('komunitas_id'))
+            <a href="{{ route('admin.dashboard') }}" class="px-4 py-2.5 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition">Reset</a>
+        @endif
+    </div>
+</form>
 
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center gap-6 hover:shadow-md transition">
-            <div class="w-16 h-16 rounded-2xl bg-gray-50 text-gray-700 flex items-center justify-center">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-            </div>
-            <div>
-                <p class="text-sm font-medium text-gray-500 mb-1">Data Supir</p>
-                <h4 class="text-3xl font-bold text-gray-900">{{ $totalSupir }}</h4>
-            </div>
-        </div>
+<div class="mb-6">
+    <h3 class="text-xl font-black text-gray-800">Menampilkan Data: <span class="text-emerald-500">{{ $namaKomunitasFilter }}</span> (Tahun {{ $tahun }})</h3>
+</div>
 
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center gap-6 hover:shadow-md transition">
-            <div class="w-16 h-16 rounded-2xl bg-gray-50 text-gray-700 flex items-center justify-center">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-            </div>
-            <div>
-                <p class="text-sm font-medium text-gray-500 mb-1">Total Customer</p>
-                <h4 class="text-3xl font-bold text-gray-900">{{ $totalCustomer }}</h4>
-            </div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    
+    <div class="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-6 rounded-3xl shadow-sm relative overflow-hidden group">
+        <div class="absolute right-[-10px] bottom-[-10px] text-white/5 transform group-hover:scale-110 transition duration-300">
+            <svg class="w-32 h-32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <p class="text-xs uppercase tracking-widest font-bold text-gray-400 mb-1">Total Pendapatan</p>
+        <h4 class="text-2xl font-black text-emerald-400">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h4>
+        <p class="text-[11px] text-gray-400 mt-2">*Status Lunas/Selesai</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:border-amber-200 transition">
+        <div>
+            <p class="text-xs uppercase tracking-widest font-bold text-gray-400 mb-1">Butuh Persetujuan</p>
+            <h4 class="text-3xl font-black text-gray-900">{{ $pesananPending }}</h4>
+            <p class="text-[11px] text-amber-600 font-bold mt-2">Pesanan menunggu</p>
+        </div>
+        <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
     </div>
+
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:border-emerald-200 transition">
+        <div>
+            <p class="text-xs uppercase tracking-widest font-bold text-gray-400 mb-1">Total Jeep</p>
+            <h4 class="text-3xl font-black text-gray-900">{{ $totalJeep }}</h4>
+            <p class="text-[11px] text-gray-500 mt-2">Armada terdaftar</p>
+        </div>
+        <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:border-emerald-200 transition">
+        <div>
+            <p class="text-xs uppercase tracking-widest font-bold text-gray-400 mb-1">Total Supir</p>
+            <h4 class="text-3xl font-black text-gray-900">{{ $totalSupir }}</h4>
+            <p class="text-[11px] text-gray-500 mt-2">Driver aktif lapangan</p>
+        </div>
+        <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    
+    <div class="xl:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+        <h3 class="text-lg font-bold text-gray-900 mb-6">Grafik Pendapatan Tahun {{ $tahun }}</h3>
+        <div class="w-full h-72">
+            <canvas id="grafikPendapatan"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-lg font-bold text-gray-900">Pesanan Terbaru</h3>
+            <a href="{{ route('admin.pesanan.index') }}" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl transition">Lihat Semua</a>
+        </div>
+        
+        <div class="space-y-4">
+            @forelse($pesananTerbaru as $item)
+                <div class="flex justify-between items-center p-3 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition">
+                    <div>
+                        <p class="font-bold text-sm text-gray-900">#BKG-{{ str_pad($item->id, 5, '0', STR_PAD_LEFT) }}</p>
+                        <p class="text-xs text-gray-500 truncate max-w-[150px]">{{ $item->user->name }} - {{ $item->komunitas->nama_komunitas ?? 'Umum' }}</p>
+                    </div>
+                    <div class="text-right">
+                        @if($item->status === 'Pending')
+                            <span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold">Pending</span>
+                        @elseif($item->status === 'Lunas')
+                            <span class="px-2 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-bold">Lunas</span>
+                        @elseif($item->status === 'Disetujui')
+                            <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold">Disetujui</span>
+                        @elseif($item->status === 'Selesai')
+                            <span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold">Selesai</span>
+                        @else
+                            <span class="px-2 py-1 bg-red-50 text-red-700 rounded-lg text-[10px] font-bold">Batal</span>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <p class="text-sm text-gray-400 text-center py-4">Belum ada pesanan.</p>
+            @endforelse
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('grafikPendapatan').getContext('2d');
+        
+        // Data dari PHP
+        const dataPHP = @json($dataGrafik);
+
+        // Gradient Warna untuk Grafik Batang
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, '#10b981'); // Emerald 500
+        gradient.addColorStop(1, '#6ee7b7'); // Emerald 300
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                datasets: [{
+                    label: 'Pendapatan (Rp)',
+                    data: dataPHP,
+                    backgroundColor: gradient,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let value = context.raw;
+                                return 'Rp ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                if(value === 0) return '0';
+                                return 'Rp ' + (value/1000) + 'K';
+                            }
+                        },
+                        grid: { borderDash: [4, 4], color: '#f3f4f6' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
 @endsection

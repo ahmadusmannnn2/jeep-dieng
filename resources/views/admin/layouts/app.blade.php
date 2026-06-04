@@ -11,6 +11,14 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
+        /* CSS KHUSUS: Sembunyikan Scrollbar tapi tetap bisa di-scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
     </style>
 </head>
 
@@ -28,14 +36,27 @@
 
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
                class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white flex flex-col transition-transform duration-300 ease-in-out md:static md:translate-x-0">
-            <div class="h-20 flex items-center justify-between md:justify-center px-6 md:px-0 border-b border-gray-800">
-                <h1 class="text-2xl font-bold text-emerald-500 tracking-wider">JEEP<span class="text-white">DIENG</span></h1>
-                <button @click="sidebarOpen = false" class="md:hidden text-gray-400 hover:text-white focus:outline-none">
+            
+            <div class="h-20 flex items-center justify-between md:justify-start px-5 border-b border-gray-800 gap-3">
+                
+                @if(isset($pengaturan_website) && $pengaturan_website->logo)
+                    <img src="{{ asset('storage/' . $pengaturan_website->logo) }}" alt="Logo" class="w-8 h-8 rounded-lg object-contain bg-white p-0.5 shrink-0 shadow-lg shadow-emerald-500/20">
+                @else
+                    <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                    </div>
+                @endif
+                
+                <h1 class="text-xl font-bold text-emerald-500 tracking-wider truncate uppercase">
+                    {{ $pengaturan_website->nama_website ?? 'JEEP DIENG' }}
+                </h1>
+                
+                <button @click="sidebarOpen = false" class="md:hidden text-gray-400 hover:text-white focus:outline-none ml-auto">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
-            <nav class="flex-1 overflow-y-auto px-4 py-6 space-y-2">
+            <nav class="flex-1 overflow-y-auto no-scrollbar px-4 py-6 space-y-2">
                 <a href="{{ route('admin.dashboard') }}"
                     class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
@@ -78,6 +99,18 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                     <span class="font-medium">Pesanan Masuk</span>
                 </a>
+
+                <a href="{{ route('admin.laporan.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.laporan.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span class="font-medium">Laporan Keuangan</span>
+                </a>
+
+                @if(Auth::user()->role === 'super_admin')
+                <div class="pt-4 mt-4 border-t border-gray-800">
+                    <a href="{{ route('admin.pengaturan.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.pengaturan.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} rounded-xl transition">
+                </div>
+                @endif
+                
             </nav>
 
             <div class="p-4 border-t border-gray-800">
@@ -91,16 +124,16 @@
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col overflow-y-auto w-full relative">
+        <main class="flex-1 flex flex-col overflow-y-auto w-full relative bg-gray-50">
             
-            <header class="h-20 bg-white shadow-sm flex items-center justify-between px-4 md:px-8 z-10 sticky top-0">
+            <header class="h-20 bg-white shadow-sm flex items-center justify-between px-4 md:px-8 z-10 sticky top-0 border-b border-gray-100">
                 <div class="flex items-center gap-4">
-                    <button @click="sidebarOpen = true" class="md:hidden p-2 text-gray-500 hover:text-emerald-500 focus:outline-none transition bg-gray-50 rounded-lg">
+                    <button @click="sidebarOpen = true" class="md:hidden p-2 text-gray-500 hover:text-emerald-500 focus:outline-none transition bg-gray-50 rounded-lg border border-gray-100">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
 
                     <div>
-                        <h2 class="text-xl md:text-2xl font-bold text-gray-800">@yield('header_title')</h2>
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-800 tracking-tight">@yield('header_title')</h2>
                         <p class="text-xs md:text-sm text-gray-500 hidden sm:block">@yield('header_subtitle')</p>
                     </div>
                 </div>
@@ -108,11 +141,11 @@
                 <div class="flex items-center gap-4">
                     <div class="text-right hidden sm:block">
                         <p class="text-sm font-bold text-gray-800">{{ Auth::user()->name }}</p>
-                        <p class="text-xs text-emerald-600 font-medium">
+                        <p class="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded inline-block mt-0.5">
                             {{ Auth::user()->role === 'super_admin' ? 'Super Admin' : 'Admin Komunitas' }}
                         </p>
                     </div>
-                    <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold border-2 border-emerald-500 shrink-0">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold shadow-md">
                         {{ substr(Auth::user()->name, 0, 1) }}
                     </div>
                 </div>
@@ -120,11 +153,11 @@
 
             <div class="p-4 md:p-8 space-y-6">
                 @if(session('success'))
-                    <div class="bg-emerald-100 border-l-4 border-emerald-500 text-emerald-700 p-4 rounded-xl shadow-sm mb-6 flex items-center gap-3">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-2xl shadow-sm mb-6 flex items-start gap-3">
+                        <svg class="w-5 h-5 shrink-0 text-emerald-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <div>
-                            <p class="font-bold text-sm">Berhasil!</p>
-                            <p class="text-sm">{{ session('success') }}</p>
+                            <p class="font-bold text-sm">Berhasil Diperbarui!</p>
+                            <p class="text-sm mt-0.5">{{ session('success') }}</p>
                         </div>
                     </div>
                 @endif

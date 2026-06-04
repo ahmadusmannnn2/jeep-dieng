@@ -98,4 +98,18 @@ class BookingController extends Controller
         $pesanan->load(['paketWisata', 'jadwal', 'jeep', 'supir', 'pembayaran', 'komunitas']);
         return view('frontend.booking.show', compact('pesanan'));
     }
+
+    // 6. Mencetak E-Tiket Customer (Format PDF/Print)
+    public function printTicket(Pesanan $pesanan)
+    {
+        // Pastikan tiket ini benar milik user yang sedang login
+        if ($pesanan->user_id !== Auth::id()) {
+            abort(403, 'Akses ditolak. Ini bukan tiket Anda.');
+        }
+
+        $pesanan->load(['paketWisata', 'jadwal', 'jeep', 'supir', 'pembayaran', 'komunitas']);
+        return view('frontend.booking.print', compact('pesanan'));
+    }
+
+    
 }

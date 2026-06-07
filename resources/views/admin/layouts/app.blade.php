@@ -66,21 +66,29 @@
                 </a>
 
                 <!-- Master Armada -->
-                <div x-data="{ open: {{ request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'true' : 'false' }} }">
-                    <button @click="if(sidebarCollapsed) { sidebarCollapsed = false; open = true; } else { open = !open }" type="button" title="Armada & Supir" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition overflow-hidden">
+                <div x-data="{ open: {{ request()->routeIs('admin.komunitas.*') || request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'true' : 'false' }} }">
+                    <button @click="if(sidebarCollapsed) { sidebarCollapsed = false; open = true; } else { open = !open }" type="button" title="Mitra Komunitas & Armada" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.komunitas.*') || request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition overflow-hidden">
                         <div class="flex items-center gap-3">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                            <span x-show="!sidebarCollapsed" class="font-medium whitespace-nowrap">Armada & Supir</span>
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            <span x-show="!sidebarCollapsed" class="font-medium whitespace-nowrap">Mitra Komunitas</span>
                         </div>
                         <svg x-show="!sidebarCollapsed" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open && !sidebarCollapsed" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
-                        <a href="{{ route('admin.jeep.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.jeep.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
-                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.jeep.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                    <div x-show="open && !sidebarCollapsed" style="display: none;" class="relative pl-12 pr-4 py-2 space-y-1 mt-1">
+                        <div class="absolute left-[31px] top-0 bottom-4 w-px bg-gray-800"></div>
+                        <a href="{{ route('admin.komunitas.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.komunitas.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
+                            <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.komunitas.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
+                            <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.komunitas.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
+                            Kelola Komunitas
+                        </a>
+                        <a href="{{ route('admin.jeep.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.jeep.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
+                            <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.jeep.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
+                            <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.jeep.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Data Kendaraan (Jeep)
                         </a>
-                        <a href="{{ route('admin.supir.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.supir.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
-                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.supir.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                        <a href="{{ route('admin.supir.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.supir.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
+                            <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.supir.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
+                            <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.supir.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Daftar Supir Aktif
                         </a>
                     </div>
@@ -95,17 +103,21 @@
                         </div>
                         <svg x-show="!sidebarCollapsed" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open && !sidebarCollapsed" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
-                        <a href="{{ route('admin.paket-wisata.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.paket-wisata.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
-                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.paket-wisata.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                    <div x-show="open && !sidebarCollapsed" style="display: none;" class="relative pl-12 pr-4 py-2 space-y-1 mt-1">
+                        <div class="absolute left-[31px] top-0 bottom-4 w-px bg-gray-800"></div>
+                        <a href="{{ route('admin.paket-wisata.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.paket-wisata.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
+                            <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.paket-wisata.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
+                            <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.paket-wisata.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Paket Wisata Utama
                         </a>
-                        <a href="{{ route('admin.rute-wisata.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.rute-wisata.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
-                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.rute-wisata.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                        <a href="{{ route('admin.rute-wisata.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.rute-wisata.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
+                            <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.rute-wisata.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
+                            <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.rute-wisata.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Kelola Rute Destinasi
                         </a>
-                        <a href="{{ route('admin.jadwal.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.jadwal.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
-                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.jadwal.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                        <a href="{{ route('admin.jadwal.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.jadwal.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
+                            <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.jadwal.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
+                            <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.jadwal.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Jadwal Keberangkatan
                         </a>
                     </div>
@@ -120,13 +132,16 @@
                         </div>
                         <svg x-show="!sidebarCollapsed" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open && !sidebarCollapsed" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
-                        <a href="{{ route('admin.konten-informasi.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.konten-informasi.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
-                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.konten-informasi.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                    <div x-show="open && !sidebarCollapsed" style="display: none;" class="relative pl-12 pr-4 py-2 space-y-1 mt-1">
+                        <div class="absolute left-[31px] top-0 bottom-4 w-px bg-gray-800"></div>
+                        <a href="{{ route('admin.konten-informasi.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.konten-informasi.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
+                            <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.konten-informasi.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
+                            <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.konten-informasi.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Artikel & Promo
                         </a>
-                        <a href="{{ route('admin.testimoni.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.testimoni.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
-                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.testimoni.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                        <a href="{{ route('admin.testimoni.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.testimoni.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
+                            <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.testimoni.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
+                            <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.testimoni.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Review Pelanggan
                         </a>
                     </div>
@@ -141,13 +156,16 @@
                         </div>
                         <svg x-show="!sidebarCollapsed" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open && !sidebarCollapsed" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
-                        <a href="{{ route('admin.laporan.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.laporan.index') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
-                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.laporan.index') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                    <div x-show="open && !sidebarCollapsed" style="display: none;" class="relative pl-12 pr-4 py-2 space-y-1 mt-1">
+                        <div class="absolute left-[31px] top-0 bottom-4 w-px bg-gray-800"></div>
+                        <a href="{{ route('admin.laporan.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.laporan.index') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
+                            <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.laporan.index') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
+                            <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.laporan.index') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Rekap Transaksi Masuk
                         </a>
-                        <a href="{{ route('admin.laporan.komunitas') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.laporan.komunitas') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
-                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.laporan.komunitas') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                        <a href="{{ route('admin.laporan.komunitas') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.laporan.komunitas') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
+                            <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.laporan.komunitas') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
+                            <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.laporan.komunitas') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Pencairan Komunitas
                         </a>
                     </div>

@@ -59,6 +59,9 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:super_admin,admin_komunitas'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::resource('komunitas', \App\Http\Controllers\Admin\KomunitasController::class)->parameters([
+        'komunitas' => 'komunitas'
+    ]);
     Route::resource('supir', SupirController::class);
     Route::resource('jeep', JeepController::class);
     Route::resource('paket-wisata', PaketWisataController::class)->parameters([

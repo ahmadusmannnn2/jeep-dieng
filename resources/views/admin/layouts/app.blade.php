@@ -111,10 +111,20 @@
                     </div>
                 </div>
 
-                <a href="{{ route('admin.laporan.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.laporan.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <span class="font-medium">Laporan Keuangan</span>
-                </a>
+                <!-- Laporan -->
+                <div x-data="{ open: {{ request()->routeIs('admin.laporan.*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.laporan.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            <span class="font-medium">Laporan & Keuangan</span>
+                        </div>
+                        <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" style="display: none;" class="pl-12 pr-4 py-1 space-y-1">
+                        <a href="{{ route('admin.laporan.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.laporan.index') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Rekap Transaksi</a>
+                        <a href="{{ route('admin.laporan.komunitas') }}" class="block py-2 text-sm {{ request()->routeIs('admin.laporan.komunitas') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Bagi Hasil Komunitas</a>
+                    </div>
+                </div>
             </nav>
 
             <div class="p-4 border-t border-gray-800 shrink-0">

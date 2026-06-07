@@ -63,4 +63,26 @@ class LaporanController extends Controller
 
         return view('admin.laporan.print', compact('laporan', 'tanggal_mulai', 'tanggal_selesai', 'total_pendapatan', 'nama_komunitas'));
     }
+
+    public function komunitas(Request $request)
+    {
+        $tanggal_mulai = $request->input('tanggal_mulai', now()->startOfMonth()->toDateString());
+        $tanggal_selesai = $request->input('tanggal_selesai', now()->endOfMonth()->toDateString());
+
+        $komunitas = Komunitas::with(['pesanans' => function($q) use ($tanggal_mulai, $tanggal_selesai) {
+            $q->whereBetween('created_at', [$tanggal_mulai . ' 00:00:00', $tanggal_selesai . ' 23:59:59'])
+              ->whereIn('status', ['DP Lunas', 'Lunas', 'Selesai']);
+        }])->get();
+
+        // Calculate total pendapatan per komunitas
+        foreach ($komunitas as $k) {
+            $k->total_transaksi = $k->pesanans->count();
+            $pesananIds = $k->pesanans->pluck('id');
+            $k->total_pendapatan = \App\Models\Pembayaran::where('status', 'Valid')
+                ->whereIn('pesanan_id', $pesananIds)
+                ->sum('jumlah_bayar');
+        }
+
+        return view('admin.laporan.komunitas', compact('komunitas', 'tanggal_mulai', 'tanggal_selesai'));
+    }
 }

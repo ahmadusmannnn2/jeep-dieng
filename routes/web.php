@@ -80,6 +80,7 @@ Route::middleware(['auth', 'role:super_admin,admin_komunitas'])->prefix('admin')
     Route::put('/pesanan/{pesanan}', [PesananController::class, 'update'])->name('pesanan.update');
 
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/komunitas', [LaporanController::class, 'komunitas'])->name('laporan.komunitas');
     Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
 
 

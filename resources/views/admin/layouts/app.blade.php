@@ -70,13 +70,19 @@
                     <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                            <span class="font-medium">Master Armada</span>
+                            <span class="font-medium">Armada & Supir</span>
                         </div>
                         <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open" style="display: none;" class="pl-12 pr-4 py-1 space-y-1">
-                        <a href="{{ route('admin.jeep.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.jeep.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Data Jeep</a>
-                        <a href="{{ route('admin.supir.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.supir.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Data Supir</a>
+                    <div x-show="open" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
+                        <a href="{{ route('admin.jeep.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.jeep.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
+                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.jeep.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                            Data Kendaraan (Jeep)
+                        </a>
+                        <a href="{{ route('admin.supir.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.supir.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
+                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.supir.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                            Daftar Supir Aktif
+                        </a>
                     </div>
                 </div>
 
@@ -85,14 +91,23 @@
                     <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.paket-wisata.*') || request()->routeIs('admin.rute-wisata.*') || request()->routeIs('admin.jadwal.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span class="font-medium">Katalog Wisata</span>
+                            <span class="font-medium">Paket Tour & Rute</span>
                         </div>
                         <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open" style="display: none;" class="pl-12 pr-4 py-1 space-y-1">
-                        <a href="{{ route('admin.paket-wisata.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.paket-wisata.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Paket Wisata</a>
-                        <a href="{{ route('admin.rute-wisata.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.rute-wisata.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Rute Wisata</a>
-                        <a href="{{ route('admin.jadwal.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.jadwal.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Jadwal Tour</a>
+                    <div x-show="open" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
+                        <a href="{{ route('admin.paket-wisata.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.paket-wisata.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
+                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.paket-wisata.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                            Paket Wisata Utama
+                        </a>
+                        <a href="{{ route('admin.rute-wisata.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.rute-wisata.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
+                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.rute-wisata.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                            Kelola Rute Destinasi
+                        </a>
+                        <a href="{{ route('admin.jadwal.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.jadwal.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
+                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.jadwal.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                            Jadwal Keberangkatan
+                        </a>
                     </div>
                 </div>
 
@@ -101,13 +116,19 @@
                     <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.konten-informasi.*') || request()->routeIs('admin.testimoni.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
-                            <span class="font-medium">Konten Website</span>
+                            <span class="font-medium">Konten & Informasi</span>
                         </div>
                         <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open" style="display: none;" class="pl-12 pr-4 py-1 space-y-1">
-                        <a href="{{ route('admin.konten-informasi.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.konten-informasi.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Info & Promo</a>
-                        <a href="{{ route('admin.testimoni.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.testimoni.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Testimoni</a>
+                    <div x-show="open" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
+                        <a href="{{ route('admin.konten-informasi.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.konten-informasi.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
+                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.konten-informasi.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                            Artikel & Promo
+                        </a>
+                        <a href="{{ route('admin.testimoni.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.testimoni.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
+                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.testimoni.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                            Review Pelanggan
+                        </a>
                     </div>
                 </div>
 
@@ -116,13 +137,19 @@
                     <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.laporan.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            <span class="font-medium">Laporan & Keuangan</span>
+                            <span class="font-medium">Keuangan & Omzet</span>
                         </div>
                         <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open" style="display: none;" class="pl-12 pr-4 py-1 space-y-1">
-                        <a href="{{ route('admin.laporan.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.laporan.index') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Rekap Transaksi</a>
-                        <a href="{{ route('admin.laporan.komunitas') }}" class="block py-2 text-sm {{ request()->routeIs('admin.laporan.komunitas') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Bagi Hasil Komunitas</a>
+                    <div x-show="open" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
+                        <a href="{{ route('admin.laporan.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.laporan.index') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
+                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.laporan.index') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                            Rekap Transaksi Masuk
+                        </a>
+                        <a href="{{ route('admin.laporan.komunitas') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.laporan.komunitas') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
+                            <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.laporan.komunitas') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
+                            Pencairan Komunitas
+                        </a>
                     </div>
                 </div>
             </nav>

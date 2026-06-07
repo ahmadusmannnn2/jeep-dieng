@@ -10,17 +10,35 @@ use Illuminate\Support\Facades\Auth;
 
 class SupirController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $query = Supir::query();
 
         if ($user->role === 'admin_komunitas') {
             $query->where('komunitas_id', $user->komunitas_id);
+        } else {
+            if ($request->filled('komunitas_id')) {
+                $query->where('komunitas_id', $request->komunitas_id);
+            }
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_supir', 'like', "%{$search}%")
+                  ->orWhere('no_hp', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
         $supirs = $query->latest()->get();
-        return view('admin.supir.index', compact('supirs'));
+        $komunitas = $user->role === 'super_admin' ? Komunitas::all() : collect();
+
+        return view('admin.supir.index', compact('supirs', 'komunitas'));
     }
 
     public function create()
@@ -39,7 +57,7 @@ class SupirController extends Controller
             'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable'
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['_token', '_method']);
         
         // Otomatis assign komunitas jika yang login adalah admin komunitas
         if (Auth::user()->role === 'admin_komunitas') {
@@ -65,7 +83,7 @@ class SupirController extends Controller
             'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable'
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['_token', '_method']);
         if (Auth::user()->role === 'admin_komunitas') {
             $data['komunitas_id'] = Auth::user()->komunitas_id;
         }

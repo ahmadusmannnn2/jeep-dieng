@@ -25,7 +25,7 @@ class BookingController extends Controller
     }
 
     // 2. Memproses Data Booking
-    public function store(Request $request, \App\Models\PaketWisata $paketWisata)
+    public function store(Request $request, PaketWisata $paketWisata)
     {
         // 1. Validasi input, tambahkan jumlah_pengunjung (Maksimal 6)
         $request->validate([
@@ -41,15 +41,16 @@ class BookingController extends Controller
 
         // 3. Simpan ke Database
         Pesanan::create([
-            'user_id' => Auth::id(),
-            'paket_wisata_id' => $paketWisata->id,
-            'komunitas_id' => $paketWisata->komunitas_id,
-            'tanggal_jadwal' => $request->tanggal_jadwal,
-            'titik_jemput' => $request->titik_jemput,
-            'jumlah_pengunjung' => $request->jumlah_pengunjung, // <- Kolom ini sudah ditambahkan
-            'catatan' => $catatanAkhir,
-            'total_harga' => $paketWisata->harga,
-            'status' => 'Pending',
+            'user_id'           => Auth::id(),
+            'paket_wisata_id'   => $paketWisata->id,
+            'komunitas_id'      => $paketWisata->komunitas_id,
+            'tanggal_jadwal'    => $request->tanggal_jadwal,
+            'titik_jemput'      => $request->titik_jemput,
+            'jumlah_pengunjung' => $request->jumlah_pengunjung,
+            'catatan'           => $catatanAkhir,
+            // BUG #4 FIX: total harga = harga paket × jumlah pengunjung
+            'total_harga'       => $paketWisata->harga * $request->jumlah_pengunjung,
+            'status'            => 'Pending',
         ]);
 
         // 4. Arahkan ke Riwayat dengan animasi sukses
@@ -58,10 +59,10 @@ class BookingController extends Controller
 
     // 3. Menampilkan Form Upload Pembayaran
     // HALAMAN UPLOAD BUKTI BAYAR
-    public function payment(\App\Models\Pesanan $pesanan)
+    public function payment(Pesanan $pesanan)
     {
         // 1. Keamanan: Pastikan hanya pemilik pesanan yang bisa mengakses halamannya
-        if ($pesanan->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+        if ($pesanan->user_id !== Auth::id()) {
             abort(403, 'Akses Ditolak: Anda tidak dapat melihat tagihan orang lain.');
         }
 
@@ -77,10 +78,11 @@ class BookingController extends Controller
     }
 
     // PROSES SIMPAN BUKTI BAYAR
-    public function paymentStore(\Illuminate\Http\Request $request, \App\Models\Pesanan $pesanan)
+    // PROSES SIMPAN BUKTI BAYAR
+    public function paymentStore(Request $request, Pesanan $pesanan)
     {
         // 1. Keamanan
-        if ($pesanan->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+        if ($pesanan->user_id !== Auth::id()) {
             abort(403, 'Akses Ditolak.');
         }
 
@@ -95,15 +97,13 @@ class BookingController extends Controller
 
         // 4. Masukkan ke tabel pembayaran
         Pembayaran::create([
-            'pesanan_id' => $pesanan->id,
-            'jumlah_bayar' => $pesanan->total_harga,
-            'bukti_pembayaran' => $path,
+            'pesanan_id'        => $pesanan->id,
+            'jumlah_bayar'      => $pesanan->total_harga,
+            // BUG #1 FIX: nama kolom di DB adalah 'bukti_bayar', bukan 'bukti_pembayaran'
+            'bukti_bayar'       => $path,
             'metode_pembayaran' => $request->metode_pembayaran,
-            'status' => 'Pending', // Menunggu validasi admin
+            'status'            => 'Menunggu Verifikasi',
         ]);
-
-        // (Opsional) Boleh mengubah status pesanan, namun karena strukturnya admin yang memvalidasi,
-        // Kita biarkan statusnya tetap 'Pending' agar Admin yang mengubahnya jadi 'Lunas'
 
         return redirect()->route('dashboard')->with('success', 'Bukti pembayaran berhasil diunggah! Mohon tunggu konfirmasi dari Admin kami.');
     }

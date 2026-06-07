@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class JadwalKeberangkatanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $query = JadwalKeberangkatan::query();
@@ -18,11 +18,21 @@ class JadwalKeberangkatanController extends Controller
         // Filter data sesuai komunitas yang login
         if ($user->role === 'admin_komunitas') {
             $query->where('komunitas_id', $user->komunitas_id);
+        } else {
+            if ($request->filled('komunitas_id')) {
+                $query->where('komunitas_id', $request->komunitas_id);
+            }
+        }
+
+        if ($request->filled('tanggal')) {
+            $query->where('tanggal', $request->tanggal);
         }
 
         // Urutkan berdasarkan tanggal terdekat
         $jadwal = $query->orderBy('tanggal', 'asc')->orderBy('jam', 'asc')->get();
-        return view('admin.jadwal.index', compact('jadwal'));
+        $komunitas = $user->role === 'super_admin' ? Komunitas::all() : collect();
+
+        return view('admin.jadwal.index', compact('jadwal', 'komunitas'));
     }
 
     public function create()
@@ -39,7 +49,7 @@ class JadwalKeberangkatanController extends Controller
             'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable'
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['_token', '_method']);
         
         if (Auth::user()->role === 'admin_komunitas') {
             $data['komunitas_id'] = Auth::user()->komunitas_id;
@@ -63,7 +73,7 @@ class JadwalKeberangkatanController extends Controller
             'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable'
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['_token', '_method']);
         
         if (Auth::user()->role === 'admin_komunitas') {
             $data['komunitas_id'] = Auth::user()->komunitas_id;

@@ -93,7 +93,7 @@
 
                         <a href="{{ route('booking.create', $paketWisata->id) }}" class="flex-1 px-8 py-4 bg-emerald-500 text-white text-lg font-extrabold rounded-2xl hover:bg-emerald-600 transition shadow-[0_8px_20px_rgba(16,185,129,0.3)] text-center flex items-center justify-center gap-2 transform hover:-translate-y-1">
                             Pesan Sekarang
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l7-7m7-7H3"></path></svg>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </a>
                         
                     </div>

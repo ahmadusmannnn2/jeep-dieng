@@ -59,7 +59,9 @@ class DashboardController extends Controller
         }
 
         $daftarKomunitas = Komunitas::all();
-        $namaKomunitasFilter = $komunitasId ? Komunitas::find($komunitasId)->nama_komunitas : 'Semua Komunitas';
+        $namaKomunitasFilter = $komunitasId 
+            ? (Komunitas::find($komunitasId)?->nama_komunitas ?? 'Komunitas Tidak Ditemukan')
+            : 'Semua Komunitas';
 
         return view('admin.dashboard', compact(
             'totalPesanan', 'pesananPending', 'pesananLunas', 'totalPendapatan', 

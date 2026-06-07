@@ -10,7 +10,7 @@ class PaketWisata extends Model
     use HasFactory;
 
     protected $table = 'paket_wisata';
-    protected $guarded = ['id'];
+    protected $guarded = ['id']; // Menggunakan guarded agar kolom 'gambar' otomatis diizinkan masuk
 
     public function komunitas()
     {

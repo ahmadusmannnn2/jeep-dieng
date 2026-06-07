@@ -109,15 +109,14 @@
                 <div class="flex justify-between items-center p-3 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition">
                     <div>
                         <p class="font-bold text-sm text-gray-900">#BKG-{{ str_pad($item->id, 5, '0', STR_PAD_LEFT) }}</p>
-                        <p class="text-xs text-gray-500 truncate max-w-[150px]">{{ $item->user->name }} - {{ $item->komunitas->nama_komunitas ?? 'Umum' }}</p>
+                        <p class="text-xs text-emerald-600 font-bold mb-0.5">Tour: {{ \Carbon\Carbon::parse($item->tanggal_jadwal)->format('d M Y') }}</p>
+                        <p class="text-[11px] text-gray-500 truncate max-w-[150px]">{{ $item->user->name }} - {{ $item->komunitas->nama_komunitas ?? 'Umum' }}</p>
                     </div>
                     <div class="text-right">
                         @if($item->status === 'Pending')
                             <span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold">Pending</span>
                         @elseif($item->status === 'Lunas')
                             <span class="px-2 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-bold">Lunas</span>
-                        @elseif($item->status === 'Disetujui')
-                            <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold">Disetujui</span>
                         @elseif($item->status === 'Selesai')
                             <span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold">Selesai</span>
                         @else

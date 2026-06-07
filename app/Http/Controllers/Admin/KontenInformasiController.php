@@ -9,9 +9,16 @@ use Illuminate\Support\Facades\Storage;
 
 class KontenInformasiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $konten = KontenInformasi::latest()->get();
+        $query = KontenInformasi::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('judul', 'like', "%{$search}%");
+        }
+
+        $konten = $query->latest()->get();
         return view('admin.konten.index', compact('konten'));
     }
 
@@ -29,7 +36,7 @@ class KontenInformasiController extends Controller
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048' // Maksimal 2MB
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['_token', '_method', 'gambar']);
 
         // Logika Upload Gambar
         if ($request->hasFile('gambar')) {
@@ -54,7 +61,7 @@ class KontenInformasiController extends Controller
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048'
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['_token', '_method', 'gambar']);
 
         // Logika Ganti Gambar
         if ($request->hasFile('gambar')) {

@@ -14,7 +14,6 @@ class LaporanController extends Controller
         $tanggal_mulai = $request->input('tanggal_mulai', now()->startOfMonth()->toDateString());
         $tanggal_selesai = $request->input('tanggal_selesai', now()->endOfMonth()->toDateString());
         
-        // Terbuka penuh dari dropdown filter
         $komunitas_id = $request->input('komunitas_id');
 
         $query = Pesanan::with(['user', 'paketWisata', 'komunitas'])
@@ -39,8 +38,8 @@ class LaporanController extends Controller
 
     public function cetak(Request $request)
     {
-        $tanggal_mulai = $request->input('tanggal_mulai');
-        $tanggal_selesai = $request->input('tanggal_selesai');
+        $tanggal_mulai = $request->input('tanggal_mulai', now()->startOfMonth()->toDateString());
+        $tanggal_selesai = $request->input('tanggal_selesai', now()->endOfMonth()->toDateString());
         $komunitas_id = $request->input('komunitas_id');
 
         $query = Pesanan::with(['user', 'paketWisata', 'komunitas', 'jeep', 'supir'])
@@ -54,7 +53,9 @@ class LaporanController extends Controller
         $laporan = $query->orderBy('created_at', 'asc')->get();
         $total_pendapatan = $laporan->sum('total_harga');
         
-        $nama_komunitas = $komunitas_id ? Komunitas::find($komunitas_id)->nama_komunitas : 'Semua Komunitas';
+        $nama_komunitas = $komunitas_id 
+            ? (Komunitas::find($komunitas_id)?->nama_komunitas ?? 'Komunitas Tidak Ditemukan') 
+            : 'Semua Komunitas';
 
         return view('admin.laporan.print', compact('laporan', 'tanggal_mulai', 'tanggal_selesai', 'total_pendapatan', 'nama_komunitas'));
     }

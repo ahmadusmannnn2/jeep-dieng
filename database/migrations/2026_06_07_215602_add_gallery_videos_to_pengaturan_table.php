@@ -9,19 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pengaturan', function (Blueprint $table) {
-            // Guard: hanya tambahkan jika kolom belum ada (mencegah error saat fresh migrate)
-            if (!Schema::hasColumn('pengaturan', 'gallery_images')) {
-                $table->json('gallery_images')->nullable();
-            }
+            // Tambah kolom JSON untuk menyimpan array path video galeri
+            $table->json('gallery_videos')->nullable();
         });
     }
 
     public function down(): void
     {
         Schema::table('pengaturan', function (Blueprint $table) {
-            if (Schema::hasColumn('pengaturan', 'gallery_images')) {
-                $table->dropColumn('gallery_images');
-            }
+            $table->dropColumn('gallery_videos');
         });
     }
 };

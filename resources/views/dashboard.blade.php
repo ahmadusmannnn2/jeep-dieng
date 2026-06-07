@@ -4,13 +4,14 @@
 
 @section('content')
 
-<div x-data="{ successModalOpen: {{ session('booking_success') ? 'true' : 'false' }} }" class="py-12 bg-gray-50 min-h-screen">
+<!-- Wrapper dibersihkan dari x-data bawaan Alpine -->
+<div class="py-12 bg-gray-50 min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="mb-10 border-b border-gray-200 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
                 <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">Riwayat Pesanan</h1>
-                <p class="text-gray-500 mt-2">Pantau status reservasi tour, tiket sobek, dan upload bukti pembayaran Anda.</p>
+                <p class="text-gray-500 mt-2">Pantau status reservasi tour, tiket sobek, dan detail pembayaran Anda.</p>
             </div>
             @if(count($pesanan) > 0)
                 <div class="bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3">
@@ -34,8 +35,13 @@
                             <div>
                                 <div class="flex items-center gap-3 flex-wrap mb-1.5">
                                     <h4 class="font-black text-gray-900 text-xl">#BKG-{{ str_pad($item->id, 5, '0', STR_PAD_LEFT) }}</h4>
+                                    
                                     @if($item->status === 'Pending')
-                                        <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-amber-200">Menunggu Pembayaran</span>
+                                        @if($item->pembayaran)
+                                            <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-blue-200 animate-pulse">Menunggu Validasi Admin</span>
+                                        @else
+                                            <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-amber-200">Menunggu Pembayaran</span>
+                                        @endif
                                     @elseif($item->status === 'Lunas')
                                         <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-emerald-200">Lunas / Valid</span>
                                     @elseif($item->status === 'Selesai')
@@ -53,7 +59,7 @@
                         </div>
 
                         <div class="lg:text-right bg-gray-50 lg:bg-transparent p-4 lg:p-0 rounded-2xl lg:rounded-none border border-gray-100 lg:border-transparent">
-                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Total Pembayaran</p>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Total Tagihan</p>
                             <p class="text-2xl font-black text-emerald-600">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</p>
                             <p class="text-xs text-gray-400 mt-1">Komunitas: {{ $item->komunitas->nama_komunitas ?? 'Umum' }}</p>
                         </div>
@@ -62,20 +68,20 @@
 
                     <div class="px-6 py-4 md:px-8 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row gap-3 justify-end items-center">
                         
-                        <a href="{{ route('paket.show', $item->paket_wisata_id) }}" class="w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-100 transition text-sm text-center flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            Detail Paket
+                        <a href="{{ route('booking.show', $item->id) }}" class="w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-100 transition text-sm text-center flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            Lihat Detail Pembayaran
                         </a>
                         
-                        @if($item->status === 'Pending')
+                        @if($item->status === 'Pending' && !$item->pembayaran)
                             <a href="{{ route('booking.payment', $item->id) }}" class="w-full sm:w-auto px-6 py-2.5 bg-gray-900 text-white font-extrabold rounded-xl hover:bg-emerald-500 transition shadow-lg hover:shadow-emerald-500/30 text-sm text-center flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                                 Bayar Sekarang
                             </a>
-                        @else
-                            <a href="{{ route('booking.show', $item->id) }}" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-500 text-white font-extrabold rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 text-sm text-center flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
-                                Detail E-Tiket
+                        @elseif($item->status === 'Lunas' || $item->status === 'Selesai')
+                            <a href="{{ route('booking.print', $item->id) }}" target="_blank" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-500 text-white font-extrabold rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 text-sm text-center flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                                Cetak E-Tiket
                             </a>
                         @endif
 
@@ -94,34 +100,52 @@
             @endforelse
         </div>
     </div>
-
-    <div x-show="successModalOpen" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4">
-        <div @click.away="successModalOpen = false" 
-             x-show="successModalOpen"
-             x-transition:enter="transition ease-out duration-300 transform"
-             x-transition:enter-start="opacity-0 scale-90 translate-y-4"
-             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-200 transform"
-             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-             x-transition:leave-end="opacity-0 scale-90 translate-y-4"
-             class="bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl border border-gray-100 text-center relative overflow-hidden">
-            
-            <div class="absolute -top-10 -left-10 w-32 h-32 bg-emerald-500/5 rounded-full blur-xl"></div>
-            <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-teal-500/5 rounded-full blur-xl"></div>
-
-            <div class="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border border-emerald-100 transform scale-100 animate-bounce duration-1000">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-            </div>
-            
-            <h3 class="text-2xl font-black text-gray-900 mb-2">Booking Berhasil!</h3>
-            <p class="text-gray-500 text-sm leading-relaxed mb-8 px-2">
-                Pesanan Anda telah dicatat oleh sistem. Silakan lanjutkan mengunggah bukti pembayaran agar pesanan segera divalidasi oleh admin kami.
-            </p>
-            
-            <button @click="successModalOpen = false" type="button" class="w-full py-3.5 bg-gray-900 text-white font-extrabold rounded-2xl hover:bg-emerald-500 transition shadow-lg hover:shadow-emerald-500/20 transform active:scale-95">
-                Oke, Saya Paham
-            </button>
-        </div>
-    </div>
 </div>
+
+<!-- ============================================== -->
+<!-- PUSTAKA SWEETALERT2 UNTUK NOTIFIKASI ELEGAN  -->
+<!-- ============================================== -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        // 1. Notifikasi Sukses Pemesanan (Awal Booking)
+        @if(session('booking_success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Booking Berhasil!',
+                text: 'Pesanan Anda telah dicatat oleh sistem. Silakan lanjutkan mengunggah bukti pembayaran agar pesanan segera divalidasi oleh admin kami.',
+                confirmButtonText: 'Oke, Saya Paham',
+                confirmButtonColor: '#10b981',
+                backdrop: `rgba(17, 24, 39, 0.8)` // Background blur gelap
+            });
+        @endif
+
+        // 2. Notifikasi Sukses Mengunggah Bukti Pembayaran
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#10b981',
+                backdrop: `rgba(17, 24, 39, 0.8)`
+            });
+        @endif
+
+        // 3. Notifikasi Jika Ada Error/Kesalahan
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: '{{ session('error') }}',
+                confirmButtonText: 'Mengerti',
+                confirmButtonColor: '#ef4444',
+                backdrop: `rgba(17, 24, 39, 0.8)`
+            });
+        @endif
+        
+    });
+</script>
+
 @endsection

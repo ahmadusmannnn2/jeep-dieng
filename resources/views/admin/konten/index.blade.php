@@ -13,6 +13,18 @@
     </a>
 </div>
 
+<div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-6 p-6">
+    <form action="{{ route('admin.konten-informasi.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
+        <div class="flex-1">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul konten..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
+        </div>
+        <div class="flex gap-2">
+            <button type="submit" class="px-5 py-2.5 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition shadow-lg">Cari</button>
+            <a href="{{ route('admin.konten-informasi.index') }}" class="px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition">Reset</a>
+        </div>
+    </form>
+</div>
+
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
     @forelse($konten as $item)
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition">

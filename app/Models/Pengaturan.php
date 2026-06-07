@@ -23,11 +23,13 @@ class Pengaturan extends Model
         'hero_title_highlight',
         'hero_subtitle',
         'hero_images',
-        'gallery_images' // <- Tambahan baru di sini
+        'gallery_images',
+        'gallery_videos', // <- Support video galeri
     ];
 
     protected $casts = [
-        'hero_images' => 'array',
-        'gallery_images' => 'array', // <- Tambahan baru di sini
+        'hero_images'     => 'array',
+        'gallery_images'  => 'array',
+        'gallery_videos'  => 'array', // <- Cast JSON ke array otomatis
     ];
 }

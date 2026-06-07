@@ -29,23 +29,24 @@ class PengaturanController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'nama_website' => 'required|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
-            'no_telp' => 'nullable|string|max:50',
-            'email' => 'nullable|email|max:100',
-            'alamat' => 'nullable|string|max:255',
-            'deskripsi_footer' => 'nullable|string',
-            'hero_badge' => 'nullable|string|max:255',
-            'hero_title' => 'nullable|string|max:255',
-            'hero_title_highlight' => 'nullable|string|max:255',
-            'hero_subtitle' => 'nullable|string',
-            'hero_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
-            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072' // Validasi Galeri
+            'nama_website'        => 'required|string|max:255',
+            'logo'                => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
+            'no_telp'             => 'nullable|string|max:50',
+            'email'               => 'nullable|email|max:100',
+            'alamat'              => 'nullable|string|max:255',
+            'deskripsi_footer'    => 'nullable|string',
+            'hero_badge'          => 'nullable|string|max:255',
+            'hero_title'          => 'nullable|string|max:255',
+            'hero_title_highlight'=> 'nullable|string|max:255',
+            'hero_subtitle'       => 'nullable|string',
+            'hero_images.*'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+            'gallery_images.*'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+            'gallery_videos.*'    => 'nullable|mimes:mp4,webm,mov,avi|max:51200', // Max 50MB per video
         ]);
 
         $pengaturan = Pengaturan::first();
-        // Kecualikan input file gambar, kita proses terpisah
-        $data = $request->except(['hero_images', 'gallery_images']);
+        // Kecualikan semua input file, kita proses terpisah
+        $data = $request->except(['hero_images', 'gallery_images', 'gallery_videos']);
 
         if ($request->hasFile('logo')) {
             if ($pengaturan->logo && Storage::disk('public')->exists($pengaturan->logo)) {
@@ -79,6 +80,21 @@ class PengaturanController extends Controller
                 $galleryPath[] = $file->store('gallery', 'public');
             }
             $data['gallery_images'] = $galleryPath;
+        }
+
+        // Proses Multiple Video Galeri (BARU)
+        if ($request->hasFile('gallery_videos')) {
+            // Hapus video lama dari storage agar hemat ruang
+            if ($pengaturan->gallery_videos) {
+                foreach($pengaturan->gallery_videos as $oldVideo) {
+                    if(Storage::disk('public')->exists($oldVideo)) { Storage::disk('public')->delete($oldVideo); }
+                }
+            }
+            $videoPaths = [];
+            foreach($request->file('gallery_videos') as $file) {
+                $videoPaths[] = $file->store('gallery/videos', 'public');
+            }
+            $data['gallery_videos'] = $videoPaths;
         }
 
         $pengaturan->update($data);

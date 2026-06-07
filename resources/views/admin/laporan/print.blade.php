@@ -21,7 +21,6 @@
         .signature-container { margin-top: 50px; float: right; text-align: center; width: 200px; font-size: 13px; }
         .signature-space { height: 70px; }
         
-        /* Pengaturan Cetak Halaman Potong Otomatis */
         @media print {
             body { margin: 0; }
             .no-print { display: none; }
@@ -48,11 +47,11 @@
             <tr>
                 <th style="width: 5%;">No</th>
                 <th style="width: 15%;">Waktu Transaksi</th>
-                <th style="width: 15%;">Kode Booking</th>
+                <th style="width: 15%;">Tgl Trip</th>
                 <th style="width: 15%;">Nama Wisatawan</th>
                 <th style="width: 15%;">Armada & Supir</th>
                 <th style="width: 20%;">Paket Perjalanan</th>
-                <th style="width: 15%; text-align: right;">Tarifflat</th>
+                <th style="width: 15%; text-align: right;">Tarif Flat</th>
             </tr>
         </thead>
         <tbody>
@@ -60,8 +59,11 @@
             @forelse($laporan as $item)
             <tr>
                 <td class="text-center">{{ $no++ }}</td>
-                <td>{{ $item->created_at->format('d M Y H:i') }}</td>
-                <td class="font-bold">#BKG-{{ str_pad($item->id, 5, '0', STR_PAD_LEFT) }}</td>
+                <td>
+                    <span class="font-bold">#BKG-{{ str_pad($item->id, 5, '0', STR_PAD_LEFT) }}</span><br>
+                    <small style="color:#666;">{{ $item->created_at->format('d M Y H:i') }}</small>
+                </td>
+                <td class="font-bold" style="color: #10b981;">{{ \Carbon\Carbon::parse($item->tanggal_jadwal)->format('d/m/Y') }}</td>
                 <td>{{ $item->user->name }}</td>
                 <td>
                     {{ $item->jeep->nama_jeep ?? '-' }}<br>

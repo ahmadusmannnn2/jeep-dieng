@@ -20,10 +20,7 @@ use App\Http\Controllers\Admin\PengaturanController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/paket-wisata', [HomeController::class, 'paket'])->name('paket');
 
-Route::get('/paket-wisata/{paketWisata}', [HomeController::class, 'showPaket'])->name('paket.show'); 
-Route::get('/rute-trip', [HomeController::class, 'rute'])->name('rute');
-
-
+Route::get('/paket-wisata/{paketWisata}', [HomeController::class, 'showPaket'])->name('paket.show');
 Route::get('/rute-trip', [HomeController::class, 'rute'])->name('rute');
 Route::get('/info-promo', [HomeController::class, 'promo'])->name('promo');
 Route::get('/galeri', [HomeController::class, 'galeri'])->name('galeri');
@@ -31,10 +28,10 @@ Route::get('/galeri', [HomeController::class, 'galeri'])->name('galeri');
 // Dashboard Bawaan Breeze (Menampilkan daftar pesanan Customer)
 Route::get('/dashboard', function () {
     $pesanan = \App\Models\Pesanan::with(['paketWisata', 'jadwal', 'pembayaran'])
-                ->where('user_id', Auth::id())
-                ->latest()
-                ->get();
-                
+        ->where('user_id', Auth::id())
+        ->latest()
+        ->get();
+
     return view('dashboard', compact('pesanan'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -47,10 +44,10 @@ Route::middleware('auth')->group(function () {
     // Rute Booking untuk Customer
     Route::get('/booking/{paketWisata}', [BookingController::class, 'create'])->name('booking.create');
     Route::post('/booking/{paketWisata}', [BookingController::class, 'store'])->name('booking.store');
-    
+
     Route::get('/pesanan/{pesanan}/bayar', [BookingController::class, 'payment'])->name('booking.payment');
     Route::post('/pesanan/{pesanan}/bayar', [BookingController::class, 'paymentStore'])->name('booking.payment.store');
-    
+
     // DETAIL RIWAYAT PESANAN / E-TIKET CUSTOMER
     Route::get('/pesanan-saya/{pesanan}', [BookingController::class, 'show'])->name('booking.show');
     // RUTE CETAK TIKET
@@ -64,11 +61,19 @@ Route::middleware(['auth', 'role:super_admin,admin_komunitas'])->prefix('admin')
 
     Route::resource('supir', SupirController::class);
     Route::resource('jeep', JeepController::class);
-    Route::resource('paket-wisata', PaketWisataController::class);
-    Route::resource('rute-wisata', RuteWisataController::class);
+    Route::resource('paket-wisata', PaketWisataController::class)->parameters([
+        'paket-wisata' => 'paketWisata'
+    ]);
+
+    Route::resource('rute-wisata', RuteWisataController::class)->parameters([
+        'rute-wisata' => 'ruteWisata'
+    ]);
     Route::resource('jadwal', JadwalKeberangkatanController::class);
     Route::resource('konten-informasi', KontenInformasiController::class);
     
+    Route::resource('testimoni', \App\Http\Controllers\Admin\TestimoniController::class);
+    Route::patch('testimoni/{testimoni}/toggle', [\App\Http\Controllers\Admin\TestimoniController::class, 'toggle'])->name('testimoni.toggle');
+
     Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
     Route::get('/pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
     Route::get('/pesanan/{pesanan}/edit', [PesananController::class, 'edit'])->name('pesanan.edit');
@@ -82,8 +87,8 @@ Route::middleware(['auth', 'role:super_admin,admin_komunitas'])->prefix('admin')
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
     Route::put('/pengaturan', [PengaturanController::class, 'update'])->name('pengaturan.update');
 
-    
+
 
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

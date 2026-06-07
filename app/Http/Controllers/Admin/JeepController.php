@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class JeepController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $query = Jeep::query();
@@ -18,10 +18,31 @@ class JeepController extends Controller
         // Filter data Jeep sesuai komunitas admin yang login
         if ($user->role === 'admin_komunitas') {
             $query->where('komunitas_id', $user->komunitas_id);
+        } else {
+            // Filter komunitas untuk super_admin
+            if ($request->filled('komunitas_id')) {
+                $query->where('komunitas_id', $request->komunitas_id);
+            }
+        }
+
+        // Pencarian
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_jeep', 'like', "%{$search}%")
+                  ->orWhere('nomor_polisi', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter Status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
         $jeeps = $query->latest()->get();
-        return view('admin.jeep.index', compact('jeeps'));
+        $komunitas = $user->role === 'super_admin' ? Komunitas::all() : collect();
+
+        return view('admin.jeep.index', compact('jeeps', 'komunitas'));
     }
 
     public function create()

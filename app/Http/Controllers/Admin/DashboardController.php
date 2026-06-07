@@ -34,21 +34,33 @@ class DashboardController extends Controller
         // 3. Hitung Metrik Data Statistik (Card)
         $totalPesanan = (clone $pesananQuery)->count();
         $pesananPending = (clone $pesananQuery)->where('status', 'Pending')->count();
-        $pesananLunas = (clone $pesananQuery)->whereIn('status', ['Lunas', 'Selesai'])->count();
-        $totalPendapatan = (clone $pesananQuery)->whereIn('status', ['Lunas', 'Selesai'])->sum('total_harga');
+        $pesananLunas = (clone $pesananQuery)->whereIn('status', ['DP Lunas', 'Lunas', 'Selesai'])->count();
+        
+        $totalPendapatan = \App\Models\Pembayaran::where('status', 'Valid')
+            ->whereHas('pesanan', function($q) use ($tahun, $komunitasId) {
+                $q->whereYear('created_at', $tahun);
+                if ($komunitasId) {
+                    $q->where('komunitas_id', $komunitasId);
+                }
+            })->sum('jumlah_bayar');
                             
         $totalJeep = $jeepQuery->count();
         $totalSupir = $supirQuery->count();
         
         $pesananTerbaru = (clone $pesananQuery)->with(['user', 'paketWisata', 'komunitas'])->latest()->take(5)->get();
 
-        // 4. DATA GRAFIK: Hitung Total Pendapatan per Bulan di Tahun Terpilih
-        $grafikPendapatan = (clone $pesananQuery)
+        // 4. DATA GRAFIK: Hitung Total Pendapatan per Bulan di Tahun Terpilih (Berdasarkan Pembayaran Valid)
+        $grafikPendapatan = \App\Models\Pembayaran::where('status', 'Valid')
+            ->whereYear('created_at', $tahun)
+            ->when($komunitasId, function($q) use ($komunitasId) {
+                $q->whereHas('pesanan', function($pq) use ($komunitasId) {
+                    $pq->where('komunitas_id', $komunitasId);
+                });
+            })
             ->select(
                 DB::raw('MONTH(created_at) as bulan'),
-                DB::raw('SUM(total_harga) as total')
+                DB::raw('SUM(jumlah_bayar) as total')
             )
-            ->whereIn('status', ['Lunas', 'Selesai'])
             ->groupBy('bulan')
             ->pluck('total', 'bulan')
             ->toArray();

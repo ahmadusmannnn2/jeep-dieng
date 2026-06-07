@@ -114,7 +114,9 @@
                     </div>
                     <div class="text-right">
                         @if($item->status === 'Pending')
-                            <span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold">Pending</span>
+                            <span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold">Menunggu</span>
+                        @elseif($item->status === 'DP Lunas')
+                            <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold">DP Lunas</span>
                         @elseif($item->status === 'Lunas')
                             <span class="px-2 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-bold">Lunas</span>
                         @elseif($item->status === 'Selesai')

@@ -51,7 +51,7 @@
                 <th style="width: 15%;">Nama Wisatawan</th>
                 <th style="width: 15%;">Armada & Supir</th>
                 <th style="width: 20%;">Paket Perjalanan</th>
-                <th style="width: 15%; text-align: right;">Tarif Flat</th>
+                <th style="width: 15%; text-align: right;">Terbayar</th>
             </tr>
         </thead>
         <tbody>
@@ -70,7 +70,12 @@
                     <small style="color:#666;">Driver: {{ $item->supir->nama_supir ?? '-' }}</small>
                 </td>
                 <td>{{ $item->paketWisata->nama_paket ?? 'Paket Terhapus' }}</td>
-                <td class="text-right font-bold">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
+                <td class="text-right font-bold">
+                    Rp {{ number_format($item->pembayarans->where('status', 'Valid')->sum('jumlah_bayar'), 0, ',', '.') }}
+                    @if($item->status === 'DP Lunas')
+                        <br><small style="color: #d97706;">(DP 50%)</small>
+                    @endif
+                </td>
             </tr>
             @empty
             <tr>

@@ -16,9 +16,9 @@ class LaporanController extends Controller
         
         $komunitas_id = $request->input('komunitas_id');
 
-        $query = Pesanan::with(['user', 'paketWisata', 'komunitas'])
+        $query = Pesanan::with(['user', 'paketWisata', 'komunitas', 'pembayarans'])
                     ->whereBetween('created_at', [$tanggal_mulai . ' 00:00:00', $tanggal_selesai . ' 23:59:59'])
-                    ->whereIn('status', ['Lunas', 'Selesai']);
+                    ->whereIn('status', ['DP Lunas', 'Lunas', 'Selesai']);
 
         if ($komunitas_id) {
             $query->where('komunitas_id', $komunitas_id);
@@ -26,7 +26,9 @@ class LaporanController extends Controller
 
         $laporan = $query->latest()->get();
         
-        $total_pendapatan = $laporan->sum('total_harga');
+        $total_pendapatan = \App\Models\Pembayaran::where('status', 'Valid')
+            ->whereIn('pesanan_id', $laporan->pluck('id'))
+            ->sum('jumlah_bayar');
         $total_transaksi = $laporan->count();
         $daftar_komunitas = Komunitas::all();
 
@@ -42,16 +44,18 @@ class LaporanController extends Controller
         $tanggal_selesai = $request->input('tanggal_selesai', now()->endOfMonth()->toDateString());
         $komunitas_id = $request->input('komunitas_id');
 
-        $query = Pesanan::with(['user', 'paketWisata', 'komunitas', 'jeep', 'supir'])
+        $query = Pesanan::with(['user', 'paketWisata', 'komunitas', 'jeep', 'supir', 'pembayarans'])
                     ->whereBetween('created_at', [$tanggal_mulai . ' 00:00:00', $tanggal_selesai . ' 23:59:59'])
-                    ->whereIn('status', ['Lunas', 'Selesai']);
+                    ->whereIn('status', ['DP Lunas', 'Lunas', 'Selesai']);
 
         if ($komunitas_id) {
             $query->where('komunitas_id', $komunitas_id);
         }
 
         $laporan = $query->orderBy('created_at', 'asc')->get();
-        $total_pendapatan = $laporan->sum('total_harga');
+        $total_pendapatan = \App\Models\Pembayaran::where('status', 'Valid')
+            ->whereIn('pesanan_id', $laporan->pluck('id'))
+            ->sum('jumlah_bayar');
         
         $nama_komunitas = $komunitas_id 
             ? (Komunitas::find($komunitas_id)?->nama_komunitas ?? 'Komunitas Tidak Ditemukan') 

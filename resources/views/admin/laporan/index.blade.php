@@ -62,7 +62,7 @@
                     <th class="px-6 py-4">Customer</th>
                     <th class="px-6 py-4">Penyelenggara</th>
                     <th class="px-6 py-4">Paket Wisata</th>
-                    <th class="px-6 py-4 text-right">Total Tarif</th>
+                    <th class="px-6 py-4 text-right">Terbayar</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
@@ -73,7 +73,12 @@
                     <td class="px-6 py-4 font-medium">{{ $item->user->name }}</td>
                     <td class="px-6 py-4"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">{{ $item->komunitas->nama_komunitas ?? 'Umum' }}</span></td>
                     <td class="px-6 py-4 text-gray-600">{{ $item->paketWisata->nama_paket ?? 'Paket Terhapus' }}</td>
-                    <td class="px-6 py-4 text-right font-black text-gray-900">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
+                    <td class="px-6 py-4 text-right font-black text-gray-900">
+                        Rp {{ number_format($item->pembayarans->where('status', 'Valid')->sum('jumlah_bayar'), 0, ',', '.') }}
+                        @if($item->status === 'DP Lunas')
+                            <br><span class="text-[10px] text-amber-600 font-bold">(DP 50%)</span>
+                        @endif
+                    </td>
                 </tr>
                 @empty
                 <tr>

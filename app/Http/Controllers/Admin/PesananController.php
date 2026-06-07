@@ -16,7 +16,7 @@ class PesananController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $query = Pesanan::with(['user', 'paketWisata', 'jadwal', 'pembayaran']);
+        $query = Pesanan::with(['user', 'paketWisata', 'jadwal', 'pembayaran', 'komunitas']);
 
         // Filter data pesanan sesuai komunitas yang login
         if ($user->role === 'admin_komunitas') {

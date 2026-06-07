@@ -33,34 +33,14 @@ class DatabaseSeeder extends Seeder
         // 2. Buat Akun Pengguna (Password: 11111111)
         $password = Hash::make('11111111');
 
-        // Super Admin (Tidak terikat komunitas tertentu)
+        // Administrator Pusat
         User::create([
-            'name' => 'Super Admin',
-            'email' => 'superadmin@gmail.com',
-            'password' => $password,
-            'role' => 'super_admin',
-            'komunitas_id' => null,
-            'no_hp' => '080000000000',
-        ]);
-
-        // Admin Komunitas 1
-        User::create([
-            'name' => 'Admin Sikunir',
+            'name' => 'Administrator',
             'email' => 'admin@gmail.com',
             'password' => $password,
-            'role' => 'admin_komunitas',
-            'komunitas_id' => $komunitas1->id,
-            'no_hp' => '081111111111',
-        ]);
-
-        // Admin Komunitas 2
-        User::create([
-            'name' => 'Admin Sikidang',
-            'email' => 'admin2@gmail.com',
-            'password' => $password,
-            'role' => 'admin_komunitas',
-            'komunitas_id' => $komunitas2->id,
-            'no_hp' => '082222222222',
+            'role' => 'admin',
+            'komunitas_id' => null,
+            'no_hp' => '080000000000',
         ]);
 
         // Customer 1

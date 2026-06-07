@@ -16,12 +16,8 @@ class RuteWisataController extends Controller
         $user = Auth::user();
         $query = RuteWisata::with('komunitas');
 
-        if ($user->role === 'admin_komunitas') {
-            $query->where('komunitas_id', $user->komunitas_id);
-        } else {
-            if ($request->filled('komunitas_id')) {
-                $query->where('komunitas_id', $request->komunitas_id);
-            }
+        if ($request->filled('komunitas_id')) {
+            $query->where('komunitas_id', $request->komunitas_id);
         }
 
         if ($request->filled('search')) {
@@ -30,14 +26,14 @@ class RuteWisataController extends Controller
         }
 
         $ruteWisata = $query->latest()->get();
-        $komunitas = $user->role === 'super_admin' ? Komunitas::all() : collect();
+        $komunitas = Komunitas::all();
 
         return view('admin.rute_wisata.index', compact('ruteWisata', 'komunitas'));
     }
 
     public function create()
     {
-        $komunitas = Auth::user()->role === 'super_admin' ? Komunitas::all() : null;
+        $komunitas = Komunitas::all();
         return view('admin.rute_wisata.create', compact('komunitas'));
     }
 
@@ -46,15 +42,13 @@ class RuteWisataController extends Controller
         $request->validate([
             'nama_rute' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable',
+            'komunitas_id' => 'required|exists:komunitas,id',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072'
         ]);
 
         $data = $request->except('gambar');
         
-        if (Auth::user()->role === 'admin_komunitas') {
-            $data['komunitas_id'] = Auth::user()->komunitas_id;
-        }
+
 
         if ($request->hasFile('gambar')) {
             $data['gambar'] = $request->file('gambar')->store('rute_wisata', 'public');
@@ -66,7 +60,7 @@ class RuteWisataController extends Controller
 
     public function edit(RuteWisata $ruteWisata)
     {
-        $komunitas = Auth::user()->role === 'super_admin' ? Komunitas::all() : null;
+        $komunitas = Komunitas::all();
         return view('admin.rute_wisata.edit', compact('ruteWisata', 'komunitas'));
     }
 
@@ -75,15 +69,13 @@ class RuteWisataController extends Controller
         $request->validate([
             'nama_rute' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable',
+            'komunitas_id' => 'required|exists:komunitas,id',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072'
         ]);
 
         $data = $request->except('gambar');
         
-        if (Auth::user()->role === 'admin_komunitas') {
-            $data['komunitas_id'] = Auth::user()->komunitas_id;
-        }
+
 
         if ($request->hasFile('gambar')) {
             if ($ruteWisata->gambar && Storage::disk('public')->exists($ruteWisata->gambar)) {

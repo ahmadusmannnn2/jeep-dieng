@@ -15,14 +15,8 @@ class JeepController extends Controller
         $user = Auth::user();
         $query = Jeep::query();
 
-        // Filter data Jeep sesuai komunitas admin yang login
-        if ($user->role === 'admin_komunitas') {
-            $query->where('komunitas_id', $user->komunitas_id);
-        } else {
-            // Filter komunitas untuk super_admin
-            if ($request->filled('komunitas_id')) {
-                $query->where('komunitas_id', $request->komunitas_id);
-            }
+        if ($request->filled('komunitas_id')) {
+            $query->where('komunitas_id', $request->komunitas_id);
         }
 
         // Pencarian
@@ -40,14 +34,14 @@ class JeepController extends Controller
         }
 
         $jeeps = $query->latest()->get();
-        $komunitas = $user->role === 'super_admin' ? Komunitas::all() : collect();
+        $komunitas = Komunitas::all();
 
         return view('admin.jeep.index', compact('jeeps', 'komunitas'));
     }
 
     public function create()
     {
-        $komunitas = Auth::user()->role === 'super_admin' ? Komunitas::all() : null;
+        $komunitas = Komunitas::all();
         return view('admin.jeep.create', compact('komunitas'));
     }
 
@@ -58,15 +52,12 @@ class JeepController extends Controller
             'nomor_polisi' => 'required|string|max:20|unique:jeep,nomor_polisi',
             'kapasitas' => 'required|integer|min:1',
             'status' => 'required|in:Tersedia,Disewa,Perbaikan',
-            'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable'
+            'komunitas_id' => 'required|exists:komunitas,id'
         ]);
 
         $data = $request->all();
         
-        // Otomatis menetapkan komunitas jika admin komunitas yang menambah data
-        if (Auth::user()->role === 'admin_komunitas') {
-            $data['komunitas_id'] = Auth::user()->komunitas_id;
-        }
+
 
         Jeep::create($data);
         return redirect()->route('admin.jeep.index')->with('success', 'Armada Jeep berhasil ditambahkan!');
@@ -74,7 +65,7 @@ class JeepController extends Controller
 
     public function edit(Jeep $jeep)
     {
-        $komunitas = Auth::user()->role === 'super_admin' ? Komunitas::all() : null;
+        $komunitas = Komunitas::all();
         return view('admin.jeep.edit', compact('jeep', 'komunitas'));
     }
 
@@ -85,13 +76,11 @@ class JeepController extends Controller
             'nomor_polisi' => 'required|string|max:20|unique:jeep,nomor_polisi,' . $jeep->id,
             'kapasitas' => 'required|integer|min:1',
             'status' => 'required|in:Tersedia,Disewa,Perbaikan',
-            'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable'
+            'komunitas_id' => 'required|exists:komunitas,id'
         ]);
 
         $data = $request->all();
-        if (Auth::user()->role === 'admin_komunitas') {
-            $data['komunitas_id'] = Auth::user()->komunitas_id;
-        }
+
 
         $jeep->update($data);
         return redirect()->route('admin.jeep.index')->with('success', 'Data Jeep berhasil diperbarui!');

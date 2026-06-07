@@ -16,13 +16,8 @@ class PaketWisataController extends Controller
         $user = Auth::user();
         $query = PaketWisata::query();
 
-        // Filter data sesuai komunitas yang login
-        if ($user->role === 'admin_komunitas') {
-            $query->where('komunitas_id', $user->komunitas_id);
-        } else {
-            if ($request->filled('komunitas_id')) {
-                $query->where('komunitas_id', $request->komunitas_id);
-            }
+        if ($request->filled('komunitas_id')) {
+            $query->where('komunitas_id', $request->komunitas_id);
         }
 
         if ($request->filled('search')) {
@@ -31,14 +26,14 @@ class PaketWisataController extends Controller
         }
 
         $paketWisata = $query->latest()->get();
-        $komunitas = $user->role === 'super_admin' ? Komunitas::all() : collect();
+        $komunitas = Komunitas::all();
 
         return view('admin.paket_wisata.index', compact('paketWisata', 'komunitas'));
     }
 
     public function create()
     {
-        $komunitas = Auth::user()->role === 'super_admin' ? Komunitas::all() : null;
+        $komunitas = Komunitas::all();
         return view('admin.paket_wisata.create', compact('komunitas'));
     }
 
@@ -49,15 +44,13 @@ class PaketWisataController extends Controller
             'harga' => 'required|numeric|min:0',
             'durasi' => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
-            'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable',
+            'komunitas_id' => 'required|exists:komunitas,id',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072' // Validasi untuk gambar
         ]);
 
         $data = $request->except('gambar'); // Pisahkan gambar dari array data umum
         
-        if (Auth::user()->role === 'admin_komunitas') {
-            $data['komunitas_id'] = Auth::user()->komunitas_id;
-        }
+
 
         // Proses unggah gambar
         if ($request->hasFile('gambar')) {
@@ -70,7 +63,7 @@ class PaketWisataController extends Controller
 
     public function edit(PaketWisata $paketWisata)
     {
-        $komunitas = Auth::user()->role === 'super_admin' ? Komunitas::all() : null;
+        $komunitas = Komunitas::all();
         return view('admin.paket_wisata.edit', compact('paketWisata', 'komunitas'));
     }
 
@@ -81,15 +74,13 @@ class PaketWisataController extends Controller
             'harga' => 'required|numeric|min:0',
             'durasi' => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
-            'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable',
+            'komunitas_id' => 'required|exists:komunitas,id',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072' // Validasi untuk gambar
         ]);
 
         $data = $request->except('gambar');
         
-        if (Auth::user()->role === 'admin_komunitas') {
-            $data['komunitas_id'] = Auth::user()->komunitas_id;
-        }
+
 
         // Proses update gambar
         if ($request->hasFile('gambar')) {

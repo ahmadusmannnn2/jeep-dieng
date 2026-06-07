@@ -15,13 +15,8 @@ class JadwalKeberangkatanController extends Controller
         $user = Auth::user();
         $query = JadwalKeberangkatan::query();
 
-        // Filter data sesuai komunitas yang login
-        if ($user->role === 'admin_komunitas') {
-            $query->where('komunitas_id', $user->komunitas_id);
-        } else {
-            if ($request->filled('komunitas_id')) {
-                $query->where('komunitas_id', $request->komunitas_id);
-            }
+        if ($request->filled('komunitas_id')) {
+            $query->where('komunitas_id', $request->komunitas_id);
         }
 
         if ($request->filled('tanggal')) {
@@ -30,14 +25,14 @@ class JadwalKeberangkatanController extends Controller
 
         // Urutkan berdasarkan tanggal terdekat
         $jadwal = $query->orderBy('tanggal', 'asc')->orderBy('jam', 'asc')->get();
-        $komunitas = $user->role === 'super_admin' ? Komunitas::all() : collect();
+        $komunitas = Komunitas::all();
 
         return view('admin.jadwal.index', compact('jadwal', 'komunitas'));
     }
 
     public function create()
     {
-        $komunitas = Auth::user()->role === 'super_admin' ? Komunitas::all() : null;
+        $komunitas = Komunitas::all();
         return view('admin.jadwal.create', compact('komunitas'));
     }
 
@@ -46,14 +41,12 @@ class JadwalKeberangkatanController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'jam' => 'required',
-            'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable'
+            'komunitas_id' => 'required|exists:komunitas,id'
         ]);
 
         $data = $request->except(['_token', '_method']);
         
-        if (Auth::user()->role === 'admin_komunitas') {
-            $data['komunitas_id'] = Auth::user()->komunitas_id;
-        }
+
 
         JadwalKeberangkatan::create($data);
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal keberangkatan berhasil ditambahkan!');
@@ -61,7 +54,7 @@ class JadwalKeberangkatanController extends Controller
 
     public function edit(JadwalKeberangkatan $jadwal)
     {
-        $komunitas = Auth::user()->role === 'super_admin' ? Komunitas::all() : null;
+        $komunitas = Komunitas::all();
         return view('admin.jadwal.edit', compact('jadwal', 'komunitas'));
     }
 
@@ -70,14 +63,12 @@ class JadwalKeberangkatanController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'jam' => 'required',
-            'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable'
+            'komunitas_id' => 'required|exists:komunitas,id'
         ]);
 
         $data = $request->except(['_token', '_method']);
         
-        if (Auth::user()->role === 'admin_komunitas') {
-            $data['komunitas_id'] = Auth::user()->komunitas_id;
-        }
+
 
         $jadwal->update($data);
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal keberangkatan berhasil diperbarui!');

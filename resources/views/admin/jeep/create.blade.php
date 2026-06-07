@@ -9,7 +9,7 @@
     <form action="{{ route('admin.jeep.store') }}" method="POST" class="space-y-6">
         @csrf
         
-        @if(Auth::user()->role === 'super_admin')
+        @if(Auth::user()->role === 'admin')
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Komunitas</label>
             <select name="komunitas_id" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">

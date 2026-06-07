@@ -18,7 +18,7 @@
         <div class="flex-1">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama rute..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
         </div>
-        @if(Auth::user()->role === 'super_admin')
+        @if(Auth::user()->role === 'admin')
         <div class="w-full md:w-64">
             <select name="komunitas_id" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
                 <option value="">Semua Komunitas</option>

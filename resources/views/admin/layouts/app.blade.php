@@ -18,9 +18,6 @@
     @php
         // Menghitung jumlah pesanan baru (Pending) secara otomatis
         $pendingQuery = \App\Models\Pesanan::where('status', 'Pending');
-        if (Auth::user()->role === 'admin_komunitas') {
-            $pendingQuery->where('komunitas_id', Auth::user()->komunitas_id);
-        }
         $pesananPendingCount = $pendingQuery->count();
     @endphp
 

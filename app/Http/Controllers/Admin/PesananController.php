@@ -18,13 +18,8 @@ class PesananController extends Controller
         $user = Auth::user();
         $query = Pesanan::with(['user', 'paketWisata', 'jadwal', 'pembayaran', 'komunitas']);
 
-        // Filter data pesanan sesuai komunitas yang login
-        if ($user->role === 'admin_komunitas') {
-            $query->where('komunitas_id', $user->komunitas_id);
-        } else {
-            if ($request->filled('komunitas_id')) {
-                $query->where('komunitas_id', $request->komunitas_id);
-            }
+        if ($request->filled('komunitas_id')) {
+            $query->where('komunitas_id', $request->komunitas_id);
         }
 
         if ($request->filled('status')) {
@@ -42,7 +37,7 @@ class PesananController extends Controller
         }
 
         $pesanan = $query->latest()->get();
-        $komunitas = $user->role === 'super_admin' ? Komunitas::all() : collect();
+        $komunitas = Komunitas::all();
 
         return view('admin.pesanan.index', compact('pesanan', 'komunitas'));
     }

@@ -18,7 +18,7 @@
         <div class="flex-1">
             <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
         </div>
-        @if(Auth::user()->role === 'super_admin')
+        @if(Auth::user()->role === 'admin')
         <div class="w-full md:w-64">
             <select name="komunitas_id" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
                 <option value="">Semua Komunitas</option>
@@ -42,7 +42,7 @@
                 <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     <th class="px-6 py-4">Tanggal</th>
                     <th class="px-6 py-4">Jam Keberangkatan</th>
-                    @if(Auth::user()->role === 'super_admin')
+                    @if(Auth::user()->role === 'admin')
                         <th class="px-6 py-4">Komunitas</th>
                     @endif
                     <th class="px-6 py-4 text-center">Aksi</th>
@@ -53,7 +53,7 @@
                 <tr class="hover:bg-gray-50 transition">
                     <td class="px-6 py-4 font-bold text-gray-800">{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('l, d F Y') }}</td>
                     <td class="px-6 py-4 text-emerald-600 font-bold">{{ \Carbon\Carbon::parse($item->jam)->format('H:i') }} WIB</td>
-                    @if(Auth::user()->role === 'super_admin')
+                    @if(Auth::user()->role === 'admin')
                         <td class="px-6 py-4 text-gray-600">{{ $item->komunitas->nama_komunitas ?? '-' }}</td>
                     @endif
                     <td class="px-6 py-4 flex justify-center gap-3">

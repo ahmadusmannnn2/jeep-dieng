@@ -15,12 +15,8 @@ class SupirController extends Controller
         $user = Auth::user();
         $query = Supir::query();
 
-        if ($user->role === 'admin_komunitas') {
-            $query->where('komunitas_id', $user->komunitas_id);
-        } else {
-            if ($request->filled('komunitas_id')) {
-                $query->where('komunitas_id', $request->komunitas_id);
-            }
+        if ($request->filled('komunitas_id')) {
+            $query->where('komunitas_id', $request->komunitas_id);
         }
 
         if ($request->filled('search')) {
@@ -36,15 +32,14 @@ class SupirController extends Controller
         }
 
         $supirs = $query->latest()->get();
-        $komunitas = $user->role === 'super_admin' ? Komunitas::all() : collect();
+        $komunitas = Komunitas::all();
 
         return view('admin.supir.index', compact('supirs', 'komunitas'));
     }
 
     public function create()
     {
-        // Jika super admin, berikan pilihan komunitas. Jika admin biasa, kosongkan.
-        $komunitas = Auth::user()->role === 'super_admin' ? Komunitas::all() : null;
+        $komunitas = Komunitas::all();
         return view('admin.supir.create', compact('komunitas'));
     }
 
@@ -54,15 +49,12 @@ class SupirController extends Controller
             'nama_supir' => 'required|string|max:255',
             'no_hp' => 'nullable|string|max:15',
             'status' => 'required|in:Tersedia,Sedang Bertugas,Tidak Aktif',
-            'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable'
+            'komunitas_id' => 'required|exists:komunitas,id'
         ]);
 
         $data = $request->except(['_token', '_method']);
         
-        // Otomatis assign komunitas jika yang login adalah admin komunitas
-        if (Auth::user()->role === 'admin_komunitas') {
-            $data['komunitas_id'] = Auth::user()->komunitas_id;
-        }
+
 
         Supir::create($data);
         return redirect()->route('admin.supir.index')->with('success', 'Data supir berhasil ditambahkan!');
@@ -70,7 +62,7 @@ class SupirController extends Controller
 
     public function edit(Supir $supir)
     {
-        $komunitas = Auth::user()->role === 'super_admin' ? Komunitas::all() : null;
+        $komunitas = Komunitas::all();
         return view('admin.supir.edit', compact('supir', 'komunitas'));
     }
 
@@ -80,13 +72,11 @@ class SupirController extends Controller
             'nama_supir' => 'required|string|max:255',
             'no_hp' => 'nullable|string|max:15',
             'status' => 'required|in:Tersedia,Sedang Bertugas,Tidak Aktif',
-            'komunitas_id' => Auth::user()->role === 'super_admin' ? 'required|exists:komunitas,id' : 'nullable'
+            'komunitas_id' => 'required|exists:komunitas,id'
         ]);
 
         $data = $request->except(['_token', '_method']);
-        if (Auth::user()->role === 'admin_komunitas') {
-            $data['komunitas_id'] = Auth::user()->komunitas_id;
-        }
+
 
         $supir->update($data);
         return redirect()->route('admin.supir.index')->with('success', 'Data supir berhasil diperbarui!');

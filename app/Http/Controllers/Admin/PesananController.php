@@ -77,7 +77,7 @@ class PesananController extends Controller
     {
         // PERBAIKAN DI SINI: Ganti 'jeeps' menjadi 'jeep' dan 'supirs' menjadi 'supir'
         $request->validate([
-            'status'   => 'required|in:Pending,Disetujui,Lunas,Selesai,Dibatalkan',
+            'status'   => 'required|in:Pending,Disetujui,DP Lunas,Lunas,Selesai,Dibatalkan',
             'jeep_id'  => 'nullable|exists:jeep,id', 
             'supir_id' => 'nullable|exists:supir,id',
         ]);
@@ -88,8 +88,8 @@ class PesananController extends Controller
             'supir_id' => $request->supir_id,
         ]);
 
-        // Jika status diubah menjadi Lunas, otomatis update status pembayaran jika ada
-        if ($request->status === 'Lunas' && $pesanan->pembayaran) {
+        // Jika status diubah menjadi Lunas atau DP Lunas, otomatis update status pembayaran terbaru jika ada
+        if (in_array($request->status, ['Lunas', 'DP Lunas']) && $pesanan->pembayaran) {
             $pesanan->pembayaran->update(['status' => 'Valid']);
         }
 

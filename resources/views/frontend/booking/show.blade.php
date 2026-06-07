@@ -31,12 +31,18 @@
                     <span class="block text-xs font-bold text-gray-400 uppercase">Status</span>
                     <span class="inline-block mt-1 px-3 py-1 rounded-full text-xs font-black
                         {{ $pesanan->status === 'Lunas' ? 'bg-emerald-100 text-emerald-700' : '' }}
-                        {{ $pesanan->status === 'Pending' ? 'bg-gray-100 text-gray-700' : '' }}
-                        {{ $pesanan->status === 'Disetujui' ? 'bg-amber-100 text-amber-700' : '' }}
-                        {{ $pesanan->status === 'Selesai' ? 'bg-blue-100 text-blue-700' : '' }}
+                        {{ $pesanan->status === 'Pending' ? 'bg-amber-100 text-amber-700' : '' }}
+                        {{ $pesanan->status === 'DP Lunas' ? 'bg-blue-100 text-blue-700' : '' }}
+                        {{ $pesanan->status === 'Selesai' ? 'bg-indigo-100 text-indigo-700' : '' }}
                         {{ $pesanan->status === 'Dibatalkan' ? 'bg-red-100 text-red-700' : '' }}
                     ">
-                        {{ $pesanan->status }}
+                        @if($pesanan->status === 'Pending')
+                            Menunggu Pembayaran
+                        @elseif($pesanan->status === 'Dibatalkan')
+                            Batal
+                        @else
+                            {{ $pesanan->status }}
+                        @endif
                     </span>
                 </div>
             </div>
@@ -102,6 +108,29 @@
                     </p>
                 @endif
             </div>
+
+            <div class="mt-8 border-t border-gray-100 pt-8">
+                <h4 class="font-black text-gray-900 text-lg mb-4">Riwayat Pembayaran</h4>
+                @if($pesanan->pembayarans && $pesanan->pembayarans->count() > 0)
+                    <div class="space-y-4">
+                    @foreach($pesanan->pembayarans as $bayar)
+                        <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-5 flex flex-col md:flex-row justify-between md:items-center gap-4">
+                            <div>
+                                <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black rounded uppercase tracking-wider mb-2 inline-block">{{ $bayar->jenis_pembayaran }}</span>
+                                <p class="font-bold text-gray-900">{{ $bayar->metode_pembayaran }}</p>
+                                <p class="text-xs text-gray-500 font-medium">{{ $bayar->created_at->translatedFormat('d F Y - H:i') }}</p>
+                            </div>
+                            <div class="md:text-right">
+                                <p class="font-black text-emerald-600 text-xl">Rp {{ number_format($bayar->jumlah_bayar, 0, ',', '.') }}</p>
+                                <span class="text-[11px] font-bold uppercase tracking-wider {{ $bayar->status === 'Valid' ? 'text-emerald-500' : 'text-amber-500' }} mt-1 inline-block">{{ $bayar->status }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500 italic p-4 bg-gray-50 rounded-xl border border-gray-100">Belum ada riwayat pembayaran.</p>
+                @endif
+            </div>
             
         </div>
 
@@ -113,7 +142,7 @@
             <div class="w-full">
                 <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Total Biaya Trip</p>
                 <h4 class="text-3xl font-black text-emerald-400">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</h4>
-                <p class="text-[10px] text-gray-400 mt-1">*Tarif flat sewa per kendaraan Jeep</p>
+                <p class="text-[10px] text-gray-400 mt-1">*Tarif flat sewa 1 kendaraan Jeep (Maks. 6 orang)</p>
             </div>
 
             <div class="my-8 p-4 bg-white rounded-2xl inline-block shadow-lg shadow-emerald-500/5">

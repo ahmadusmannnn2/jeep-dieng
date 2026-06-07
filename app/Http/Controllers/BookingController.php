@@ -48,8 +48,8 @@ class BookingController extends Controller
             'titik_jemput'      => $request->titik_jemput,
             'jumlah_pengunjung' => $request->jumlah_pengunjung,
             'catatan'           => $catatanAkhir,
-            // BUG #4 FIX: total harga = harga paket × jumlah pengunjung
-            'total_harga'       => $paketWisata->harga * $request->jumlah_pengunjung,
+            // HARGA PER JEEP: Karena pesanan maksimal 6 orang (1 jeep), harganya flat per paket/jeep.
+            'total_harga'       => $paketWisata->harga,
             'status'            => 'Pending',
         ]);
 
@@ -66,8 +66,8 @@ class BookingController extends Controller
             abort(403, 'Akses Ditolak: Anda tidak dapat melihat tagihan orang lain.');
         }
 
-        // 2. Cegah akses jika pesanan sudah dibayar atau dibatalkan
-        if ($pesanan->status !== 'Pending') {
+        // 2. Cegah akses jika pesanan sudah dibayar lunas atau dibatalkan
+        if (in_array($pesanan->status, ['Lunas', 'Selesai', 'Dibatalkan', 'Disetujui'])) {
             return redirect()->route('dashboard')->with('error', 'Pesanan ini sudah diproses atau dibatalkan.');
         }
 
@@ -90,20 +90,37 @@ class BookingController extends Controller
         $request->validate([
             'bukti_pembayaran' => 'required|image|mimes:jpeg,png,jpg,webp|max:3072',
             'metode_pembayaran' => 'required|string',
+            'jenis_pembayaran' => 'required|in:DP,Pelunasan,Lunas',
         ]);
 
         // 3. Simpan gambar ke folder storage/app/public/bukti_pembayaran
         $path = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
 
+        // Logic for DP vs Lunas
+        $jumlahBayar = $pesanan->total_harga;
+        if ($request->jenis_pembayaran === 'DP') {
+            $jumlahBayar = $pesanan->total_harga / 2;
+            $pesanan->update(['tipe_pembayaran' => 'DP']);
+        } elseif ($request->jenis_pembayaran === 'Pelunasan') {
+            $jumlahBayar = $pesanan->total_harga / 2;
+        } else {
+            $pesanan->update(['tipe_pembayaran' => 'Lunas']);
+        }
+
         // 4. Masukkan ke tabel pembayaran
         Pembayaran::create([
             'pesanan_id'        => $pesanan->id,
-            'jumlah_bayar'      => $pesanan->total_harga,
-            // BUG #1 FIX: nama kolom di DB adalah 'bukti_bayar', bukan 'bukti_pembayaran'
+            'jumlah_bayar'      => $jumlahBayar,
             'bukti_bayar'       => $path,
             'metode_pembayaran' => $request->metode_pembayaran,
+            'jenis_pembayaran'  => $request->jenis_pembayaran,
             'status'            => 'Menunggu Verifikasi',
         ]);
+
+        // Ubah status pesanan menjadi Pending jika sedang DP Lunas tapi belum diverifikasi pelunasannya
+        if ($pesanan->status === 'DP Lunas') {
+            $pesanan->update(['status' => 'Pending']);
+        }
 
         return redirect()->route('dashboard')->with('success', 'Bukti pembayaran berhasil diunggah! Mohon tunggu konfirmasi dari Admin kami.');
     }

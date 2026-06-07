@@ -19,10 +19,17 @@
                     <span class="block text-xs uppercase text-gray-400 font-bold mb-1">Status Pembayaran</span>
                     <span class="px-3 py-1 rounded-full text-xs font-bold border 
                         {{ $pesanan->status === 'Lunas' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : '' }}
+                        {{ $pesanan->status === 'DP Lunas' ? 'bg-blue-50 text-blue-700 border-blue-200' : '' }}
                         {{ $pesanan->status === 'Pending' ? 'bg-amber-50 text-amber-700 border-amber-200' : '' }}
                         {{ $pesanan->status === 'Selesai' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : '' }}
                         {{ $pesanan->status === 'Dibatalkan' ? 'bg-red-50 text-red-700 border-red-200' : '' }}">
-                        {{ $pesanan->status }}
+                        @if($pesanan->status === 'Pending')
+                            Menunggu Pembayaran
+                        @elseif($pesanan->status === 'Dibatalkan')
+                            Batal
+                        @else
+                            {{ $pesanan->status }}
+                        @endif
                     </span>
                 </div>
             </div>
@@ -62,31 +69,39 @@
         </div>
 
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
-            <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-4 mb-4">Bukti Pembayaran</h3>
+            <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-4 mb-4">Histori Pembayaran</h3>
             
-            @if($pesanan->pembayaran && $pesanan->pembayaran->bukti_pembayaran)
-                <div class="flex flex-col md:flex-row gap-6">
-                    <div class="w-full md:w-1/2">
-                        <a href="{{ asset('storage/' . $pesanan->pembayaran->bukti_pembayaran) }}" target="_blank" class="block border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-emerald-500 transition relative group">
-                            <img src="{{ asset('storage/' . $pesanan->pembayaran->bukti_pembayaran) }}" alt="Bukti Bayar" class="w-full h-auto max-h-64 object-cover">
-                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                                <span class="text-white font-bold text-sm">Klik untuk Perbesar</span>
+            @if($pesanan->pembayarans && $pesanan->pembayarans->count() > 0)
+                <div class="space-y-8">
+                @foreach($pesanan->pembayarans as $index => $bayar)
+                    <div class="flex flex-col md:flex-row gap-6 relative">
+                        @if($index > 0)
+                            <div class="absolute -top-6 left-0 right-0 border-t border-dashed border-gray-200"></div>
+                        @endif
+                        <div class="w-full md:w-1/2">
+                            <a href="{{ asset('storage/' . $bayar->bukti_bayar) }}" target="_blank" class="block border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-emerald-500 transition relative group">
+                                <img src="{{ asset('storage/' . $bayar->bukti_bayar) }}" alt="Bukti Bayar" class="w-full h-auto max-h-64 object-cover">
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">Klik untuk Perbesar</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="w-full md:w-1/2 space-y-4 text-sm">
+                            <div class="flex items-center gap-3">
+                                <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full uppercase tracking-wider">{{ $bayar->jenis_pembayaran }}</span>
+                                <span class="text-gray-500 text-xs">{{ $bayar->created_at->translatedFormat('d M Y H:i') }}</span>
                             </div>
-                        </a>
-                    </div>
-                    <div class="w-full md:w-1/2 space-y-4 text-sm">
-                        <div>
-                            <p class="text-gray-400 text-xs font-bold uppercase">Bank Pengirim</p>
-                            <p class="font-black text-gray-900 text-lg">{{ $pesanan->pembayaran->metode_pembayaran }}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-400 text-xs font-bold uppercase">Total Tagihan</p>
-                            <p class="font-black text-emerald-600 text-2xl">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</p>
-                        </div>
-                        <div class="p-3 bg-amber-50 border border-amber-100 rounded-lg text-amber-700 text-xs font-medium">
-                            Pastikan nominal yang ditransfer pelanggan sesuai dengan tagihan pesanan sebelum Anda mengubah status menjadi Lunas di panel sebelah kanan.
+                            <div>
+                                <p class="text-gray-400 text-xs font-bold uppercase">Bank Pengirim</p>
+                                <p class="font-black text-gray-900 text-lg">{{ $bayar->metode_pembayaran }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-xs font-bold uppercase">Nominal Dibayar</p>
+                                <p class="font-black text-emerald-600 text-2xl">Rp {{ number_format($bayar->jumlah_bayar, 0, ',', '.') }}</p>
+                            </div>
                         </div>
                     </div>
+                @endforeach
                 </div>
             @else
                 <div class="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
@@ -107,10 +122,11 @@
             <div class="mb-5">
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Ubah Status</label>
                 <select name="status" class="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800 text-white font-bold focus:ring-2 focus:ring-emerald-500">
-                    <option value="Pending" {{ $pesanan->status === 'Pending' ? 'selected' : '' }}>Pending (Menunggu Pembayaran)</option>
-                    <option value="Lunas" {{ $pesanan->status === 'Lunas' ? 'selected' : '' }}>Lunas (Pembayaran Valid)</option>
-                    <option value="Selesai" {{ $pesanan->status === 'Selesai' ? 'selected' : '' }}>Selesai (Tour Selesai)</option>
-                    <option value="Dibatalkan" {{ $pesanan->status === 'Dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+                    <option value="Pending" {{ $pesanan->status === 'Pending' ? 'selected' : '' }}>Menunggu Pembayaran</option>
+                    <option value="DP Lunas" {{ $pesanan->status === 'DP Lunas' ? 'selected' : '' }}>DP Lunas</option>
+                    <option value="Lunas" {{ $pesanan->status === 'Lunas' ? 'selected' : '' }}>Lunas</option>
+                    <option value="Selesai" {{ $pesanan->status === 'Selesai' ? 'selected' : '' }}>Selesai</option>
+                    <option value="Dibatalkan" {{ $pesanan->status === 'Dibatalkan' ? 'selected' : '' }}>Batal</option>
                 </select>
             </div>
 

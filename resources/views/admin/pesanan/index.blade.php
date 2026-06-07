@@ -13,7 +13,8 @@
         <div class="w-full md:w-48">
             <select name="status" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
                 <option value="">Semua Status</option>
-                <option value="Pending" {{ request('status') === 'Pending' ? 'selected' : '' }}>Pending</option>
+                <option value="Pending" {{ request('status') === 'Pending' ? 'selected' : '' }}>Menunggu Pembayaran (Pending)</option>
+                <option value="DP Lunas" {{ request('status') === 'DP Lunas' ? 'selected' : '' }}>DP Lunas</option>
                 <option value="Lunas" {{ request('status') === 'Lunas' ? 'selected' : '' }}>Lunas</option>
                 <option value="Selesai" {{ request('status') === 'Selesai' ? 'selected' : '' }}>Selesai</option>
                 <option value="Dibatalkan" {{ request('status') === 'Dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
@@ -64,16 +65,18 @@
                     </td>
                     <td class="px-6 py-4">
                         @if($item->status === 'Pending')
-                            <span class="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold border border-amber-200">Pending</span>
+                            <span class="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold border border-amber-200">Menunggu Pembayaran</span>
+                        @elseif($item->status === 'DP Lunas')
+                            <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-200">DP Lunas</span>
                         @elseif($item->status === 'Lunas')
                             <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-200">Lunas</span>
                         @elseif($item->status === 'Selesai')
                             <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold border border-indigo-200">Selesai</span>
                         @else
-                            <span class="px-3 py-1 bg-red-50 text-red-700 rounded-full text-xs font-bold border border-red-200">Dibatalkan</span>
+                            <span class="px-3 py-1 bg-red-50 text-red-700 rounded-full text-xs font-bold border border-red-200">Batal</span>
                         @endif
 
-                        @if($item->pembayaran && $item->status === 'Pending')
+                        @if($item->pembayaran && $item->pembayaran->status === 'Menunggu Verifikasi')
                             <span class="block mt-1 text-[10px] text-emerald-600 font-bold animate-pulse">Menunggu Validasi!</span>
                         @endif
                     </td>

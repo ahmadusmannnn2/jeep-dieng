@@ -51,41 +51,6 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     <span class="font-medium">Dashboard</span>
                 </a>
-                
-                <a href="{{ route('admin.jeep.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.jeep.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path></svg>
-                    <span class="font-medium">Data Jeep</span>
-                </a>
-                
-                <a href="{{ route('admin.supir.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.supir.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    <span class="font-medium">Data Supir</span>
-                </a>
-                
-                <a href="{{ route('admin.paket-wisata.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.paket-wisata.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="font-medium">Paket Wisata</span>
-                </a>
-
-                <a href="{{ route('admin.rute-wisata.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.rute-wisata.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                    <span class="font-medium">Rute Wisata</span>
-                </a>
-
-                <a href="{{ route('admin.jadwal.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.jadwal.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    <span class="font-medium">Jadwal Tour</span>
-                </a>
-
-                <a href="{{ route('admin.konten-informasi.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.konten-informasi.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
-                    <span class="font-medium">Info & Promo</span>
-                </a>
-
-                <a href="{{ route('admin.testimoni.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.testimoni.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                    <span class="font-medium">Testimoni</span>
-                </a>
 
                 <a href="{{ route('admin.pesanan.index') }}" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.pesanan.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
                     <div class="flex items-center gap-3">
@@ -99,6 +64,52 @@
                         </span>
                     @endif
                 </a>
+
+                <!-- Master Armada -->
+                <div x-data="{ open: {{ request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            <span class="font-medium">Master Armada</span>
+                        </div>
+                        <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" style="display: none;" class="pl-12 pr-4 py-1 space-y-1">
+                        <a href="{{ route('admin.jeep.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.jeep.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Data Jeep</a>
+                        <a href="{{ route('admin.supir.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.supir.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Data Supir</a>
+                    </div>
+                </div>
+
+                <!-- Katalog Wisata -->
+                <div x-data="{ open: {{ request()->routeIs('admin.paket-wisata.*') || request()->routeIs('admin.rute-wisata.*') || request()->routeIs('admin.jadwal.*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.paket-wisata.*') || request()->routeIs('admin.rute-wisata.*') || request()->routeIs('admin.jadwal.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="font-medium">Katalog Wisata</span>
+                        </div>
+                        <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" style="display: none;" class="pl-12 pr-4 py-1 space-y-1">
+                        <a href="{{ route('admin.paket-wisata.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.paket-wisata.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Paket Wisata</a>
+                        <a href="{{ route('admin.rute-wisata.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.rute-wisata.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Rute Wisata</a>
+                        <a href="{{ route('admin.jadwal.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.jadwal.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Jadwal Tour</a>
+                    </div>
+                </div>
+
+                <!-- Konten Website -->
+                <div x-data="{ open: {{ request()->routeIs('admin.konten-informasi.*') || request()->routeIs('admin.testimoni.*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.konten-informasi.*') || request()->routeIs('admin.testimoni.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                            <span class="font-medium">Konten Website</span>
+                        </div>
+                        <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" style="display: none;" class="pl-12 pr-4 py-1 space-y-1">
+                        <a href="{{ route('admin.konten-informasi.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.konten-informasi.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Info & Promo</a>
+                        <a href="{{ route('admin.testimoni.index') }}" class="block py-2 text-sm {{ request()->routeIs('admin.testimoni.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">Testimoni</a>
+                    </div>
+                </div>
 
                 <a href="{{ route('admin.laporan.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.laporan.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>

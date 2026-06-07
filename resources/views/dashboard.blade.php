@@ -42,12 +42,14 @@
                                         @else
                                             <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-amber-200">Menunggu Pembayaran</span>
                                         @endif
+                                    @elseif($item->status === 'DP Lunas')
+                                        <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-blue-200">DP Lunas</span>
                                     @elseif($item->status === 'Lunas')
-                                        <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-emerald-200">Lunas / Valid</span>
+                                        <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-emerald-200">Lunas</span>
                                     @elseif($item->status === 'Selesai')
-                                        <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-indigo-200">Selesai Trip</span>
+                                        <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-indigo-200">Selesai</span>
                                     @else
-                                        <span class="px-2.5 py-1 bg-red-50 text-red-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-red-200">Dibatalkan</span>
+                                        <span class="px-2.5 py-1 bg-red-50 text-red-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-red-200">Batal</span>
                                     @endif
                                 </div>
                                 <p class="text-base font-bold text-gray-700">{{ $item->paketWisata->nama_paket ?? 'Paket Wisata Terhapus' }}</p>
@@ -73,10 +75,10 @@
                             Lihat Detail Pembayaran
                         </a>
                         
-                        @if($item->status === 'Pending' && !$item->pembayaran)
+                        @if(($item->status === 'Pending' && !$item->pembayaran) || $item->status === 'DP Lunas')
                             <a href="{{ route('booking.payment', $item->id) }}" class="w-full sm:w-auto px-6 py-2.5 bg-gray-900 text-white font-extrabold rounded-xl hover:bg-emerald-500 transition shadow-lg hover:shadow-emerald-500/30 text-sm text-center flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                Bayar Sekarang
+                                {{ $item->status === 'DP Lunas' ? 'Bayar Pelunasan' : 'Bayar Sekarang' }}
                             </a>
                         @elseif($item->status === 'Lunas' || $item->status === 'Selesai')
                             <a href="{{ route('booking.print', $item->id) }}" target="_blank" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-500 text-white font-extrabold rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 text-sm text-center flex items-center justify-center gap-2 transform hover:-translate-y-0.5">

@@ -55,6 +55,36 @@
                         @csrf
                         
                         <div class="space-y-6">
+                            @if($pesanan->status === 'DP Lunas')
+                                <input type="hidden" name="jenis_pembayaran" value="Pelunasan">
+                                <div class="p-4 bg-blue-50 border border-blue-100 text-blue-700 rounded-xl">
+                                    <p class="font-bold text-sm mb-1">Pembayaran Pelunasan</p>
+                                    <p class="text-xs">Sisa tagihan yang harus dibayar: Rp {{ number_format($pesanan->total_harga / 2, 0, ',', '.') }}</p>
+                                </div>
+                            @else
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Pilih Jenis Pembayaran <span class="text-red-500">*</span></label>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="jenis_pembayaran" value="Lunas" checked class="peer sr-only">
+                                            <div class="p-4 rounded-xl border border-gray-200 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 transition text-center hover:bg-gray-50 h-full flex flex-col justify-center">
+                                                <p class="font-bold text-gray-900">Bayar Penuh</p>
+                                                <p class="text-xs text-gray-500 mt-1 mb-2">Langsung lunas 100%</p>
+                                                <p class="text-lg font-black text-emerald-600">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</p>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="jenis_pembayaran" value="DP" class="peer sr-only">
+                                            <div class="p-4 rounded-xl border border-gray-200 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 transition text-center hover:bg-gray-50 h-full flex flex-col justify-center">
+                                                <p class="font-bold text-gray-900">DP 50%</p>
+                                                <p class="text-xs text-gray-500 mt-1 mb-2">Amankan jadwal Jeep</p>
+                                                <p class="text-lg font-black text-emerald-600">Rp {{ number_format($pesanan->total_harga / 2, 0, ',', '.') }}</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            @endif
+
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Metode Pembayaran (Bank Pengirim)</label>
                                 <select name="metode_pembayaran" required class="w-full px-4 py-3.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 font-bold text-gray-900 bg-white">
@@ -112,8 +142,16 @@
                     </div>
 
                     <div class="relative z-10">
-                        <span class="font-bold text-gray-400 block mb-1">Total yang harus dibayar</span>
+                        <span class="font-bold text-gray-400 block mb-1">Total Tagihan Pesanan</span>
                         <span class="text-4xl font-black text-emerald-400">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</span>
+                        <p class="text-xs text-gray-400 mt-2 font-medium">*Tarif sewa flat untuk 1 kendaraan Jeep (Kapasitas maks. 6 penumpang)</p>
+                        
+                        @if($pesanan->status === 'DP Lunas')
+                        <div class="mt-5 pt-5 border-t border-gray-700">
+                            <span class="font-bold text-gray-400 block mb-1">Sisa yang harus dilunasi</span>
+                            <span class="text-3xl font-black text-amber-400">Rp {{ number_format($pesanan->total_harga / 2, 0, ',', '.') }}</span>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

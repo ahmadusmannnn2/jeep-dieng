@@ -123,9 +123,12 @@
                         <div class="flex justify-between"><span class="text-gray-400">Kapasitas Maksimal</span><span class="font-bold text-gray-200">5-6 Penumpang</span></div>
                         <div class="flex justify-between"><span class="text-gray-400">Durasi Tour</span><span class="font-bold text-gray-200">{{ $paketWisata->durasi ?? '4 Jam' }}</span></div>
                     </div>
-                    <div class="flex justify-between items-end mb-8 relative z-10">
-                        <span class="font-bold text-gray-400">Total Pembayaran</span>
-                        <span class="text-3xl font-black text-emerald-400">Rp {{ number_format($paketWisata->harga, 0, ',', '.') }}</span>
+                    <div class="flex flex-col items-end mb-8 relative z-10 text-right">
+                        <div class="w-full flex justify-between items-end mb-1">
+                            <span class="font-bold text-gray-400">Total Biaya Trip</span>
+                            <span class="text-3xl font-black text-emerald-400">Rp {{ number_format($paketWisata->harga, 0, ',', '.') }}</span>
+                        </div>
+                        <span class="text-[10px] text-gray-500">*Tarif flat sewa 1 kendaraan Jeep (Maks. 6 penumpang)</span>
                     </div>
 
                     <button type="submit" class="w-full py-4 bg-emerald-500 text-white text-lg font-extrabold rounded-2xl hover:bg-emerald-400 transition shadow-lg flex items-center justify-center gap-2 transform hover:-translate-y-1 relative z-10">

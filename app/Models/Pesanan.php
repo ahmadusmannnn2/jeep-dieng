@@ -42,8 +42,14 @@ class Pesanan extends Model
         return $this->belongsTo(Supir::class, 'supir_id');
     }
 
+    public function pembayarans()
+    {
+        return $this->hasMany(Pembayaran::class, 'pesanan_id');
+    }
+
     public function pembayaran()
     {
-        return $this->hasOne(Pembayaran::class, 'pesanan_id');
+        // Helper untuk mendapatkan pembayaran terbaru (bisa DP atau Pelunasan)
+        return $this->hasOne(Pembayaran::class, 'pesanan_id')->latestOfMany();
     }
 }

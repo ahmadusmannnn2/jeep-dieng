@@ -24,11 +24,11 @@
         $pesananPendingCount = $pendingQuery->count();
     @endphp
 
-    <div x-data="{ mobileSidebarOpen: false, desktopSidebarOpen: true }" class="flex h-screen overflow-hidden">
+    <div x-data="{ mobileSidebarOpen: false, sidebarCollapsed: false }" class="flex h-screen overflow-hidden">
         
         <div x-show="mobileSidebarOpen" @click="mobileSidebarOpen = false" class="fixed inset-0 bg-gray-900/80 z-20 md:hidden" style="display: none;"></div>
 
-        <aside x-show="desktopSidebarOpen" :class="mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white flex flex-col transition-transform duration-300 ease-in-out md:relative md:translate-x-0">
+        <aside :class="(mobileSidebarOpen ? 'translate-x-0 ' : '-translate-x-full ') + (sidebarCollapsed ? 'md:w-20 ' : 'md:w-64 ')" class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white flex flex-col transition-all duration-300 ease-in-out md:relative md:translate-x-0 shrink-0">
             
             <div class="h-20 flex items-center justify-between md:justify-start px-5 border-b border-gray-800 gap-3 shrink-0">
                 @if(isset($pengaturan_website) && $pengaturan_website->logo)
@@ -38,7 +38,7 @@
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                     </div>
                 @endif
-                <h1 class="text-xl font-bold text-emerald-500 tracking-wider truncate uppercase">
+                <h1 x-show="!sidebarCollapsed" class="text-xl font-bold text-emerald-500 tracking-wider truncate uppercase transition-opacity duration-300">
                     {{ $pengaturan_website->nama_website ?? 'JEEP DIENG' }}
                 </h1>
                 <button @click="mobileSidebarOpen = false" class="md:hidden text-gray-400 hover:text-white focus:outline-none ml-auto">
@@ -47,18 +47,18 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto no-scrollbar px-4 py-6 space-y-2">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    <span class="font-medium">Dashboard</span>
+                <a href="{{ route('admin.dashboard') }}" title="Dashboard" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition overflow-hidden">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <span x-show="!sidebarCollapsed" class="font-medium whitespace-nowrap">Dashboard</span>
                 </a>
 
-                <a href="{{ route('admin.pesanan.index') }}" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.pesanan.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition">
+                <a href="{{ route('admin.pesanan.index') }}" title="Pesanan Masuk" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.pesanan.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition overflow-hidden">
                     <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                        <span class="font-medium">Pesanan Masuk</span>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                        <span x-show="!sidebarCollapsed" class="font-medium whitespace-nowrap">Pesanan Masuk</span>
                     </div>
                     @if($pesananPendingCount > 0)
-                        <span class="relative flex h-3 w-3 shrink-0">
+                        <span x-show="!sidebarCollapsed" class="relative flex h-3 w-3 shrink-0">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                         </span>
@@ -67,14 +67,14 @@
 
                 <!-- Master Armada -->
                 <div x-data="{ open: {{ request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'true' : 'false' }} }">
-                    <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition">
+                    <button @click="if(sidebarCollapsed) { sidebarCollapsed = false; open = true; } else { open = !open }" type="button" title="Armada & Supir" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition overflow-hidden">
                         <div class="flex items-center gap-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                            <span class="font-medium">Armada & Supir</span>
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            <span x-show="!sidebarCollapsed" class="font-medium whitespace-nowrap">Armada & Supir</span>
                         </div>
-                        <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg x-show="!sidebarCollapsed" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
+                    <div x-show="open && !sidebarCollapsed" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
                         <a href="{{ route('admin.jeep.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.jeep.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
                             <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.jeep.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
                             Data Kendaraan (Jeep)
@@ -88,14 +88,14 @@
 
                 <!-- Katalog Wisata -->
                 <div x-data="{ open: {{ request()->routeIs('admin.paket-wisata.*') || request()->routeIs('admin.rute-wisata.*') || request()->routeIs('admin.jadwal.*') ? 'true' : 'false' }} }">
-                    <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.paket-wisata.*') || request()->routeIs('admin.rute-wisata.*') || request()->routeIs('admin.jadwal.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition">
+                    <button @click="if(sidebarCollapsed) { sidebarCollapsed = false; open = true; } else { open = !open }" type="button" title="Paket Tour & Rute" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.paket-wisata.*') || request()->routeIs('admin.rute-wisata.*') || request()->routeIs('admin.jadwal.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition overflow-hidden">
                         <div class="flex items-center gap-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span class="font-medium">Paket Tour & Rute</span>
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span x-show="!sidebarCollapsed" class="font-medium whitespace-nowrap">Paket Tour & Rute</span>
                         </div>
-                        <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg x-show="!sidebarCollapsed" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
+                    <div x-show="open && !sidebarCollapsed" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
                         <a href="{{ route('admin.paket-wisata.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.paket-wisata.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
                             <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.paket-wisata.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
                             Paket Wisata Utama
@@ -113,14 +113,14 @@
 
                 <!-- Konten Website -->
                 <div x-data="{ open: {{ request()->routeIs('admin.konten-informasi.*') || request()->routeIs('admin.testimoni.*') ? 'true' : 'false' }} }">
-                    <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.konten-informasi.*') || request()->routeIs('admin.testimoni.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition">
+                    <button @click="if(sidebarCollapsed) { sidebarCollapsed = false; open = true; } else { open = !open }" type="button" title="Konten & Informasi" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.konten-informasi.*') || request()->routeIs('admin.testimoni.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition overflow-hidden">
                         <div class="flex items-center gap-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
-                            <span class="font-medium">Konten & Informasi</span>
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                            <span x-show="!sidebarCollapsed" class="font-medium whitespace-nowrap">Konten & Informasi</span>
                         </div>
-                        <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg x-show="!sidebarCollapsed" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
+                    <div x-show="open && !sidebarCollapsed" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
                         <a href="{{ route('admin.konten-informasi.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.konten-informasi.*') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
                             <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.konten-informasi.*') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
                             Artikel & Promo
@@ -134,14 +134,14 @@
 
                 <!-- Laporan -->
                 <div x-data="{ open: {{ request()->routeIs('admin.laporan.*') ? 'true' : 'false' }} }">
-                    <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.laporan.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition">
+                    <button @click="if(sidebarCollapsed) { sidebarCollapsed = false; open = true; } else { open = !open }" type="button" title="Keuangan & Omzet" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.laporan.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition overflow-hidden">
                         <div class="flex items-center gap-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            <span class="font-medium">Keuangan & Omzet</span>
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            <span x-show="!sidebarCollapsed" class="font-medium whitespace-nowrap">Keuangan & Omzet</span>
                         </div>
-                        <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg x-show="!sidebarCollapsed" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
+                    <div x-show="open && !sidebarCollapsed" style="display: none;" class="pl-11 pr-4 py-1 space-y-1 mt-1 border-l-2 border-gray-800 ml-6">
                         <a href="{{ route('admin.laporan.index') }}" class="flex items-center relative py-2 text-sm {{ request()->routeIs('admin.laporan.index') ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-emerald-400' }} transition">
                             <span class="absolute -left-[22px] w-3 h-0.5 {{ request()->routeIs('admin.laporan.index') ? 'bg-emerald-400' : 'bg-gray-700' }}"></span>
                             Rekap Transaksi Masuk
@@ -157,9 +157,9 @@
             <div class="p-4 border-t border-gray-800 shrink-0">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-500 hover:text-white rounded-xl transition">
+                    <button type="submit" title="Logout" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-500 hover:text-white rounded-xl transition overflow-hidden">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        Logout
+                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Logout</span>
                     </button>
                 </form>
             </div>
@@ -169,7 +169,7 @@
             
             <header class="h-20 shrink-0 bg-white shadow-sm flex items-center justify-between px-4 md:px-8 z-10 sticky top-0 border-b border-gray-100">
                 <div class="flex items-center gap-4">
-                    <button @click="window.innerWidth < 768 ? mobileSidebarOpen = true : desktopSidebarOpen = !desktopSidebarOpen" class="p-2 text-gray-500 hover:text-emerald-500 focus:outline-none transition bg-gray-50 rounded-lg border border-gray-100 shrink-0">
+                    <button @click="window.innerWidth < 768 ? mobileSidebarOpen = true : sidebarCollapsed = !sidebarCollapsed" class="p-2 text-gray-500 hover:text-emerald-500 focus:outline-none transition bg-gray-50 rounded-lg border border-gray-100 shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
                     <div>

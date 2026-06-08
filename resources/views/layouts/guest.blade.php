@@ -4,7 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Jeep Dieng') }} - Autentikasi</title>
+    <title>@yield('title', 'Autentikasi - ' . ($pengaturan_website->nama_website ?? config('app.name', 'Jeep Dieng')))</title>
+    
+    @if(isset($pengaturan_website) && $pengaturan_website->logo)
+        <link rel="icon" href="{{ asset('storage/' . $pengaturan_website->logo) }}" type="image/png">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    @endif
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>

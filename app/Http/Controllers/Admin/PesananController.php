@@ -10,6 +10,9 @@ use App\Models\Pembayaran;
 use App\Models\Komunitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PaymentConfirmedMail;
+use App\Mail\EtiketLunasMail;
 
 class PesananController extends Controller
 {
@@ -46,8 +49,6 @@ class PesananController extends Controller
     {
         $pesanan->load(['user', 'paketWisata', 'jeep', 'supir', 'pembayaran', 'komunitas']);
         
-        // Ambil data armada dan supir yang berada di komunitas yang sama dengan pesanan ini
-        // (Atau jika komunitas_id null, ambil semua armada/supir)
         $jeeps = Jeep::when($pesanan->komunitas_id, function($q) use ($pesanan) {
             return $q->where('komunitas_id', $pesanan->komunitas_id);
         })->get();
@@ -61,7 +62,6 @@ class PesananController extends Controller
 
     public function edit(Pesanan $pesanan)
     {
-        // Ambil data armada dan supir yang berada di komunitas yang sama dengan pesanan ini
         $jeeps = Jeep::where('komunitas_id', $pesanan->komunitas_id)->get();
         $supirs = Supir::where('komunitas_id', $pesanan->komunitas_id)->get();
         
@@ -70,12 +70,13 @@ class PesananController extends Controller
 
     public function update(Request $request, Pesanan $pesanan)
     {
-        // PERBAIKAN DI SINI: Ganti 'jeeps' menjadi 'jeep' dan 'supirs' menjadi 'supir'
         $request->validate([
             'status'   => 'required|in:Pending,Disetujui,DP Lunas,Lunas,Selesai,Dibatalkan',
             'jeep_id'  => 'nullable|exists:jeep,id', 
             'supir_id' => 'nullable|exists:supir,id',
         ]);
+
+        $statusLama = $pesanan->status;
 
         $pesanan->update([
             'status'   => $request->status,
@@ -83,9 +84,26 @@ class PesananController extends Controller
             'supir_id' => $request->supir_id,
         ]);
 
-        // Jika status diubah menjadi Lunas atau DP Lunas, otomatis update status pembayaran terbaru jika ada
+        // Jika status diubah menjadi Lunas atau DP Lunas, otomatis update status pembayaran terbaru
         if (in_array($request->status, ['Lunas', 'DP Lunas']) && $pesanan->pembayaran) {
             $pesanan->pembayaran->update(['status' => 'Valid']);
+        }
+
+        // 📧 Kirim email berdasarkan perubahan status
+        $pesanan->load(['user', 'paketWisata', 'jeep', 'supir', 'komunitas', 'pembayaran']);
+
+        try {
+            // Kirim email konfirmasi DP atau Lunas ke customer
+            if (in_array($request->status, ['DP Lunas', 'Lunas']) && $statusLama !== $request->status) {
+                Mail::to($pesanan->user->email)->send(new PaymentConfirmedMail($pesanan));
+
+                // Jika LUNAS, kirim juga E-Tiket resmi
+                if ($request->status === 'Lunas') {
+                    Mail::to($pesanan->user->email)->send(new EtiketLunasMail($pesanan));
+                }
+            }
+        } catch (\Exception $e) {
+            // Jangan hentikan proses jika email gagal terkirim
         }
 
         return redirect()->route('admin.pesanan.show', $pesanan->id)->with('success', 'Status pesanan dan penugasan berhasil diperbarui!');

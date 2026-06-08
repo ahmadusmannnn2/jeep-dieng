@@ -26,7 +26,6 @@
                 <option value="Tidak Aktif" {{ request('status') === 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
             </select>
         </div>
-        @if(Auth::user()->role === 'admin')
         <div class="w-full md:w-64">
             <select name="komunitas_id" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
                 <option value="">Semua Komunitas</option>
@@ -35,7 +34,6 @@
                 @endforeach
             </select>
         </div>
-        @endif
         <div class="flex gap-2">
             <button type="submit" class="px-5 py-2.5 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition shadow-lg">Filter</button>
             <a href="{{ route('admin.supir.index') }}" class="px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition">Reset</a>
@@ -51,9 +49,7 @@
                     <th class="px-6 py-4">Nama Supir</th>
                     <th class="px-6 py-4">No HP</th>
                     <th class="px-6 py-4">Status</th>
-                    @if(Auth::user()->role === 'admin')
-                        <th class="px-6 py-4">Komunitas</th>
-                    @endif
+                    <th class="px-6 py-4">Komunitas</th>
                     <th class="px-6 py-4 text-center">Aksi</th>
                 </tr>
             </thead>
@@ -71,14 +67,12 @@
                             <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">Tidak Aktif</span>
                         @endif
                     </td>
-                    @if(Auth::user()->role === 'admin')
-                        <td class="px-6 py-4">
+                    <td class="px-6 py-4">
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                 {{ $supir->komunitas->nama_komunitas ?? '-' }}
                             </span>
                         </td>
-                    @endif
                     <td class="px-6 py-4 flex justify-center gap-3">
                         <a href="{{ route('admin.supir.edit', $supir->id) }}" class="text-amber-500 hover:text-amber-600 font-medium">Edit</a>
                         <form action="{{ route('admin.supir.destroy', $supir->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data supir ini?')">

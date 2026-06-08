@@ -20,7 +20,6 @@
                 <option value="Dibatalkan" {{ request('status') === 'Dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
             </select>
         </div>
-        @if(Auth::user()->role === 'admin')
         <div class="w-full md:w-64">
             <select name="komunitas_id" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
                 <option value="">Semua Komunitas</option>
@@ -29,7 +28,6 @@
                 @endforeach
             </select>
         </div>
-        @endif
         <div class="flex gap-2">
             <button type="submit" class="px-5 py-2.5 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition shadow-lg">Filter</button>
             <a href="{{ route('admin.pesanan.index') }}" class="px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition">Reset</a>
@@ -45,9 +43,7 @@
                     <th class="px-6 py-4">Kode Booking</th>
                     <th class="px-6 py-4">Customer</th>
                     <th class="px-6 py-4">Paket & Jadwal</th>
-                    @if(Auth::user()->role === 'admin')
-                        <th class="px-6 py-4">Penyedia / Komunitas</th>
-                    @endif
+                    <th class="px-6 py-4">Penyedia / Komunitas</th>
                     <th class="px-6 py-4">Status</th>
                     <th class="px-6 py-4 text-center">Aksi</th>
                 </tr>
@@ -66,14 +62,12 @@
                             {{ \Carbon\Carbon::parse($item->tanggal_jadwal)->format('d/m/Y') }}
                         </p>
                     </td>
-                    @if(Auth::user()->role === 'admin')
-                        <td class="px-6 py-4">
+                    <td class="px-6 py-4">
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                 {{ $item->komunitas->nama_komunitas ?? '-' }}
                             </span>
                         </td>
-                    @endif
                     <td class="px-6 py-4">
                         @if($item->status === 'Pending')
                             <span class="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold border border-amber-200">Menunggu Pembayaran</span>
@@ -97,7 +91,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">Belum ada pesanan masuk.</td>
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">Belum ada pesanan masuk.</td>
                 </tr>
                 @endforelse
             </tbody>

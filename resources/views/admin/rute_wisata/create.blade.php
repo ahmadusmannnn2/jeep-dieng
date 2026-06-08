@@ -9,7 +9,6 @@
     <form action="{{ route('admin.rute-wisata.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
         
-        @if(Auth::user()->role === 'admin')
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Komunitas (Opsional)</label>
             <select name="komunitas_id" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
@@ -19,7 +18,6 @@
                 @endforeach
             </select>
         </div>
-        @endif
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Nama Destinasi / Rute <span class="text-red-500">*</span></label>

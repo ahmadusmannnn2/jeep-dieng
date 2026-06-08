@@ -10,7 +10,6 @@
         @csrf
         @method('PUT')
         
-        @if(Auth::user()->role === 'admin')
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Komunitas</label>
             <select name="komunitas_id" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
@@ -20,7 +19,6 @@
                 @endforeach
             </select>
         </div>
-        @endif
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Nama Paket <span class="text-red-500">*</span></label>

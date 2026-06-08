@@ -18,7 +18,6 @@
         <div class="flex-1">
             <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
         </div>
-        @if(Auth::user()->role === 'admin')
         <div class="w-full md:w-64">
             <select name="komunitas_id" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
                 <option value="">Semua Komunitas</option>
@@ -27,7 +26,6 @@
                 @endforeach
             </select>
         </div>
-        @endif
         <div class="flex gap-2">
             <button type="submit" class="px-5 py-2.5 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition shadow-lg">Filter</button>
             <a href="{{ route('admin.jadwal.index') }}" class="px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition">Reset</a>
@@ -42,9 +40,7 @@
                 <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     <th class="px-6 py-4">Tanggal</th>
                     <th class="px-6 py-4">Jam Keberangkatan</th>
-                    @if(Auth::user()->role === 'admin')
-                        <th class="px-6 py-4">Komunitas</th>
-                    @endif
+                    <th class="px-6 py-4">Komunitas</th>
                     <th class="px-6 py-4 text-center">Aksi</th>
                 </tr>
             </thead>
@@ -53,9 +49,7 @@
                 <tr class="hover:bg-gray-50 transition">
                     <td class="px-6 py-4 font-bold text-gray-800">{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('l, d F Y') }}</td>
                     <td class="px-6 py-4 text-emerald-600 font-bold">{{ \Carbon\Carbon::parse($item->jam)->format('H:i') }} WIB</td>
-                    @if(Auth::user()->role === 'admin')
-                        <td class="px-6 py-4 text-gray-600">{{ $item->komunitas->nama_komunitas ?? '-' }}</td>
-                    @endif
+                    <td class="px-6 py-4 text-gray-600">{{ $item->komunitas->nama_komunitas ?? '-' }}</td>
                     <td class="px-6 py-4 flex justify-center gap-3">
                         <a href="{{ route('admin.jadwal.edit', $item->id) }}" class="text-amber-500 hover:text-amber-600 font-medium">Edit</a>
                         <form action="{{ route('admin.jadwal.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')">

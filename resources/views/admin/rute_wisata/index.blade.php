@@ -18,7 +18,6 @@
         <div class="flex-1">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama rute..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
         </div>
-        @if(Auth::user()->role === 'admin')
         <div class="w-full md:w-64">
             <select name="komunitas_id" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
                 <option value="">Semua Komunitas</option>
@@ -27,7 +26,6 @@
                 @endforeach
             </select>
         </div>
-        @endif
         <div class="flex gap-2">
             <button type="submit" class="px-5 py-2.5 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition shadow-lg">Filter</button>
             <a href="{{ route('admin.rute-wisata.index') }}" class="px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition">Reset</a>

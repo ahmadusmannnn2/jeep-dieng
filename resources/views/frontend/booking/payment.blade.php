@@ -18,30 +18,14 @@
                 <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100">
                     <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
                         <span class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm">1</span>
-                        Transfer ke Rekening Berikut
+                        Metode Pembayaran
                     </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="border border-gray-200 rounded-2xl p-5 flex items-center gap-4 hover:border-emerald-500 transition cursor-default">
-                            <div class="w-16 h-12 bg-gray-100 rounded-lg flex items-center justify-center font-black text-blue-800 text-xl tracking-wider">BCA</div>
-                            <div>
-                                <p class="text-xs text-gray-500 font-bold uppercase mb-0.5">A.n. Pengelola Jeep Dieng</p>
-                                <p class="text-lg font-black text-gray-900 tracking-widest">8910 234 567</p>
-                            </div>
+                    <div class="p-5 border border-emerald-200 bg-emerald-50 rounded-2xl flex items-center gap-4">
+                        <div class="w-16 h-12 bg-white rounded-lg flex items-center justify-center font-black text-emerald-600 text-sm tracking-wider shadow-sm border border-emerald-100">PAY</div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase mb-0.5">Sistem Pembayaran Otomatis</p>
+                            <p class="text-sm font-medium text-gray-800">Pembayaran akan diproses secara aman melalui *Payment Gateway*. Anda dapat memilih berbagai metode seperti Transfer Bank (Virtual Account), E-Wallet, atau Kartu Kredit di halaman selanjutnya.</p>
                         </div>
-
-                        <div class="border border-gray-200 rounded-2xl p-5 flex items-center gap-4 hover:border-emerald-500 transition cursor-default">
-                            <div class="w-16 h-12 bg-gray-100 rounded-lg flex items-center justify-center font-black text-amber-500 text-xl tracking-wider">MDR</div>
-                            <div>
-                                <p class="text-xs text-gray-500 font-bold uppercase mb-0.5">A.n. Pengelola Jeep Dieng</p>
-                                <p class="text-lg font-black text-gray-900 tracking-widest">1370 012 345</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-6 p-4 bg-amber-50 border border-amber-100 rounded-xl flex gap-3 text-amber-700 text-sm font-medium">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <p>Lakukan pembayaran sesuai nominal total di sebelah kanan. Pastikan Anda menyimpan resi/bukti transfer untuk diunggah pada form di bawah.</p>
                     </div>
                 </div>
 
@@ -85,36 +69,8 @@
                                 </div>
                             @endif
 
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Metode Pembayaran (Bank Pengirim)</label>
-                                <select name="metode_pembayaran" required class="w-full px-4 py-3.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 font-bold text-gray-900 bg-white">
-                                    <option value="" disabled selected>-- Pilih Bank Anda --</option>
-                                    <option value="BCA">Transfer Bank BCA</option>
-                                    <option value="Mandiri">Transfer Bank Mandiri</option>
-                                    <option value="BRI">Transfer Bank BRI</option>
-                                    <option value="BNI">Transfer Bank BNI</option>
-                                    <option value="E-Wallet">E-Wallet (Gopay/Ovo/Dana)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Unggah Bukti Transfer <span class="text-red-500">*</span></label>
-                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-2xl bg-gray-50 hover:bg-gray-100 transition relative">
-                                    <div class="space-y-2 text-center">
-                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                                        <div class="flex text-sm text-gray-600 justify-center">
-                                            <label class="relative cursor-pointer bg-white rounded-md font-bold text-emerald-600 hover:text-emerald-500 px-2 py-0.5">
-                                                <span>Pilih File Gambar</span>
-                                                <input type="file" name="bukti_pembayaran" required accept="image/*" class="sr-only">
-                                            </label>
-                                        </div>
-                                        <p class="text-xs text-gray-500">PNG, JPG, JPEG maks. 2MB</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="w-full py-4 bg-emerald-500 text-white text-lg font-extrabold rounded-2xl hover:bg-emerald-600 transition shadow-[0_8px_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 transform hover:-translate-y-1">
-                                Kirim Bukti Pembayaran
+                            <button type="button" class="w-full py-4 bg-emerald-500 text-white text-lg font-extrabold rounded-2xl hover:bg-emerald-600 transition shadow-[0_8px_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 transform hover:-translate-y-1">
+                                Lanjutkan ke Pembayaran (Midtrans)
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             </button>
                         </div>

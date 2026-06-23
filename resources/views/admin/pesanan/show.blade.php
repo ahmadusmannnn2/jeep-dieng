@@ -79,12 +79,22 @@
                             <div class="absolute -top-6 left-0 right-0 border-t border-dashed border-gray-200"></div>
                         @endif
                         <div class="w-full md:w-1/2">
-                            <a href="{{ asset('storage/' . $bayar->bukti_bayar) }}" target="_blank" class="block border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-emerald-500 transition relative group">
-                                <img src="{{ asset('storage/' . $bayar->bukti_bayar) }}" alt="Bukti Bayar" class="w-full h-auto max-h-64 object-cover">
-                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                                    <span class="text-white font-bold text-sm">Klik untuk Perbesar</span>
+                            @if($bayar->bukti_bayar && $bayar->bukti_bayar !== 'midtrans')
+                                <a href="{{ asset('storage/' . $bayar->bukti_bayar) }}" target="_blank" class="block border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-emerald-500 transition relative group">
+                                    <img src="{{ asset('storage/' . $bayar->bukti_bayar) }}" alt="Bukti Bayar" class="w-full h-auto max-h-64 object-cover">
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                        <span class="text-white font-bold text-sm">Klik untuk Perbesar</span>
+                                    </div>
+                                </a>
+                            @else
+                                <div class="block border-2 border-emerald-100 bg-emerald-50 rounded-2xl p-8 text-center flex flex-col items-center justify-center h-full min-h-[160px]">
+                                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-3 text-emerald-500 border border-emerald-100">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    </div>
+                                    <p class="text-emerald-800 font-bold">Pembayaran Otomatis</p>
+                                    <p class="text-xs text-emerald-600 mt-1">Diverifikasi oleh Payment Gateway</p>
                                 </div>
-                            </a>
+                            @endif
                         </div>
                         <div class="w-full md:w-1/2 space-y-4 text-sm">
                             <div class="flex items-center gap-3">
@@ -106,7 +116,7 @@
             @else
                 <div class="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
                     <svg class="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <p class="text-gray-500 font-medium">Pelanggan belum mengunggah bukti pembayaran manual.</p>
+                    <p class="text-gray-500 font-medium">Belum ada pembayaran masuk.</p>
                 </div>
             @endif
         </div>

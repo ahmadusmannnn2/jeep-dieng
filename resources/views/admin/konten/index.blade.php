@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+﻿@extends('admin.layouts.app')
 
 @section('title', 'Konten Informasi - Jeep Dieng')
 @section('header_title', 'Info & Promo Wisata')
@@ -31,7 +31,7 @@
         @if($item->gambar)
             <img src="{{ asset('storage/' . $item->gambar) }}" alt="Thumbnail" class="w-full h-48 object-cover">
         @else
-            <div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400">Tidak ada gambar</div>
+            <img src="{{ asset('images/placeholder-promo.svg') }}" alt="Placeholder" class="w-full h-48 object-cover">
         @endif
         
         <div class="p-6 flex-1 flex flex-col">

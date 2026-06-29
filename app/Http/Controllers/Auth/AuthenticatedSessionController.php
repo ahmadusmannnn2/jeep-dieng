@@ -34,9 +34,12 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(route('admin.dashboard', absolute: false));
         }
 
-        // FUNGSI INI AKAN OTOMATIS MEMBAWA USER KE FORM BOOKING 
-        // JIKA SEBELUMNYA DIA KLIK "PESAN SEKARANG", 
-        // ATAU KE "HOME" JIKA DIA HANYA KLIK TOMBOL "LOGIN" BIASA.
+        // Pengelola hanya perlu melihat pesanan komunitasnya
+        if ($role === 'pengelola') {
+            return redirect()->intended(route('admin.pesanan.index', absolute: false));
+        }
+
+        // Customer: bawa ke booking jika sebelumnya klik "Pesan Sekarang", atau ke Home
         return redirect()->intended(route('home', absolute: false));
     }
 

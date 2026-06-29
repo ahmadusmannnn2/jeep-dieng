@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // RUTE KHUSUS ADMIN
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin,pengelola'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('komunitas', \App\Http\Controllers\Admin\KomunitasController::class)->parameters([
@@ -94,5 +94,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 
 });
+
+// --- RUTE MIDTRANS ---
+// Webhook notifikasi dari Midtrans server (tanpa auth, diverifikasi via signature)
+Route::post('/midtrans/notification', [\App\Http\Controllers\MidtransController::class, 'notification'])->name('midtrans.notification');
+// Callback setelah user selesai di Snap
+Route::get('/midtrans/finish',   [\App\Http\Controllers\MidtransController::class, 'finish'])->name('midtrans.finish');
+Route::get('/midtrans/unfinish', [\App\Http\Controllers\MidtransController::class, 'unfinish'])->name('midtrans.unfinish');
+Route::get('/midtrans/error',    [\App\Http\Controllers\MidtransController::class, 'error'])->name('midtrans.error');
 
 require __DIR__ . '/auth.php';

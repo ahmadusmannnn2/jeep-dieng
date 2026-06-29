@@ -15,8 +15,13 @@ class SupirController extends Controller
         $user = Auth::user();
         $query = Supir::query();
 
-        if ($request->filled('komunitas_id')) {
-            $query->where('komunitas_id', $request->komunitas_id);
+        // GEMBOK MULTI-TENANT
+        if ($user->role === 'pengelola') {
+            $query->where('komunitas_id', $user->komunitas_id);
+        } else {
+            if ($request->filled('komunitas_id')) {
+                $query->where('komunitas_id', $request->komunitas_id);
+            }
         }
 
         if ($request->filled('search')) {
@@ -39,7 +44,12 @@ class SupirController extends Controller
 
     public function create()
     {
-        $komunitas = Komunitas::all();
+        $user = Auth::user();
+        // Pengelola hanya melihat komunitasnya sendiri di dropdown
+        $komunitas = $user->role === 'pengelola' 
+            ? Komunitas::where('id', $user->komunitas_id)->get() 
+            : Komunitas::all();
+
         return view('admin.supir.create', compact('komunitas'));
     }
 
@@ -54,7 +64,10 @@ class SupirController extends Controller
 
         $data = $request->except(['_token', '_method']);
         
-
+        // Proteksi: Paksa komunitas_id menjadi milik pengelola
+        if (Auth::user()->role === 'pengelola') {
+            $data['komunitas_id'] = Auth::user()->komunitas_id;
+        }
 
         Supir::create($data);
         return redirect()->route('admin.supir.index')->with('success', 'Data supir berhasil ditambahkan!');
@@ -62,12 +75,24 @@ class SupirController extends Controller
 
     public function edit(Supir $supir)
     {
-        $komunitas = Komunitas::all();
+        $user = Auth::user();
+        if ($user->role === 'pengelola' && $supir->komunitas_id !== $user->komunitas_id) {
+            abort(403, 'Akses Ditolak.');
+        }
+
+        $komunitas = $user->role === 'pengelola' 
+            ? Komunitas::where('id', $user->komunitas_id)->get() 
+            : Komunitas::all();
+
         return view('admin.supir.edit', compact('supir', 'komunitas'));
     }
 
     public function update(Request $request, Supir $supir)
     {
+        if (Auth::user()->role === 'pengelola' && $supir->komunitas_id !== Auth::user()->komunitas_id) {
+            abort(403, 'Akses Ditolak.');
+        }
+
         $request->validate([
             'nama_supir' => 'required|string|max:255',
             'no_hp' => 'nullable|string|max:15',
@@ -76,7 +101,10 @@ class SupirController extends Controller
         ]);
 
         $data = $request->except(['_token', '_method']);
-
+        
+        if (Auth::user()->role === 'pengelola') {
+            $data['komunitas_id'] = Auth::user()->komunitas_id;
+        }
 
         $supir->update($data);
         return redirect()->route('admin.supir.index')->with('success', 'Data supir berhasil diperbarui!');
@@ -84,6 +112,10 @@ class SupirController extends Controller
 
     public function destroy(Supir $supir)
     {
+        if (Auth::user()->role === 'pengelola' && $supir->komunitas_id !== Auth::user()->komunitas_id) {
+            abort(403, 'Akses Ditolak.');
+        }
+
         $supir->delete();
         return redirect()->route('admin.supir.index')->with('success', 'Data supir berhasil dihapus!');
     }

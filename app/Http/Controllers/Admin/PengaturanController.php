@@ -13,7 +13,7 @@ class PengaturanController extends Controller
     {
         $pengaturan = Pengaturan::firstOrCreate(['id' => 1], [
             'nama_website' => 'JEEP DIENG',
-            'no_telp' => '0812-3456-7890',
+            'no_telp' => '',
             'email' => 'support@jeepdieng.com',
             'alamat' => 'Wonosobo, Jawa Tengah',
             'deskripsi_footer' => 'Platform penyewaan Jeep resmi dan terpercaya di Dataran Tinggi Dieng. Menghubungkan Anda dengan komunitas Jeep lokal untuk pengalaman wisata tak terlupakan.',
@@ -44,7 +44,7 @@ class PengaturanController extends Controller
             'gallery_videos.*'    => 'nullable|mimes:mp4,webm,mov,avi|max:51200', // Max 50MB per video
         ]);
 
-        $pengaturan = Pengaturan::first();
+        $pengaturan = Pengaturan::firstOrCreate(['id' => 1]);
         // Kecualikan semua input file, kita proses terpisah
         $data = $request->except(['hero_images', 'gallery_images', 'gallery_videos']);
 

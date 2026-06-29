@@ -15,11 +15,15 @@ class JeepController extends Controller
         $user = Auth::user();
         $query = Jeep::query();
 
-        if ($request->filled('komunitas_id')) {
-            $query->where('komunitas_id', $request->komunitas_id);
+        // GEMBOK MULTI-TENANT
+        if ($user->role === 'pengelola') {
+            $query->where('komunitas_id', $user->komunitas_id);
+        } else {
+            if ($request->filled('komunitas_id')) {
+                $query->where('komunitas_id', $request->komunitas_id);
+            }
         }
 
-        // Pencarian
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -28,7 +32,6 @@ class JeepController extends Controller
             });
         }
 
-        // Filter Status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -41,7 +44,11 @@ class JeepController extends Controller
 
     public function create()
     {
-        $komunitas = Komunitas::all();
+        $user = Auth::user();
+        $komunitas = $user->role === 'pengelola' 
+            ? Komunitas::where('id', $user->komunitas_id)->get() 
+            : Komunitas::all();
+
         return view('admin.jeep.create', compact('komunitas'));
     }
 
@@ -55,9 +62,11 @@ class JeepController extends Controller
             'komunitas_id' => 'required|exists:komunitas,id'
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['_token', '_method']);
         
-
+        if (Auth::user()->role === 'pengelola') {
+            $data['komunitas_id'] = Auth::user()->komunitas_id;
+        }
 
         Jeep::create($data);
         return redirect()->route('admin.jeep.index')->with('success', 'Armada Jeep berhasil ditambahkan!');
@@ -65,12 +74,24 @@ class JeepController extends Controller
 
     public function edit(Jeep $jeep)
     {
-        $komunitas = Komunitas::all();
+        $user = Auth::user();
+        if ($user->role === 'pengelola' && $jeep->komunitas_id !== $user->komunitas_id) {
+            abort(403, 'Akses Ditolak.');
+        }
+
+        $komunitas = $user->role === 'pengelola' 
+            ? Komunitas::where('id', $user->komunitas_id)->get() 
+            : Komunitas::all();
+
         return view('admin.jeep.edit', compact('jeep', 'komunitas'));
     }
 
     public function update(Request $request, Jeep $jeep)
     {
+        if (Auth::user()->role === 'pengelola' && $jeep->komunitas_id !== Auth::user()->komunitas_id) {
+            abort(403, 'Akses Ditolak.');
+        }
+
         $request->validate([
             'nama_jeep' => 'required|string|max:255',
             'nomor_polisi' => 'required|string|max:20|unique:jeep,nomor_polisi,' . $jeep->id,
@@ -79,8 +100,11 @@ class JeepController extends Controller
             'komunitas_id' => 'required|exists:komunitas,id'
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['_token', '_method']);
 
+        if (Auth::user()->role === 'pengelola') {
+            $data['komunitas_id'] = Auth::user()->komunitas_id;
+        }
 
         $jeep->update($data);
         return redirect()->route('admin.jeep.index')->with('success', 'Data Jeep berhasil diperbarui!');
@@ -88,6 +112,10 @@ class JeepController extends Controller
 
     public function destroy(Jeep $jeep)
     {
+        if (Auth::user()->role === 'pengelola' && $jeep->komunitas_id !== Auth::user()->komunitas_id) {
+            abort(403, 'Akses Ditolak.');
+        }
+
         $jeep->delete();
         return redirect()->route('admin.jeep.index')->with('success', 'Armada Jeep berhasil dihapus!');
     }

@@ -6,7 +6,7 @@
 
 {{-- Default cover image jika paket tidak punya gambar --}}
 @php
-    $defaultCover = 'https://images.unsplash.com/photo-1533692328991-08159ff19fca?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+    $defaultCover = asset('images/placeholder-landscape.svg');
 @endphp
 
 <section class="bg-gray-50 min-h-screen">

@@ -66,8 +66,13 @@
                 <td class="font-bold" style="color: #10b981;">{{ \Carbon\Carbon::parse($item->tanggal_jadwal)->format('d/m/Y') }}</td>
                 <td>{{ $item->user->name }}</td>
                 <td>
-                    {{ $item->jeep->nama_jeep ?? '-' }}<br>
-                    <small style="color:#666;">Driver: {{ $item->supir->nama_supir ?? '-' }}</small>
+                    @forelse($item->armadas as $armada)
+                        {{ $armada->jeep->nama_jeep ?? '-' }}<br>
+                        <small style="color:#666;">Driver: {{ $armada->supir->nama_supir ?? '-' }}</small>
+                        @if(!$loop->last)<hr style="margin:4px 0; border-color:#ddd;">@endif
+                    @empty
+                        <span style="color:#999;">-</span>
+                    @endforelse
                 </td>
                 <td>{{ $item->paketWisata->nama_paket ?? 'Paket Terhapus' }}</td>
                 <td class="text-right font-bold">

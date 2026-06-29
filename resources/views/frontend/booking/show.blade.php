@@ -49,22 +49,22 @@
 
             <div class="grid grid-cols-2 gap-y-6 gap-x-4 text-sm border-t border-gray-100 pt-6 mt-6">
                 <div>
-                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Nama Penumpang</p>
+                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Nama Pemesan</p>
                     <p class="font-extrabold text-gray-800 text-base">{{ $pesanan->user->name }}</p>
                 </div>
                 <div>
-                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Kode Reservasi</p>
-                    <p class="font-extrabold text-gray-900 text-base tracking-wider">#BKG-{{ str_pad($pesanan->id, 5, '0', STR_PAD_LEFT) }}</p>
+                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Tipe Trip</p>
+                    <p class="font-extrabold text-emerald-600 text-base tracking-wider">{{ $pesanan->tipe_trip ?? 'Private' }}</p>
                 </div>
                 <div>
                     <p class="text-gray-400 text-xs font-bold uppercase mb-1">Tanggal Tour</p>
-                    <p class="font-bold text-emerald-600 text-base">
+                    <p class="font-bold text-gray-800 text-base">
                         {{ \Carbon\Carbon::parse($pesanan->tanggal_jadwal)->translatedFormat('l, d F Y') }}
                     </p>
                 </div>
                 <div>
-                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Jumlah Peserta</p>
-                    <p class="font-bold text-gray-800 text-base">{{ $pesanan->jumlah_pengunjung }} Orang <span class="text-xs text-gray-400 font-normal">(1 Armada)</span></p>
+                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Peserta & Armada</p>
+                    <p class="font-bold text-gray-800 text-base">{{ $pesanan->jumlah_pengunjung }} Orang <span class="text-xs text-gray-400 font-normal">({{ $pesanan->jumlah_jeep }} Jeep)</span></p>
                 </div>
             </div>
 
@@ -87,19 +87,26 @@
             </div>
 
             <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100 mt-6">
-                <h4 class="font-black text-gray-900 text-sm mb-3 uppercase tracking-wider text-emerald-500">Informasi Armada & Driver</h4>
-                @if($pesanan->jeep_id && $pesanan->supir_id)
-                    <div class="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                            <p class="text-gray-400 text-xs font-bold mb-0.5">Kendaran Jeep</p>
-                            <p class="font-bold text-gray-800">{{ $pesanan->jeep->nama_jeep }}</p>
-                            <p class="text-xs font-black text-gray-900 mt-1 px-2 py-0.5 bg-gray-200 inline-block rounded">{{ $pesanan->jeep->nomor_polisi }}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-400 text-xs font-bold mb-0.5">Nama Supir (Driver)</p>
-                            <p class="font-bold text-gray-800 mb-1">{{ $pesanan->supir->nama_supir }}</p>
-                            <p class="text-xs font-medium text-gray-500">Kapasitas Maks: {{ $pesanan->jeep->kapasitas }} Orang</p>
-                        </div>
+                <h4 class="font-black text-gray-900 text-sm mb-4 uppercase tracking-wider text-emerald-500">Informasi Armada & Driver</h4>
+                @if(isset($pesanan->armadas) && $pesanan->armadas->count() > 0)
+                    <div class="space-y-4">
+                        @foreach($pesanan->armadas as $index => $armada)
+                            <div class="p-3 bg-white border border-gray-200 rounded-xl">
+                                <span class="text-[10px] font-black uppercase text-emerald-600 tracking-wider mb-2 block">Armada {{ $index + 1 }}</span>
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-400 text-xs font-bold mb-0.5">Kendaraan Jeep</p>
+                                        <p class="font-bold text-gray-800">{{ $armada->jeep->nama_jeep ?? 'Data Dihapus' }}</p>
+                                        <p class="text-xs font-black text-gray-900 mt-1 px-2 py-0.5 bg-gray-200 inline-block rounded">{{ $armada->jeep->nomor_polisi ?? '-' }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-400 text-xs font-bold mb-0.5">Nama Supir</p>
+                                        <p class="font-bold text-gray-800 mb-1">{{ $armada->supir->nama_supir ?? 'Data Dihapus' }}</p>
+                                        <p class="text-xs font-medium text-gray-500">No. HP: {{ $armada->supir->no_hp ?? '-' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 @else
                     <p class="text-sm text-gray-500 italic flex items-center gap-2">
@@ -117,7 +124,12 @@
                         <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-5 flex flex-col md:flex-row justify-between md:items-center gap-4">
                             <div>
                                 <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black rounded uppercase tracking-wider mb-2 inline-block">{{ $bayar->jenis_pembayaran }}</span>
-                                <p class="font-bold text-gray-900">{{ $bayar->metode_pembayaran }}</p>
+                                <p class="font-bold text-gray-900">
+                                    {{ $bayar->metode_pembayaran }}
+                                    @if($bayar->payment_channel)
+                                        <span class="text-xs font-semibold text-gray-500">({{ strtoupper($bayar->payment_channel) }})</span>
+                                    @endif
+                                </p>
                                 <p class="text-xs text-gray-500 font-medium">{{ $bayar->created_at->translatedFormat('d F Y - H:i') }}</p>
                             </div>
                             <div class="md:text-right">
@@ -140,9 +152,9 @@
             <div class="hidden md:block absolute bottom-[-12px] left-[-12px] w-6 h-6 bg-gray-50 rounded-full"></div>
 
             <div class="w-full">
-                <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Total Biaya Trip</p>
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Total Tagihan Trip</p>
                 <h4 class="text-3xl font-black text-emerald-400">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</h4>
-                <p class="text-[10px] text-gray-400 mt-1">*Tarif flat sewa 1 kendaraan Jeep (Maks. 6 orang)</p>
+                <p class="text-[10px] text-gray-400 mt-1">*Tarif Rp {{ number_format($pesanan->paketWisata->harga, 0, ',', '.') }} / Jeep ({{ $pesanan->jumlah_jeep }} Kendaraan)</p>
             </div>
 
             <div class="my-8 p-4 bg-white rounded-2xl inline-block shadow-lg shadow-emerald-500/5">

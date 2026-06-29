@@ -1,4 +1,4 @@
-@extends('frontend.layouts.app')
+﻿@extends('frontend.layouts.app')
 
 @section('title', $paketWisata->nama_paket . ' - ' . ($pengaturan_website->nama_website ?? 'Jeep Dieng'))
 
@@ -6,16 +6,16 @@
 
 @php
     // Menggunakan gambar paket jika ada, jika tidak gunakan placeholder
-    $mainImage = $paketWisata->gambar ? asset('storage/' . $paketWisata->gambar) : 'https://images.unsplash.com/photo-1533692328991-08159ff19fca?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
+    $mainImage = $paketWisata->gambar ? asset('storage/' . $paketWisata->gambar) : asset('images/placeholder-landscape.svg');
     
     // Mengambil gambar galeri website sebagai thumbnail "suasana"
     $thumbnails = (isset($pengaturan_website) && !empty($pengaturan_website->gallery_images)) 
         ? array_slice(array_map(function($img) { return asset('storage/' . $img); }, $pengaturan_website->gallery_images), 0, 4)
         : [
-            'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=400&q=80',
-            'https://images.unsplash.com/photo-1535492984851-bc015f3e2ff5?w=400&q=80',
-            'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?w=400&q=80',
-            'https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?w=400&q=80'
+            asset('images/placeholder-square.svg'),
+            asset('images/placeholder-square.svg'),
+            asset('images/placeholder-square.svg'),
+            asset('images/placeholder-square.svg')
         ];
 @endphp
 

@@ -43,7 +43,7 @@
                     <th class="px-6 py-4">Kode Booking</th>
                     <th class="px-6 py-4">Customer</th>
                     <th class="px-6 py-4">Paket & Jadwal</th>
-                    <th class="px-6 py-4">Penyedia / Komunitas</th>
+                    <th class="px-6 py-4">Armada Ditugaskan</th>
                     <th class="px-6 py-4">Status</th>
                     <th class="px-6 py-4 text-center">Aksi</th>
                 </tr>
@@ -63,11 +63,17 @@
                         </p>
                     </td>
                     <td class="px-6 py-4">
+                        @if($item->armadas->count() > 0)
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                                {{ $item->komunitas->nama_komunitas ?? '-' }}
+                                {{ $item->armadas->count() }} Jeep ({{ $item->komunitas->nama_komunitas ?? '-' }})
                             </span>
-                        </td>
+                        @else
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 font-bold text-xs border border-red-200">
+                                Belum ada Jeep
+                            </span>
+                        @endif
+                    </td>
                     <td class="px-6 py-4">
                         @if($item->status === 'Pending')
                             <span class="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold border border-amber-200">Menunggu Pembayaran</span>
@@ -85,8 +91,9 @@
                             <span class="block mt-1 text-[10px] text-emerald-600 font-bold animate-pulse">Menunggu Validasi!</span>
                         @endif
                     </td>
-                    <td class="px-6 py-4 flex justify-center">
-                        <a href="{{ route('admin.pesanan.show', $item->id) }}" class="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-emerald-500 transition shadow-md">Kelola</a>
+                    <td class="px-6 py-4 flex justify-center gap-2">
+                        <a href="{{ route('admin.pesanan.show', $item->id) }}" class="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition shadow-md">Detail</a>
+                        <a href="{{ route('admin.pesanan.edit', $item->id) }}" class="px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-xl hover:bg-emerald-600 transition shadow-md">Kelola</a>
                     </td>
                 </tr>
                 @empty

@@ -12,7 +12,10 @@
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
             <div class="flex justify-between items-start border-b border-gray-100 pb-4 mb-4">
                 <div>
-                    <h3 class="text-xl font-black text-gray-900">#BKG-{{ str_pad($pesanan->id, 5, '0', STR_PAD_LEFT) }}</h3>
+                    <div class="flex items-center gap-3 mb-1">
+                        <h3 class="text-xl font-black text-gray-900">#BKG-{{ str_pad($pesanan->id, 5, '0', STR_PAD_LEFT) }}</h3>
+                        <span class="px-2.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] font-bold rounded-lg uppercase tracking-wider">{{ $pesanan->tipe_trip ?? 'Private' }}</span>
+                    </div>
                     <p class="text-sm text-gray-500 mt-1">Dibuat pada: {{ $pesanan->created_at->translatedFormat('d M Y H:i') }}</p>
                 </div>
                 <div class="text-right">
@@ -50,8 +53,8 @@
                     <p class="font-bold text-emerald-600">{{ \Carbon\Carbon::parse($pesanan->tanggal_jadwal)->translatedFormat('l, d F Y') }}</p>
                 </div>
                 <div>
-                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Jumlah</p>
-                    <p class="font-bold text-gray-800">{{ $pesanan->jumlah_pengunjung }} Orang</p>
+                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Kapasitas</p>
+                    <p class="font-bold text-gray-800">{{ $pesanan->jumlah_pengunjung }} Orang ({{ $pesanan->jumlah_jeep ?? 1 }} Jeep)</p>
                 </div>
             </div>
 
@@ -69,6 +72,28 @@
         </div>
 
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+            <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-4 mb-4">Daftar Penugasan Armada</h3>
+            
+            <div class="space-y-4">
+                @forelse($pesanan->armadas as $index => $armada)
+                    <div class="flex items-center gap-4 p-4 border border-gray-100 rounded-2xl bg-gray-50">
+                        <div class="w-10 h-10 bg-gray-900 text-white rounded-xl flex items-center justify-center font-black">
+                            #{{ $index + 1 }}
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900">{{ $armada->jeep->nama_jeep ?? 'Jeep Belum Dipilih' }} <span class="text-sm font-normal text-gray-500">({{ $armada->jeep->nomor_polisi ?? '-' }})</span></p>
+                            <p class="text-sm text-gray-600">Supir: <span class="font-medium">{{ $armada->supir->nama_supir ?? 'Belum Ditugaskan' }}</span></p>
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-6 bg-amber-50 rounded-2xl border border-dashed border-amber-200">
+                        <p class="text-amber-700 font-medium text-sm">Belum ada armada yang ditugaskan untuk pesanan ini.</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
             <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-4 mb-4">Histori Pembayaran</h3>
             
             @if($pesanan->pembayarans && $pesanan->pembayarans->count() > 0)
@@ -79,31 +104,51 @@
                             <div class="absolute -top-6 left-0 right-0 border-t border-dashed border-gray-200"></div>
                         @endif
                         <div class="w-full md:w-1/2">
-                            @if($bayar->bukti_bayar && $bayar->bukti_bayar !== 'midtrans')
-                                <a href="{{ asset('storage/' . $bayar->bukti_bayar) }}" target="_blank" class="block border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-emerald-500 transition relative group">
+                            @if($bayar->bukti_bayar)
+                                <a href="{{ asset('storage/' . $bayar->bukti_bayar) }}" target="_blank" class="block border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-emerald-500 transition relative group shadow-sm">
                                     <img src="{{ asset('storage/' . $bayar->bukti_bayar) }}" alt="Bukti Bayar" class="w-full h-auto max-h-64 object-cover">
                                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                                         <span class="text-white font-bold text-sm">Klik untuk Perbesar</span>
                                     </div>
                                 </a>
                             @else
-                                <div class="block border-2 border-emerald-100 bg-emerald-50 rounded-2xl p-8 text-center flex flex-col items-center justify-center h-full min-h-[160px]">
-                                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-3 text-emerald-500 border border-emerald-100">
-                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div class="bg-gradient-to-br from-gray-900 to-slate-800 rounded-2xl p-6 text-white shadow-md relative overflow-hidden h-full flex flex-col justify-between">
+                                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
+                                    <div>
+                                        <div class="flex justify-between items-center mb-4">
+                                            <span class="text-[10px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">MIDTRANS</span>
+                                            <span class="text-xs text-gray-400 font-medium">Auto-Payment Gateway</span>
+                                        </div>
+                                        <p class="text-xs text-gray-400 font-bold uppercase">Order ID</p>
+                                        <p class="font-mono text-sm font-semibold text-emerald-400 mb-3">{{ $bayar->midtrans_order_id ?? '-' }}</p>
                                     </div>
-                                    <p class="text-emerald-800 font-bold">Pembayaran Otomatis</p>
-                                    <p class="text-xs text-emerald-600 mt-1">Diverifikasi oleh Payment Gateway</p>
+                                    <div class="flex items-center gap-2 border-t border-gray-700/50 pt-3 text-xs text-gray-300">
+                                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                        <span>Terverifikasi Sistem</span>
+                                    </div>
                                 </div>
                             @endif
                         </div>
-                        <div class="w-full md:w-1/2 space-y-4 text-sm">
+                        <div class="w-full md:w-1/2 space-y-3.5 text-sm">
                             <div class="flex items-center gap-3">
                                 <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full uppercase tracking-wider">{{ $bayar->jenis_pembayaran }}</span>
                                 <span class="text-gray-500 text-xs">{{ $bayar->created_at->translatedFormat('d M Y H:i') }}</span>
                             </div>
                             <div>
-                                <p class="text-gray-400 text-xs font-bold uppercase">Bank Pengirim</p>
-                                <p class="font-black text-gray-900 text-lg">{{ $bayar->metode_pembayaran }}</p>
+                                <p class="text-gray-400 text-xs font-bold uppercase">Metode / Saluran</p>
+                                <p class="font-black text-gray-900 text-lg">
+                                    {{ $bayar->metode_pembayaran }} 
+                                    @if($bayar->payment_channel)
+                                        <span class="text-sm font-medium text-gray-500">({{ strtoupper($bayar->payment_channel) }})</span>
+                                    @endif
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-xs font-bold uppercase font-bold">Status Verifikasi</p>
+                                <span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-md
+                                    {{ $bayar->status === 'Valid' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-100' }}">
+                                    {{ $bayar->status }}
+                                </span>
                             </div>
                             <div>
                                 <p class="text-gray-400 text-xs font-bold uppercase">Nominal Dibayar</p>
@@ -116,7 +161,7 @@
             @else
                 <div class="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
                     <svg class="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <p class="text-gray-500 font-medium">Belum ada pembayaran masuk.</p>
+                    <p class="text-gray-500 font-medium">Belum ada riwayat pembayaran yang tercatat.</p>
                 </div>
             @endif
         </div>
@@ -133,6 +178,7 @@
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Ubah Status</label>
                 <select name="status" class="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800 text-white font-bold focus:ring-2 focus:ring-emerald-500">
                     <option value="Pending" {{ $pesanan->status === 'Pending' ? 'selected' : '' }}>Menunggu Pembayaran</option>
+                    <option value="Disetujui" {{ $pesanan->status === 'Disetujui' ? 'selected' : '' }}>Disetujui</option>
                     <option value="DP Lunas" {{ $pesanan->status === 'DP Lunas' ? 'selected' : '' }}>DP Lunas</option>
                     <option value="Lunas" {{ $pesanan->status === 'Lunas' ? 'selected' : '' }}>Lunas</option>
                     <option value="Selesai" {{ $pesanan->status === 'Selesai' ? 'selected' : '' }}>Selesai</option>
@@ -140,35 +186,45 @@
                 </select>
             </div>
 
-            <div class="mb-5">
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Pilih Kendaraan Jeep</label>
-                <select name="jeep_id" class="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800 text-white font-medium focus:ring-2 focus:ring-emerald-500">
-                    <option value="">-- Belum Ditentukan --</option>
-                    @foreach($jeeps as $jp)
-                        <option value="{{ $jp->id }}" {{ $pesanan->jeep_id == $jp->id ? 'selected' : '' }}>
-                            {{ $jp->nama_jeep }} ({{ $jp->nomor_polisi }})
-                        </option>
-                    @endforeach
-                </select>
+            <div class="space-y-4 mb-6">
+                @php
+                    $totalArmada = $pesanan->jumlah_jeep > 0 ? $pesanan->jumlah_jeep : 1;
+                @endphp
+                
+                @for ($i = 0; $i < $totalArmada; $i++)
+                    @php $armadaTerpilih = $pesanan->armadas[$i] ?? null; @endphp
+                    
+                    <div class="p-4 bg-gray-800 rounded-2xl border border-gray-700">
+                        <p class="text-[11px] font-black text-emerald-500 uppercase tracking-widest mb-3">Tugaskan Armada {{ $i + 1 }}</p>
+                        
+                        <div class="space-y-3">
+                            <select name="jeep_id[]" class="w-full px-3 py-2.5 rounded-lg border border-gray-700 bg-gray-900 text-white text-sm font-medium focus:ring-2 focus:ring-emerald-500">
+                                <option value="">-- Pilih Jeep --</option>
+                                @foreach($jeeps as $jp)
+                                    <option value="{{ $jp->id }}" {{ ($armadaTerpilih && $armadaTerpilih->jeep_id == $jp->id) ? 'selected' : '' }}>
+                                        {{ $jp->nama_jeep }} ({{ $jp->nomor_polisi }})
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <select name="supir_id[]" class="w-full px-3 py-2.5 rounded-lg border border-gray-700 bg-gray-900 text-white text-sm font-medium focus:ring-2 focus:ring-emerald-500">
+                                <option value="">-- Pilih Supir --</option>
+                                @foreach($supirs as $dr)
+                                    <option value="{{ $dr->id }}" {{ ($armadaTerpilih && $armadaTerpilih->supir_id == $dr->id) ? 'selected' : '' }}>
+                                        {{ $dr->nama_supir }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                @endfor
             </div>
 
-            <div class="mb-8">
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Pilih Supir (Driver)</label>
-                <select name="supir_id" class="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800 text-white font-medium focus:ring-2 focus:ring-emerald-500">
-                    <option value="">-- Belum Ditentukan --</option>
-                    @foreach($supirs as $dr)
-                        <option value="{{ $dr->id }}" {{ $pesanan->supir_id == $dr->id ? 'selected' : '' }}>
-                            {{ $dr->nama_supir }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <button type="submit" class="w-full py-4 bg-emerald-500 text-white text-base font-extrabold rounded-xl hover:bg-emerald-400 transition shadow-[0_4px_15px_rgba(16,185,129,0.3)]">
+            <button type="submit" class="w-full py-4 bg-emerald-500 text-white text-base font-extrabold rounded-xl hover:bg-emerald-400 transition shadow-[0_4px_15px_rgba(16,185,129,0.3)] mb-4">
                 Simpan & Validasi
             </button>
             
-            <p class="text-[10px] text-gray-500 text-center mt-4 mb-6">Jika diubah ke "Lunas" dan armada dipilih, E-Ticket pelanggan otomatis terbit beserta nama Supir.</p>
+            <p class="text-[10px] text-gray-500 text-center mb-6">Jika diubah ke "Lunas" dan armada dipilih, E-Ticket pelanggan otomatis terbit.</p>
 
             <hr class="border-gray-700 mb-6">
 
@@ -179,7 +235,8 @@
                           "Tgl Tour: " . \Carbon\Carbon::parse($pesanan->tanggal_jadwal)->translatedFormat('d M Y') . "\n" .
                           "Paket: " . ($pesanan->paketWisata->nama_paket ?? '-') . "\n" .
                           "Titik Jemput: " . $pesanan->titik_jemput . "\n" .
-                          "Jumlah: " . $pesanan->jumlah_pengunjung . " Orang\n" .
+                          "Total Peserta: " . $pesanan->jumlah_pengunjung . " Orang\n" .
+                          "Jumlah Jeep: " . ($pesanan->jumlah_jeep ?? 1) . " Armada\n" .
                           "Catatan: " . ($pesanan->catatan ?? '-') . "\n\n" .
                           "Mohon segera persiapkan armada Jeep. Terima kasih!";
                 $waLink = "https://api.whatsapp.com/send?text=" . urlencode($waText);

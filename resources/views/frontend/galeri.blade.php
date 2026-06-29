@@ -7,14 +7,14 @@
 @php
     // Fallback jika admin belum mengunggah foto galeri
     $defaultGallery = [
-        ['type' => 'image', 'src' => 'https://images.unsplash.com/photo-1533692328991-08159ff19fca?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-        ['type' => 'image', 'src' => 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-        ['type' => 'image', 'src' => 'https://images.unsplash.com/photo-1535492984851-bc015f3e2ff5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-        ['type' => 'image', 'src' => 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-        ['type' => 'image', 'src' => 'https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-        ['type' => 'image', 'src' => 'https://images.unsplash.com/photo-1520645521318-f06a70e20113?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-        ['type' => 'image', 'src' => 'https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-        ['type' => 'image', 'src' => 'https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
+        ['type' => 'image', 'src' => asset('images/placeholder-landscape.svg')],
+        ['type' => 'image', 'src' => asset('images/placeholder-square.svg')],
+        ['type' => 'image', 'src' => asset('images/placeholder-promo.svg')],
+        ['type' => 'image', 'src' => asset('images/placeholder-landscape.svg')],
+        ['type' => 'image', 'src' => asset('images/placeholder-square.svg')],
+        ['type' => 'image', 'src' => asset('images/placeholder-promo.svg')],
+        ['type' => 'image', 'src' => asset('images/placeholder-landscape.svg')],
+        ['type' => 'image', 'src' => asset('images/placeholder-square.svg')],
     ];
 
     // Gabungkan foto dan video menjadi satu array media

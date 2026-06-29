@@ -30,7 +30,7 @@
                     @php
                         // Logika Zig-Zag: Genap di Kiri, Ganjil di Kanan
                         $isEven = $index % 2 == 0;
-                        $gambarRute = $rute->gambar ? asset('storage/' . $rute->gambar) : 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=800&q=80';
+                        $gambarRute = $rute->gambar ? asset('storage/' . $rute->gambar) : asset('images/placeholder-landscape.svg');
                     @endphp
 
                     <div class="relative z-10 flex flex-col md:flex-row items-center w-full group">

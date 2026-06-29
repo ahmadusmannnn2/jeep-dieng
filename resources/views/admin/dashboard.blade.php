@@ -113,6 +113,8 @@
                         <p class="text-[11px] text-gray-500 truncate max-w-[150px]">{{ $item->user->name }} - {{ $item->komunitas->nama_komunitas ?? 'Umum' }}</p>
                     </div>
                     <div class="text-right">
+                        <!-- Tampilkan Jumlah Armada -->
+                        <p class="text-[10px] font-bold text-gray-500 mb-1">{{ $item->armadas->count() }} Jeep Ditugaskan</p>
                         @if($item->status === 'Pending')
                             <span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold">Menunggu</span>
                         @elseif($item->status === 'DP Lunas')
@@ -185,5 +187,4 @@
         });
     });
 </script>
-
 @endsection

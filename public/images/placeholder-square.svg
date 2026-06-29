@@ -1,0 +1,15 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#f0f4f8"/>
+  <rect x="0" y="260" width="400" height="140" fill="#d4e6f1"/>
+  <polygon points="50,260 160,120 270,260" fill="#2d6a4f" opacity="0.5"/>
+  <polygon points="140,260 270,80 400,260" fill="#1b4332" opacity="0.7"/>
+  <circle cx="60" cy="80" r="35" fill="#f4a261" opacity="0.8"/>
+  <rect x="140" y="275" width="120" height="40" rx="6" fill="#1b4332"/>
+  <rect x="155" y="258" width="90" height="22" rx="5" fill="#2d6a4f"/>
+  <circle cx="165" cy="316" r="14" fill="#333"/>
+  <circle cx="165" cy="316" r="6" fill="#888"/>
+  <circle cx="235" cy="316" r="14" fill="#333"/>
+  <circle cx="235" cy="316" r="6" fill="#888"/>
+  <text x="200" y="195" font-family="Arial, sans-serif" font-size="14" fill="#666" text-anchor="middle" font-weight="bold">No Image</text>
+  <text x="200" y="213" font-family="Arial, sans-serif" font-size="10" fill="#999" text-anchor="middle">Upload gambar</text>
+</svg>

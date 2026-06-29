@@ -86,7 +86,7 @@
                     <div class="value">{{ $pesanan->user->name ?? '-' }}</div>
                 </div>
                 <div class="ticket-item">
-                    <div class="label">Jumlah Orang</div>
+                    <div class="label">Jumlah Peserta</div>
                     <div class="value accent">{{ $pesanan->jumlah_pengunjung }} Orang</div>
                 </div>
                 <div class="ticket-item">
@@ -94,8 +94,8 @@
                     <div class="value">{{ $pesanan->paketWisata->nama_paket ?? '-' }}</div>
                 </div>
                 <div class="ticket-item">
-                    <div class="label">Penyedia</div>
-                    <div class="value">{{ $pesanan->komunitas->nama_komunitas ?? 'Jeep Dieng' }}</div>
+                    <div class="label">Tipe Perjalanan</div>
+                    <div class="value">{{ $pesanan->tipe_trip ?? 'Private' }} ({{ $pesanan->jumlah_jeep ?? 1 }} Jeep)</div>
                 </div>
             </div>
 
@@ -103,25 +103,25 @@
 
             <div class="ticket-grid">
                 <div class="ticket-item">
-                    <div class="label">Tanggal</div>
+                    <div class="label">Tanggal Tour</div>
                     <div class="value accent">{{ \Carbon\Carbon::parse($pesanan->tanggal_jadwal)->translatedFormat('d F Y') }}</div>
                 </div>
                 <div class="ticket-item">
                     <div class="label">Titik Jemput</div>
                     <div class="value">{{ $pesanan->titik_jemput }}</div>
                 </div>
-                @if($pesanan->jeep)
-                <div class="ticket-item">
-                    <div class="label">No. Kendaraan</div>
-                    <div class="value accent">{{ $pesanan->jeep->nomor_polisi ?? '-' }}</div>
+
+                <div class="ticket-item" style="grid-column: span 2;">
+                    <div class="label">Armada & Supir Bertugas</div>
+                    @forelse($pesanan->armadas as $index => $armada)
+                        <div class="value" style="margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid #374151;">
+                            <span class="accent" style="font-size: 13px;">#{{ $index + 1 }} - {{ $armada->jeep->nomor_polisi ?? 'TBA' }}</span> <br>
+                            Supir: {{ $armada->supir->nama_supir ?? 'TBA' }}
+                        </div>
+                    @empty
+                        <div class="value">Menunggu Konfirmasi Admin</div>
+                    @endforelse
                 </div>
-                @endif
-                @if($pesanan->supir)
-                <div class="ticket-item">
-                    <div class="label">Driver</div>
-                    <div class="value">{{ $pesanan->supir->nama_supir ?? '-' }}</div>
-                </div>
-                @endif
             </div>
 
             <hr class="ticket-divider">
@@ -144,19 +144,24 @@
             </ul>
         </div>
 
-        @if($pesanan->supir && $pesanan->supir->no_hp)
-        <div class="card">
-            <div class="card-title">📞 Kontak Driver</div>
-            <div class="detail-row">
-                <span class="detail-label">Nama Driver</span>
-                <span class="detail-value">{{ $pesanan->supir->nama_supir }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">No. HP / WhatsApp</span>
-                <span class="detail-value" style="color: #059669;">{{ $pesanan->supir->no_hp }}</span>
-            </div>
-        </div>
+        @if($pesanan->armadas && $pesanan->armadas->count() > 0)
+            @foreach($pesanan->armadas as $index => $armada)
+                @if($armada->supir && $armada->supir->no_hp)
+                <div class="card">
+                    <div class="card-title">📞 Kontak Supir (Armada #{{ $index + 1 }})</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Nama Supir</span>
+                        <span class="detail-value">{{ $armada->supir->nama_supir }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">No. HP / WhatsApp</span>
+                        <span class="detail-value" style="color: #059669;">{{ $armada->supir->no_hp }}</span>
+                    </div>
+                </div>
+                @endif
+            @endforeach
         @endif
+
     </div>
 
     <div class="footer">

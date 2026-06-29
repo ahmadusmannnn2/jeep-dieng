@@ -29,13 +29,20 @@ class BookingController extends Controller
     // 2. Memproses Data Booking
     public function store(Request $request, PaketWisata $paketWisata)
     {
+        // Validasi max:6 dihapus untuk rombongan besar, ditambah tipe_trip
         $request->validate([
+            'tipe_trip'         => 'required|in:Private,Group',
             'tanggal_jadwal'    => 'required|date|after_or_equal:today',
             'waktu_jemput'      => 'required',
             'titik_jemput'      => 'required|string|max:255',
-            'jumlah_pengunjung' => 'required|integer|min:1|max:6',
+            'jumlah_pengunjung' => 'required|integer|min:1',
             'catatan'           => 'nullable|string'
         ]);
+
+        // Kalkulasi Backend: 1 Jeep = 4 Orang (pembulatan ke atas)
+        $jumlahPengunjung = $request->jumlah_pengunjung;
+        $jumlahJeep = ceil($jumlahPengunjung / 4);
+        $totalHarga = $jumlahJeep * $paketWisata->harga;
 
         $catatanAkhir = "Jam Jemput: " . $request->waktu_jemput . "\n" . "Catatan Tambahan: " . $request->catatan;
 
@@ -44,10 +51,12 @@ class BookingController extends Controller
             'paket_wisata_id'   => $paketWisata->id,
             'komunitas_id'      => $paketWisata->komunitas_id,
             'tanggal_jadwal'    => $request->tanggal_jadwal,
+            'tipe_trip'         => $request->tipe_trip,
             'titik_jemput'      => $request->titik_jemput,
-            'jumlah_pengunjung' => $request->jumlah_pengunjung,
+            'jumlah_pengunjung' => $jumlahPengunjung,
+            'jumlah_jeep'       => $jumlahJeep,
             'catatan'           => $catatanAkhir,
-            'total_harga'       => $paketWisata->harga,
+            'total_harga'       => $totalHarga,
             'status'            => 'Pending',
         ]);
 
@@ -62,25 +71,102 @@ class BookingController extends Controller
         return redirect()->route('dashboard')->with('booking_success', true);
     }
 
-    // 3. Menampilkan Form Upload Pembayaran
+    // 3. Menampilkan Form Upload Pembayaran + Midtrans Snap
     public function payment(Pesanan $pesanan)
     {
-        if ($pesanan->user_id !== Auth::id()) {
+        if ((int) $pesanan->user_id !== (int) Auth::id()) {
             abort(403, 'Akses Ditolak: Anda tidak dapat melihat tagihan orang lain.');
         }
 
-        if (in_array($pesanan->status, ['Lunas', 'Selesai', 'Dibatalkan', 'Disetujui'])) {
-            return redirect()->route('dashboard')->with('error', 'Pesanan ini sudah diproses atau dibatalkan.');
+        if (in_array($pesanan->status, ['Lunas', 'Selesai', 'Dibatalkan'])) {
+            return redirect()->route('dashboard')->with('error', 'Pesanan ini sudah lunas, selesai, atau dibatalkan.');
         }
 
-        $pesanan->load('paketWisata');
-        return view('frontend.booking.payment', compact('pesanan'));
+        $pesanan->load(['paketWisata', 'user']);
+
+        // Tentukan jenis & jumlah bayar (Hanya ada DP 50% dan Pelunasan 50%)
+        $jenisPembayaran = ($pesanan->status === 'DP Lunas') ? 'Pelunasan' : 'DP';
+        $jumlahBayar     = (int) ($pesanan->total_harga / 2);
+
+        // Order ID unik per sesi pembayaran (DP atau Pelunasan)
+        $existingPembayaran = Pembayaran::where('pesanan_id', $pesanan->id)
+            ->where('jenis_pembayaran', $jenisPembayaran)
+            ->where('status', 'Menunggu Verifikasi')
+            ->whereNotNull('midtrans_order_id')
+            ->latest()
+            ->first();
+
+        if ($existingPembayaran && $existingPembayaran->snap_token) {
+            // Reuse token yang masih valid
+            $orderId   = $existingPembayaran->midtrans_order_id;
+            $snapToken = $existingPembayaran->snap_token;
+            $pembayaran = $existingPembayaran;
+        } else {
+            // Buat order_id baru
+            $orderId = 'BKG-' . $pesanan->id . '-' . strtolower($jenisPembayaran) . '-' . time();
+
+            // Buat record Pembayaran di DB SEBELUM hit Midtrans API
+            $pembayaran = Pembayaran::create([
+                'pesanan_id'         => $pesanan->id,
+                'jenis_pembayaran'   => $jenisPembayaran,
+                'metode_pembayaran'  => 'Midtrans',
+                'jumlah_bayar'       => $jumlahBayar,
+                'midtrans_order_id'  => $orderId,
+                'status'             => 'Menunggu Verifikasi',
+            ]);
+
+            // Generate Midtrans Snap Token
+            \Midtrans\Config::$serverKey    = config('midtrans.server_key');
+            \Midtrans\Config::$isProduction = config('midtrans.is_production');
+            \Midtrans\Config::$isSanitized  = config('midtrans.is_sanitized');
+            \Midtrans\Config::$is3ds        = config('midtrans.is_3ds');
+
+            $snapToken = null;
+
+            try {
+                $params = [
+                    'transaction_details' => [
+                        'order_id'     => $orderId,
+                        'gross_amount' => $jumlahBayar,
+                    ],
+                    'customer_details' => [
+                        'first_name' => $pesanan->user->name ?? 'Customer',
+                        'email'      => $pesanan->user->email ?? '',
+                    ],
+                    'item_details' => [
+                        [
+                            'id'       => 'PKT-' . $pesanan->paket_wisata_id . '-' . strtolower($jenisPembayaran),
+                            'price'    => $jumlahBayar,
+                            'quantity' => 1,
+                            'name'     => substr(($pesanan->paketWisata->nama_paket ?? 'Paket Wisata') . ' (' . $jenisPembayaran . ')', 0, 50),
+                        ],
+                    ],
+                    'callbacks' => [
+                        'finish'   => route('midtrans.finish'),
+                        'unfinish' => route('midtrans.unfinish'),
+                        'error'    => route('midtrans.error'),
+                    ],
+                ];
+
+                $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+                // Simpan snap token ke DB agar bisa di-reuse
+                $pembayaran->update(['snap_token' => $snapToken]);
+
+            } catch (\Exception $e) {
+                // Jika Midtrans gagal, hapus record
+                $pembayaran->delete();
+                \Illuminate\Support\Facades\Log::error('Midtrans snap token error: ' . $e->getMessage());
+            }
+        }
+
+        return view('frontend.booking.payment', compact('pesanan', 'snapToken', 'jenisPembayaran', 'jumlahBayar'));
     }
 
     // 4. Proses Simpan Bukti Bayar
     public function paymentStore(Request $request, Pesanan $pesanan)
     {
-        if ($pesanan->user_id !== Auth::id()) {
+        if ((int) $pesanan->user_id !== (int) Auth::id()) {
             abort(403, 'Akses Ditolak.');
         }
 
@@ -92,13 +178,18 @@ class BookingController extends Controller
 
         $path = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
 
-        $jumlahBayar = $pesanan->total_harga;
+        // Hitung jumlah bayar berdasarkan jenis pembayaran
         if ($request->jenis_pembayaran === 'DP') {
+            // DP = 50% dari total harga
             $jumlahBayar = $pesanan->total_harga / 2;
             $pesanan->update(['tipe_pembayaran' => 'DP']);
         } elseif ($request->jenis_pembayaran === 'Pelunasan') {
+            // Pelunasan = sisa 50% yang belum dibayar
             $jumlahBayar = $pesanan->total_harga / 2;
+            $pesanan->update(['tipe_pembayaran' => 'Lunas']);
         } else {
+            // Lunas sekaligus = 100% total harga
+            $jumlahBayar = $pesanan->total_harga;
             $pesanan->update(['tipe_pembayaran' => 'Lunas']);
         }
 
@@ -111,7 +202,10 @@ class BookingController extends Controller
             'status'            => 'Menunggu Verifikasi',
         ]);
 
-        if ($pesanan->status === 'DP Lunas') {
+        // Jika pesanan sudah DP Lunas dan customer upload pelunasan,
+        // ubah status menjadi Pending agar admin bisa verifikasi ulang.
+        // Jika pesanan masih Pending biasa (upload DP pertama kali), biarkan statusnya.
+        if ($pesanan->status === 'DP Lunas' && $request->jenis_pembayaran === 'Pelunasan') {
             $pesanan->update(['status' => 'Pending']);
         }
 
@@ -129,22 +223,23 @@ class BookingController extends Controller
     // 5. Menampilkan Detail Riwayat Pesanan / E-Tiket Customer
     public function show(Pesanan $pesanan)
     {
-        if ($pesanan->user_id !== Auth::id()) {
+        if ((int) $pesanan->user_id !== (int) Auth::id()) {
             abort(403, 'Anda tidak memiliki akses ke tiket ini.');
         }
 
-        $pesanan->load(['paketWisata', 'jadwal', 'jeep', 'supir', 'pembayaran', 'komunitas']);
+        // Load semua relasi termasuk pembayarans (plural) untuk riwayat pembayaran
+        $pesanan->load(['paketWisata', 'jadwal', 'armadas.jeep', 'armadas.supir', 'pembayaran', 'pembayarans', 'komunitas']);
         return view('frontend.booking.show', compact('pesanan'));
     }
 
     // 6. Mencetak E-Tiket Customer
     public function printTicket(Pesanan $pesanan)
     {
-        if ($pesanan->user_id !== Auth::id()) {
+        if ((int) $pesanan->user_id !== (int) Auth::id()) {
             abort(403, 'Akses ditolak. Ini bukan tiket Anda.');
         }
 
-        $pesanan->load(['paketWisata', 'jadwal', 'jeep', 'supir', 'pembayaran', 'komunitas']);
+        $pesanan->load(['paketWisata', 'jadwal', 'armadas.jeep', 'armadas.supir', 'pembayaran', 'pembayarans', 'komunitas']);
         return view('frontend.booking.print', compact('pesanan'));
     }
 }

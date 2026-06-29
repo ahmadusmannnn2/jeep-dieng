@@ -54,6 +54,14 @@
                 <span class="detail-value">{{ $pesanan->paketWisata->nama_paket ?? '-' }}</span>
             </div>
             <div class="detail-row">
+                <span class="detail-label">Tipe Trip</span>
+                <span class="detail-value">{{ $pesanan->tipe_trip ?? 'Private' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Peserta & Armada</span>
+                <span class="detail-value">{{ $pesanan->jumlah_pengunjung }} Orang ({{ $pesanan->jumlah_jeep }} Jeep)</span>
+            </div>
+            <div class="detail-row">
                 <span class="detail-label">Tanggal Tour</span>
                 <span class="detail-value">{{ \Carbon\Carbon::parse($pesanan->tanggal_jadwal)->translatedFormat('l, d F Y') }}</span>
             </div>
@@ -69,6 +77,20 @@
             <div class="detail-row">
                 <span class="detail-label">Jumlah Dibayar</span>
                 <span class="detail-value" style="color: #2563eb; font-size: 15px;">Rp {{ number_format($pesanan->pembayaran->jumlah_bayar, 0, ',', '.') }}</span>
+            </div>
+            @endif
+
+            @if(isset($pesanan->armadas) && $pesanan->armadas->count() > 0)
+            <div class="detail-row" style="flex-direction: column; align-items: flex-start; padding-top: 16px;">
+                <span class="detail-label" style="margin-bottom: 10px;">Armada Ditugaskan</span>
+                <div style="width: 100%;">
+                    @foreach($pesanan->armadas as $index => $armada)
+                    <div style="background: rgba(255,255,255,0.7); border: 1px dashed #93c5fd; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; text-align: left;">
+                        <span style="font-size: 12px; font-weight: 800; color: #2563eb; display: block; margin-bottom: 4px;">JEEP {{ $index + 1 }}</span>
+                        <span style="font-size: 13px; color: #111827;">🚘 {{ $armada->jeep->nama ?? $armada->jeep->merk ?? 'TBA' }} &nbsp;|&nbsp; 👨‍✈️ Supir: {{ $armada->supir->nama ?? 'TBA' }}</span>
+                    </div>
+                    @endforeach
+                </div>
             </div>
             @endif
         </div>

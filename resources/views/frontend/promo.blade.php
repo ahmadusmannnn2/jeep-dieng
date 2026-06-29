@@ -1,4 +1,4 @@
-@extends('frontend.layouts.app')
+﻿@extends('frontend.layouts.app')
 @section('title', 'Info & Promo - Jeep Dieng')
 @section('content')
 <section class="py-12 bg-white">
@@ -15,9 +15,7 @@
                     @if($item->gambar)
                         <img src="{{ asset('storage/' . $item->gambar) }}" alt="Promo" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                     @else
-                        <div class="w-full h-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-                            <span class="text-white font-bold opacity-50">JEEP DIENG</span>
-                        </div>
+                        <img src="{{ asset('images/placeholder-promo.svg') }}" alt="Placeholder" class="w-full h-full object-cover">
                     @endif
                     <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-emerald-600 shadow-sm">
                         {{ \Carbon\Carbon::parse($item->tanggal_publish)->translatedFormat('d M Y') }}

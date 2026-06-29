@@ -16,7 +16,9 @@ class RuteWisataController extends Controller
         $user = Auth::user();
         $query = RuteWisata::with('komunitas');
 
-        if ($request->filled('komunitas_id')) {
+        if ($user->role === 'pengelola') {
+            $query->where('komunitas_id', $user->komunitas_id);
+        } elseif ($request->filled('komunitas_id')) {
             $query->where('komunitas_id', $request->komunitas_id);
         }
 
@@ -90,6 +92,11 @@ class RuteWisataController extends Controller
 
     public function destroy(RuteWisata $ruteWisata)
     {
+        // Proteksi multi-tenant: pengelola tidak bisa hapus rute komunitas lain
+        if (Auth::user()->role === 'pengelola' && $ruteWisata->komunitas_id !== Auth::user()->komunitas_id) {
+            abort(403, 'Akses Ditolak.');
+        }
+
         if ($ruteWisata->gambar && Storage::disk('public')->exists($ruteWisata->gambar)) {
             Storage::disk('public')->delete($ruteWisata->gambar);
         }

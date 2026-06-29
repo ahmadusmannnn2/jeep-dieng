@@ -9,29 +9,39 @@ use App\Models\Supir;
 use App\Models\Komunitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Ambil Parameter Filter (Default: Tahun ini)
+        $user = Auth::user();
+        
+        // 1. Ambil Parameter Filter Tahun (Default: Tahun ini)
         $tahun = $request->input('tahun', date('Y'));
         
-        // Komunitas ID murni diambil dari pilihan dropdown, bebas untuk semua admin
-        $komunitasId = $request->input('komunitas_id'); 
+        // 2. LOGIKA MULTI-TENANT (GEMBOK PENGELOLA)
+        if ($user->role === 'pengelola') {
+            // Jika yang login pengelola, PAKSA komunitas_id sesuai akunnya. Abaikan filter request.
+            $komunitasId = $user->komunitas_id;
+        } else {
+            // Jika admin pusat, boleh pakai filter dari dropdown
+            $komunitasId = $request->input('komunitas_id'); 
+        }
 
-        // 2. Siapkan Query Dasar dengan Filter
+        // 3. Siapkan Query Dasar dengan Filter
         $pesananQuery = Pesanan::query()->whereYear('created_at', $tahun);
         $jeepQuery = Jeep::query();
         $supirQuery = Supir::query();
         
+        // Terapkan filter komunitas jika ada (Untuk pengelola, ini PASTI selalu jalan)
         if ($komunitasId) {
             $pesananQuery->where('komunitas_id', $komunitasId);
             $jeepQuery->where('komunitas_id', $komunitasId);
             $supirQuery->where('komunitas_id', $komunitasId);
         }
         
-        // 3. Hitung Metrik Data Statistik (Card)
+        // 4. Hitung Metrik Data Statistik (Card)
         $totalPesanan = (clone $pesananQuery)->count();
         $pesananPending = (clone $pesananQuery)->where('status', 'Pending')->count();
         $pesananLunas = (clone $pesananQuery)->whereIn('status', ['DP Lunas', 'Lunas', 'Selesai'])->count();
@@ -47,9 +57,10 @@ class DashboardController extends Controller
         $totalJeep = $jeepQuery->count();
         $totalSupir = $supirQuery->count();
         
-        $pesananTerbaru = (clone $pesananQuery)->with(['user', 'paketWisata', 'komunitas'])->latest()->take(5)->get();
+        // Load relasi armadas di sini agar tidak error di view
+        $pesananTerbaru = (clone $pesananQuery)->with(['user', 'paketWisata', 'komunitas', 'armadas'])->latest()->take(5)->get();
 
-        // 4. DATA GRAFIK: Hitung Total Pendapatan per Bulan di Tahun Terpilih (Berdasarkan Pembayaran Valid)
+        // 5. DATA GRAFIK: Hitung Total Pendapatan per Bulan di Tahun Terpilih
         $grafikPendapatan = \App\Models\Pembayaran::where('status', 'Valid')
             ->whereYear('created_at', $tahun)
             ->when($komunitasId, function($q) use ($komunitasId) {

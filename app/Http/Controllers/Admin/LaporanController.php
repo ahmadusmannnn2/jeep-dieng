@@ -15,6 +15,12 @@ class LaporanController extends Controller
         $tanggal_selesai = $request->input('tanggal_selesai', now()->endOfMonth()->toDateString());
         
         $komunitas_id = $request->input('komunitas_id');
+        
+        // Pengelola hanya bisa lihat laporan komunitasnya sendiri
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if ($user->role === 'pengelola') {
+            $komunitas_id = $user->komunitas_id;
+        }
 
         $query = Pesanan::with(['user', 'paketWisata', 'komunitas', 'pembayarans'])
                     ->whereBetween('created_at', [$tanggal_mulai . ' 00:00:00', $tanggal_selesai . ' 23:59:59'])
@@ -43,8 +49,14 @@ class LaporanController extends Controller
         $tanggal_mulai = $request->input('tanggal_mulai', now()->startOfMonth()->toDateString());
         $tanggal_selesai = $request->input('tanggal_selesai', now()->endOfMonth()->toDateString());
         $komunitas_id = $request->input('komunitas_id');
+        
+        // Pengelola hanya bisa cetak laporan komunitasnya sendiri
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if ($user->role === 'pengelola') {
+            $komunitas_id = $user->komunitas_id;
+        }
 
-        $query = Pesanan::with(['user', 'paketWisata', 'komunitas', 'jeep', 'supir', 'pembayarans'])
+        $query = Pesanan::with(['user', 'paketWisata', 'komunitas', 'armadas.jeep', 'armadas.supir', 'pembayarans'])
                     ->whereBetween('created_at', [$tanggal_mulai . ' 00:00:00', $tanggal_selesai . ' 23:59:59'])
                     ->whereIn('status', ['DP Lunas', 'Lunas', 'Selesai']);
 

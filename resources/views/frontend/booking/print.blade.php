@@ -22,6 +22,9 @@
         .footer { border-top: 1px solid #ccc; padding-top: 15px; font-size: 11px; line-height: 1.5; color: #444; }
         .barcode-placeholder { width: 100%; height: 50px; background: repeating-linear-gradient(90deg, #000, #000 2px, transparent 2px, transparent 4px, #000 4px, #000 5px, transparent 5px, transparent 8px); margin-top: 10px; }
         
+        .armada-list { font-size: 13px; font-weight: normal; margin-top: 4px; padding-bottom: 6px; border-bottom: 1px dashed #ccc; }
+        .armada-list:last-child { border-bottom: none; }
+
         @media print {
             body { padding: 0; }
             .no-print { display: none; }
@@ -53,6 +56,10 @@
                     <p class="value">{{ $pesanan->paketWisata->nama_paket ?? '-' }}</p>
                 </div>
                 <div class="field">
+                    <span class="label">Tipe Trip</span>
+                    <p class="value">{{ $pesanan->tipe_trip ?? 'Private' }}</p>
+                </div>
+                <div class="field">
                     <span class="label">Jadwal Keberangkatan</span>
                     <p class="value">
                         {{ \Carbon\Carbon::parse($pesanan->tanggal_jadwal)->translatedFormat('l, d F Y') }}
@@ -71,7 +78,7 @@
             <div class="col">
                 <div class="field">
                     <span class="label">Jumlah Peserta</span>
-                    <p class="value">{{ $pesanan->jumlah_pengunjung }} Orang (1 Armada)</p>
+                    <p class="value">{{ $pesanan->jumlah_pengunjung }} Orang ({{ $pesanan->jumlah_jeep ?? 1 }} Armada)</p>
                 </div>
                 <div class="field">
                     <span class="label">Komunitas Penyelenggara</span>
@@ -79,10 +86,18 @@
                 </div>
                 <div class="field">
                     <span class="label">Armada Jeep & Driver</span>
-                    <p class="value" style="font-size: 14px;">
-                        Jeep: {{ $pesanan->jeep->nama_jeep ?? 'Menunggu Konfirmasi' }} ({{ $pesanan->jeep->nomor_polisi ?? '-' }})<br>
-                        Driver: {{ $pesanan->supir->nama_supir ?? 'Menunggu Konfirmasi' }}
-                    </p>
+                    <div style="margin-top: 5px;">
+                        @if(isset($pesanan->armadas) && $pesanan->armadas->count() > 0)
+                            @foreach($pesanan->armadas as $index => $armada)
+                                <div class="armada-list">
+                                    <strong>#{{ $index + 1 }} - {{ $armada->jeep->nama_jeep ?? 'TBA' }} ({{ $armada->jeep->nomor_polisi ?? '-' }})</strong><br>
+                                    Driver: {{ $armada->supir->nama_supir ?? 'Menunggu Konfirmasi' }}
+                                </div>
+                            @endforeach
+                        @else
+                            <p class="value" style="font-size: 14px;">Menunggu Konfirmasi Admin</p>
+                        @endif
+                    </div>
                 </div>
                 <div class="field">
                     <span class="label">Status Pembayaran</span>

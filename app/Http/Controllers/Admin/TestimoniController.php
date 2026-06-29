@@ -39,7 +39,7 @@ class TestimoniController extends Controller
             'is_tampil' => 'required|boolean',
         ]);
 
-        Testimoni::create($request->all());
+        Testimoni::create($request->validated());
 
         return redirect()->route('admin.testimoni.index')->with('success', 'Testimoni berhasil ditambahkan!');
     }
@@ -58,7 +58,7 @@ class TestimoniController extends Controller
             'is_tampil' => 'required|boolean',
         ]);
 
-        $testimoni->update($request->all());
+        $testimoni->update($request->validated());
 
         return redirect()->route('admin.testimoni.index')->with('success', 'Testimoni berhasil diperbarui!');
     }

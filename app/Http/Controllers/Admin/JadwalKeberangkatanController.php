@@ -15,15 +15,19 @@ class JadwalKeberangkatanController extends Controller
         $user = Auth::user();
         $query = JadwalKeberangkatan::query();
 
-        if ($request->filled('komunitas_id')) {
-            $query->where('komunitas_id', $request->komunitas_id);
+        // GEMBOK MULTI-TENANT
+        if ($user->role === 'pengelola') {
+            $query->where('komunitas_id', $user->komunitas_id);
+        } else {
+            if ($request->filled('komunitas_id')) {
+                $query->where('komunitas_id', $request->komunitas_id);
+            }
         }
 
         if ($request->filled('tanggal')) {
             $query->where('tanggal', $request->tanggal);
         }
 
-        // Urutkan berdasarkan tanggal terdekat
         $jadwal = $query->orderBy('tanggal', 'asc')->orderBy('jam', 'asc')->get();
         $komunitas = Komunitas::all();
 
@@ -32,7 +36,11 @@ class JadwalKeberangkatanController extends Controller
 
     public function create()
     {
-        $komunitas = Komunitas::all();
+        $user = Auth::user();
+        $komunitas = $user->role === 'pengelola' 
+            ? Komunitas::where('id', $user->komunitas_id)->get() 
+            : Komunitas::all();
+
         return view('admin.jadwal.create', compact('komunitas'));
     }
 
@@ -46,7 +54,9 @@ class JadwalKeberangkatanController extends Controller
 
         $data = $request->except(['_token', '_method']);
         
-
+        if (Auth::user()->role === 'pengelola') {
+            $data['komunitas_id'] = Auth::user()->komunitas_id;
+        }
 
         JadwalKeberangkatan::create($data);
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal keberangkatan berhasil ditambahkan!');
@@ -54,12 +64,24 @@ class JadwalKeberangkatanController extends Controller
 
     public function edit(JadwalKeberangkatan $jadwal)
     {
-        $komunitas = Komunitas::all();
+        $user = Auth::user();
+        if ($user->role === 'pengelola' && $jadwal->komunitas_id !== $user->komunitas_id) {
+            abort(403, 'Akses Ditolak.');
+        }
+
+        $komunitas = $user->role === 'pengelola' 
+            ? Komunitas::where('id', $user->komunitas_id)->get() 
+            : Komunitas::all();
+
         return view('admin.jadwal.edit', compact('jadwal', 'komunitas'));
     }
 
     public function update(Request $request, JadwalKeberangkatan $jadwal)
     {
+        if (Auth::user()->role === 'pengelola' && $jadwal->komunitas_id !== Auth::user()->komunitas_id) {
+            abort(403, 'Akses Ditolak.');
+        }
+
         $request->validate([
             'tanggal' => 'required|date',
             'jam' => 'required',
@@ -68,7 +90,9 @@ class JadwalKeberangkatanController extends Controller
 
         $data = $request->except(['_token', '_method']);
         
-
+        if (Auth::user()->role === 'pengelola') {
+            $data['komunitas_id'] = Auth::user()->komunitas_id;
+        }
 
         $jadwal->update($data);
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal keberangkatan berhasil diperbarui!');
@@ -76,6 +100,10 @@ class JadwalKeberangkatanController extends Controller
 
     public function destroy(JadwalKeberangkatan $jadwal)
     {
+        if (Auth::user()->role === 'pengelola' && $jadwal->komunitas_id !== Auth::user()->komunitas_id) {
+            abort(403, 'Akses Ditolak.');
+        }
+
         $jadwal->delete();
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal keberangkatan berhasil dihapus!');
     }

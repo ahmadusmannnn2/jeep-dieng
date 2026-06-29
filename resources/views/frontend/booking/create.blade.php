@@ -5,7 +5,7 @@
 @section('content')
 
 @php
-    $mainImage = $paketWisata->gambar ? asset('storage/' . $paketWisata->gambar) : 'https://images.unsplash.com/photo-1533692328991-08159ff19fca?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
+    $mainImage = $paketWisata->gambar ? asset('storage/' . $paketWisata->gambar) : asset('images/placeholder-landscape.svg');
 @endphp
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -43,63 +43,75 @@
 
                 <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100">
                     <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <span class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm">2</span>
+                        <span class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold">2</span>
                         Detail Perjalanan
                     </h3>
                     
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tanggal Tour <span class="text-red-500">*</span></label>
-                                <div class="relative">
-                                    <input type="text" id="custom-date-picker" name="tanggal_jadwal" required placeholder="Pilih Tanggal..." class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 font-bold text-gray-900 bg-white cursor-pointer">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Jam Jemput <span class="text-red-500">*</span></label>
-                                <div class="relative">
-                                    <input type="time" name="waktu_jemput" required class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 font-bold text-gray-900">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4 bg-gray-50 border border-gray-100 rounded-2xl">
-                            
-                            <div class="lg:col-span-2">
-                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Lokasi Penjemputan <span class="text-red-500">*</span></label>
-                                <input type="text" name="titik_jemput" required placeholder="Contoh: Homestay Sikunir / Alun-alun" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition font-medium text-gray-800 bg-white">
-                                
-                                <div class="mt-3 flex items-start gap-2 text-xs font-medium text-gray-500">
-                                    <svg class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    <p>
-                                        GRATIS jemput di area Dieng. Di luar radius (misal pusat Wonosobo), dikenakan tambahan ongkos bensin langsung ke driver (mulai Rp 50.000).
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="lg:col-span-1">
-                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Jml Penumpang <span class="text-red-500">*</span></label>
-                                <div class="relative">
-                                    <input type="number" name="jumlah_pengunjung" min="1" max="6" required placeholder="Maks. 6" class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition font-black text-emerald-600 bg-white">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-gray-400 mt-2 font-medium">1 armada maks. 6 orang (termasuk depan).</p>
-                            </div>
-
-                        </div>
-
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Tanggal Tour --}}
                         <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tanggal Tour <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="text" id="custom-date-picker" name="tanggal_jadwal" required placeholder="Pilih Tanggal..." class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-gray-900 bg-white cursor-pointer transition">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Jam Jemput --}}
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Jam Jemput <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="time" name="waktu_jemput" required class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-gray-900 transition">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Tipe Trip --}}
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tipe Trip <span class="text-red-500">*</span></label>
+                            <select name="tipe_trip" id="tipe_trip" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition font-medium text-gray-800 bg-white">
+                                <option value="Private">Private (1 Jeep Mandiri)</option>
+                                <option value="Group">Rombongan (Multi Jeep)</option>
+                            </select>
+                        </div>
+
+                        {{-- Penumpang --}}
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Jumlah Peserta (Orang) <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="number" id="jumlah_pengunjung" name="jumlah_pengunjung" min="1" value="4" required class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition font-black text-emerald-600 bg-white">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-gray-400 mt-1.5 font-medium">Kapasitas nyaman: 1 Jeep maksimal 4 orang.</p>
+                        </div>
+
+                        {{-- Lokasi Penjemputan --}}
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Lokasi Penjemputan (Titik Kumpul) <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="text" name="titik_jemput" required placeholder="Contoh: Hotel/Homestay di Dieng, Basecamp, dll" class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition font-medium text-gray-800 bg-white">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-start gap-2 text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-100 rounded-xl p-3">
+                                <svg class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p>
+                                    GRATIS penjemputan di area Dieng. Di luar radius tersebut dikenakan biaya tambahan langsung ke supir mulai dari Rp 50.000.
+                                </p>
+                            </div>
+                        </div>
+
+                        {{-- Catatan Tambahan --}}
+                        <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Catatan Tambahan (Opsional)</label>
-                            <textarea name="catatan" rows="3" placeholder="Contoh: Bawa anak balita 1 orang..." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition font-medium text-gray-800"></textarea>
+                            <textarea name="catatan" rows="3" placeholder="Tulis catatan jika ada, misal: Bawa anak balita 1 orang, butuh 2 helm, dll." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition font-medium text-gray-800"></textarea>
                         </div>
                     </div>
                 </div>
@@ -120,20 +132,20 @@
                         </div>
                     </div>
                     <div class="space-y-3 text-sm border-b border-gray-700 pb-6 mb-6 relative z-10">
-                        <div class="flex justify-between"><span class="text-gray-400">Kapasitas Maksimal</span><span class="font-bold text-gray-200">5-6 Penumpang</span></div>
                         <div class="flex justify-between"><span class="text-gray-400">Durasi Tour</span><span class="font-bold text-gray-200">{{ $paketWisata->durasi ?? '4 Jam' }}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400">Kebutuhan Armada</span><span id="jumlah_jeep_display" class="font-bold text-amber-400">1 Jeep</span></div>
                     </div>
                     <div class="flex flex-col items-end mb-8 relative z-10 text-right">
                         <div class="w-full flex justify-between items-end mb-1">
                             <span class="font-bold text-gray-400">Total Biaya Trip</span>
-                            <span class="text-3xl font-black text-emerald-400">Rp {{ number_format($paketWisata->harga, 0, ',', '.') }}</span>
+                            <span id="total_harga_display" class="text-3xl font-black text-emerald-400">Rp {{ number_format($paketWisata->harga, 0, ',', '.') }}</span>
                         </div>
-                        <span class="text-[10px] text-gray-500">*Tarif flat sewa 1 kendaraan Jeep (Maks. 6 penumpang)</span>
+                        <span class="text-[10px] text-gray-500">*Tarif dihitung per Jeep (Rp {{ number_format($paketWisata->harga, 0, ',', '.') }} / Jeep)</span>
                     </div>
 
                     <button type="submit" class="w-full py-4 bg-emerald-500 text-white text-lg font-extrabold rounded-2xl hover:bg-emerald-400 transition shadow-lg flex items-center justify-center gap-2 transform hover:-translate-y-1 relative z-10">
                         Buat Pesanan
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l7-7m7-7H3"></path></svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
                 </div>
             </div>
@@ -167,6 +179,42 @@
             altFormat: "F j, Y",
             disableMobile: "true"
         });
+
+        // Logika Perhitungan Multi-Jeep
+        const hargaPerJeep = {{ $paketWisata->harga }};
+        const inputPengunjung = document.getElementById('jumlah_pengunjung');
+        const inputTipeTrip = document.getElementById('tipe_trip');
+        const textJumlahJeep = document.getElementById('jumlah_jeep_display');
+        const textTotalHarga = document.getElementById('total_harga_display');
+
+        function hitungKalkulasi(event) {
+            let pengunjung = parseInt(inputPengunjung.value) || 1;
+            
+            // SINKRONISASI REALTIME TIPE TRIP:
+            // Hanya jalankan auto-switch jika yang sedang diubah adalah input jumlah peserta
+            if (event && event.target === inputPengunjung) {
+                if (pengunjung > 4) {
+                    inputTipeTrip.value = 'Group';
+                } else {
+                    inputTipeTrip.value = 'Private';
+                }
+            }
+
+            // Hitung Jeep (Asumsi nyaman 1 Jeep = 4 orang)
+            let butuhJeep = Math.ceil(pengunjung / 4);
+            let totalBiaya = butuhJeep * hargaPerJeep;
+
+            // Update UI
+            textJumlahJeep.innerText = butuhJeep + (butuhJeep > 1 ? ' Jeeps' : ' Jeep');
+            textTotalHarga.innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(totalBiaya);
+        }
+
+        // Panggil fungsi dengan melempar 'event' agar terdeteksi siapa yang memicu
+        inputPengunjung.addEventListener('input', hitungKalkulasi);
+        inputTipeTrip.addEventListener('change', hitungKalkulasi);
+        
+        // Panggil saat awal load (tanpa event)
+        hitungKalkulasi(); 
     });
 </script>
 @endsection

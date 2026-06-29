@@ -10,8 +10,8 @@
 @php
     // Hero Images Fallback
     $defaultHero = [
-        'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-        'https://images.unsplash.com/photo-1533692328991-08159ff19fca?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80'
+        asset('images/placeholder-landscape.svg'),
+        asset('images/placeholder-landscape.svg'),
     ];
     $heroImages = (isset($pengaturan_website) && !empty($pengaturan_website->hero_images)) 
         ? array_map(function($img) { return asset('storage/' . $img); }, $pengaturan_website->hero_images)
@@ -20,10 +20,10 @@
 
     // Gallery Media (Foto + Video) Fallback
     $defaultGallery = [
-        ['type' => 'image', 'src' => 'https://images.unsplash.com/photo-1533692328991-08159ff19fca?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'],
-        ['type' => 'image', 'src' => 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'],
-        ['type' => 'image', 'src' => 'https://images.unsplash.com/photo-1535492984851-bc015f3e2ff5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=800&q=80'],
-        ['type' => 'image', 'src' => 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'],
+        ['type' => 'image', 'src' => asset('images/placeholder-landscape.svg')],
+        ['type' => 'image', 'src' => asset('images/placeholder-square.svg')],
+        ['type' => 'image', 'src' => asset('images/placeholder-promo.svg')],
+        ['type' => 'image', 'src' => asset('images/placeholder-landscape.svg')],
     ];
     $galleryMedia = [];
     if (isset($pengaturan_website) && (!empty($pengaturan_website->gallery_images) || !empty($pengaturan_website->gallery_videos))) {
@@ -96,7 +96,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             @forelse($paket as $index => $item)
-                @php $coverImg = $item->gambar ? asset('storage/' . $item->gambar) : 'https://images.unsplash.com/photo-1533692328991-08159ff19fca?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'; @endphp
+                @php $coverImg = $item->gambar ? asset('storage/' . $item->gambar) : asset('images/placeholder-landscape.svg'); @endphp
                 <div data-aos="fade-up" data-aos-delay="{{ $index * 150 }}" class="bg-white rounded-[2rem] overflow-hidden border border-gray-100 hover:border-emerald-500/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col group">
                     {{-- GAMBAR COVER --}}
                     <a href="{{ route('paket.show', $item->id) }}" class="block relative overflow-hidden" style="aspect-ratio:16/9;">
@@ -177,7 +177,7 @@
                 <div class="p-5 rounded-2xl border border-gray-100 flex items-center gap-5 hover:border-emerald-200 hover:shadow-lg transition group cursor-pointer bg-white">
                     <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center text-emerald-500 shrink-0 overflow-hidden relative">
                         @if($item->gambar)
-                            <img src="{{ asset('storage/' . $item->gambar) }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            <img src="{{ $item->gambar ? asset('storage/' . $item->gambar) : asset('images/placeholder-landscape.svg') }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                         @else
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
                         @endif

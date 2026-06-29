@@ -24,8 +24,8 @@
             <thead>
                 <tr class="bg-gray-50 border-y border-gray-100 text-sm text-gray-500">
                     <th class="py-4 px-4 font-semibold">Nama Komunitas</th>
-                    <th class="py-4 px-4 font-semibold">Ketua / Penanggung Jawab</th>
-                    <th class="py-4 px-4 font-semibold">Kontak</th>
+                    <th class="py-4 px-4 font-semibold">Akun & Penanggung Jawab</th>
+                    <th class="py-4 px-4 font-semibold">Kontak WA</th>
                     <th class="py-4 px-4 font-semibold">Total Armada</th>
                     <th class="py-4 px-4 font-semibold text-right">Aksi</th>
                 </tr>
@@ -37,8 +37,14 @@
                         <div class="font-bold text-gray-800">{{ $k->nama_komunitas }}</div>
                         <div class="text-xs text-gray-500 line-clamp-1 mt-0.5">{{ $k->alamat ?? 'Alamat belum diatur' }}</div>
                     </td>
-                    <td class="py-4 px-4 text-sm text-gray-700">
-                        {{ $k->ketua ?? '-' }}
+                    <td class="py-4 px-4">
+                        <div class="text-sm font-bold text-gray-800">{{ $k->ketua ?? 'Belum ada nama' }}</div>
+                        @php $pengelola = $k->users->where('role', 'pengelola')->first(); @endphp
+                        @if($pengelola)
+                            <div class="text-xs font-mono text-emerald-600 mt-0.5">{{ $pengelola->email }}</div>
+                        @else
+                            <div class="text-xs text-red-500 mt-0.5">Belum ada akun login</div>
+                        @endif
                     </td>
                     <td class="py-4 px-4 text-sm text-gray-700">
                         {{ $k->no_hp ?? '-' }}
@@ -56,7 +62,7 @@
                             <a href="{{ route('admin.komunitas.edit', $k->id) }}" class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition" title="Edit">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                             </a>
-                            <form action="{{ route('admin.komunitas.destroy', $k->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus komunitas ini? Data armada yang terkait mungkin akan kehilangan referensi komunitasnya.')">
+                            <form action="{{ route('admin.komunitas.destroy', $k->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus komunitas ini? Seluruh akun pengelola yang terhubung juga akan dihapus.')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition" title="Hapus">

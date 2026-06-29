@@ -142,7 +142,27 @@
         </div>
 
         <div>
-            <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2 mb-6">4. Informasi Kontak & Footer</h3>
+            <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2 mb-6">4. Gambar Slideshow Login & Register</h3>
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-gray-700 mb-1">📸 Foto Slideshow Halaman Login & Register</label>
+                <p class="text-xs text-gray-500 mb-3">Format: JPG, PNG, WEBP. Maks 3MB per foto. Gambar-gambar ini akan tampil secara bergantian (slideshow) pada sisi halaman Login dan Register.</p>
+                <input type="file" name="login_images[]" multiple accept="image/*" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition cursor-pointer bg-gray-50">
+                <p class="text-xs text-amber-600 mt-2 font-medium">*Unggah beberapa gambar sekaligus untuk mengganti gambar lama.</p>
+                
+                @if($pengaturan->login_images && count($pengaturan->login_images) > 0)
+                    <div class="flex gap-4 mt-4 overflow-x-auto pb-2">
+                        @foreach($pengaturan->login_images as $img)
+                            <img src="{{ asset('storage/' . $img) }}" class="w-32 h-20 object-cover rounded-xl border border-gray-200 shadow-sm shrink-0">
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-xs text-gray-400 mt-3 italic">Belum ada gambar slideshow yang diunggah. Gambar default bertema Jeep akan ditampilkan.</p>
+                @endif
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2 mb-6">5. Informasi Kontak & Footer</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-2">Nomor Telepon (CS)</label>

@@ -55,44 +55,44 @@ Route::middleware('auth')->group(function () {
 
 });
 
-// RUTE KHUSUS ADMIN
+// RUTE DI AKSES BERSAMA OLEH ADMIN DAN PENGELOLA (Hanya Lihat Pesanan)
 Route::middleware(['auth', 'role:admin,pengelola'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
+    Route::get('/pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
+});
+
+// RUTE KHUSUS SUPER ADMIN PUSAT (Bukan Pengelola)
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('komunitas', \App\Http\Controllers\Admin\KomunitasController::class)->parameters([
-        'komunitas' => 'komunitas'
-    ]);
     Route::resource('supir', SupirController::class);
     Route::resource('jeep', JeepController::class);
     Route::resource('paket-wisata', PaketWisataController::class)->parameters([
         'paket-wisata' => 'paketWisata'
     ]);
-
     Route::resource('rute-wisata', RuteWisataController::class)->parameters([
         'rute-wisata' => 'ruteWisata'
     ]);
     Route::resource('jadwal', JadwalKeberangkatanController::class);
+
+    Route::get('/pesanan/{pesanan}/edit', [PesananController::class, 'edit'])->name('pesanan.edit');
+    Route::put('/pesanan/{pesanan}', [PesananController::class, 'update'])->name('pesanan.update');
+
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
+    Route::get('/laporan/komunitas', [LaporanController::class, 'komunitas'])->name('laporan.komunitas');
+
+    Route::resource('komunitas', \App\Http\Controllers\Admin\KomunitasController::class)->parameters([
+        'komunitas' => 'komunitas'
+    ]);
     Route::resource('konten-informasi', KontenInformasiController::class);
     
     Route::resource('testimoni', \App\Http\Controllers\Admin\TestimoniController::class);
     Route::patch('testimoni/{testimoni}/toggle', [\App\Http\Controllers\Admin\TestimoniController::class, 'toggle'])->name('testimoni.toggle');
 
-    Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
-    Route::get('/pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
-    Route::get('/pesanan/{pesanan}/edit', [PesananController::class, 'edit'])->name('pesanan.edit');
-    Route::put('/pesanan/{pesanan}', [PesananController::class, 'update'])->name('pesanan.update');
-
-    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-    Route::get('/laporan/komunitas', [LaporanController::class, 'komunitas'])->name('laporan.komunitas');
-    Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
-
-
     // PENGATURAN UMUM WEBSITE
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
     Route::put('/pengaturan', [PengaturanController::class, 'update'])->name('pengaturan.update');
-
-
-
 });
 
 // --- RUTE MIDTRANS ---

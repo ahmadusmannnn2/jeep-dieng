@@ -42,11 +42,12 @@ class PengaturanController extends Controller
             'hero_images.*'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
             'gallery_images.*'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
             'gallery_videos.*'    => 'nullable|mimes:mp4,webm,mov,avi|max:51200', // Max 50MB per video
+            'login_images.*'      => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         ]);
 
         $pengaturan = Pengaturan::firstOrCreate(['id' => 1]);
         // Kecualikan semua input file, kita proses terpisah
-        $data = $request->except(['hero_images', 'gallery_images', 'gallery_videos']);
+        $data = $request->except(['hero_images', 'gallery_images', 'gallery_videos', 'login_images']);
 
         if ($request->hasFile('logo')) {
             if ($pengaturan->logo && Storage::disk('public')->exists($pengaturan->logo)) {
@@ -95,6 +96,21 @@ class PengaturanController extends Controller
                 $videoPaths[] = $file->store('gallery/videos', 'public');
             }
             $data['gallery_videos'] = $videoPaths;
+        }
+
+        // Proses Multiple Gambar Halaman Login/Register (BARU)
+        if ($request->hasFile('login_images')) {
+            // Hapus gambar lama dari storage
+            if ($pengaturan->login_images) {
+                foreach($pengaturan->login_images as $oldLoginImage) {
+                    if(Storage::disk('public')->exists($oldLoginImage)) { Storage::disk('public')->delete($oldLoginImage); }
+                }
+            }
+            $loginPaths = [];
+            foreach($request->file('login_images') as $file) {
+                $loginPaths[] = $file->store('login_slideshow', 'public');
+            }
+            $data['login_images'] = $loginPaths;
         }
 
         $pengaturan->update($data);

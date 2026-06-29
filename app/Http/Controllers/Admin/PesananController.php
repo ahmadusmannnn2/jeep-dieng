@@ -20,7 +20,7 @@ class PesananController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $query = Pesanan::with(['user', 'paketWisata', 'jadwal', 'pembayaran', 'komunitas']);
+        $query = Pesanan::with(['user', 'paketWisata', 'jadwal', 'pembayaran', 'komunitas', 'armadas.jeep', 'armadas.supir']);
 
         // LOGIKA MULTI-TENANT (GEMBOK PENGELOLA)
         if ($user->role === 'pengelola') {
@@ -80,9 +80,9 @@ class PesananController extends Controller
     public function edit(Pesanan $pesanan)
     {
         $user = Auth::user();
-        // Proteksi: Pengelola dilarang edit pesanan komunitas lain
-        if ($user->role === 'pengelola' && $pesanan->komunitas_id !== $user->komunitas_id) {
-            abort(403, 'Akses Ditolak: Anda tidak dapat mengubah pesanan dari komunitas lain.');
+        // Proteksi: Pengelola dilarang edit pesanan (Hanya boleh lihat detail saja)
+        if ($user->role === 'pengelola') {
+            abort(403, 'Akses Ditolak: Pengelola hanya dapat melihat data pesanan saja.');
         }
 
         // Load relasi armadas beserta data jeep dan supirnya agar bisa tampil di form
@@ -97,8 +97,9 @@ class PesananController extends Controller
     public function update(Request $request, Pesanan $pesanan)
     {
         $user = Auth::user();
-        if ($user->role === 'pengelola' && $pesanan->komunitas_id !== $user->komunitas_id) {
-            abort(403, 'Akses Ditolak: Tindakan ilegal.');
+        // Proteksi: Pengelola tidak diizinkan mengupdate pesanan
+        if ($user->role === 'pengelola') {
+            abort(403, 'Akses Ditolak: Pengelola tidak diizinkan mengubah data pesanan.');
         }
 
         // Validasi menggunakan Array untuk mendukung Rombongan

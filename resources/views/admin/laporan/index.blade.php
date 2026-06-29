@@ -17,6 +17,7 @@
             <input type="date" name="tanggal_selesai" value="{{ $tanggal_selesai }}" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition font-medium text-gray-800">
         </div>
         
+        @if(Auth::user()->role !== 'pengelola')
         <div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Komunitas</label>
             <select name="komunitas_id" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition font-bold text-gray-800">
@@ -26,6 +27,7 @@
                 @endforeach
             </select>
         </div>
+        @endif
 
         <div class="flex gap-2">
             <button type="submit" class="flex-1 px-5 py-2.5 bg-gray-900 text-white font-bold rounded-xl hover:bg-emerald-500 transition text-center shadow-md">Filter Data</button>

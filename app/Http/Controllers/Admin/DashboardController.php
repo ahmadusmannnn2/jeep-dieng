@@ -58,7 +58,7 @@ class DashboardController extends Controller
         $totalSupir = $supirQuery->count();
         
         // Load relasi armadas di sini agar tidak error di view
-        $pesananTerbaru = (clone $pesananQuery)->with(['user', 'paketWisata', 'komunitas', 'armadas'])->latest()->take(5)->get();
+        $pesananTerbaru = (clone $pesananQuery)->with(['user', 'paketWisata', 'komunitas', 'armadas.jeep', 'armadas.supir'])->latest()->take(5)->get();
 
         // 5. DATA GRAFIK: Hitung Total Pendapatan per Bulan di Tahun Terpilih
         $grafikPendapatan = \App\Models\Pembayaran::where('status', 'Valid')

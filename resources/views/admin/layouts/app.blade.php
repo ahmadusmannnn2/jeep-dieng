@@ -50,10 +50,12 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto no-scrollbar px-4 py-6 space-y-2">
+                @if(Auth::user()->role === 'admin')
                 <a href="{{ route('admin.dashboard') }}" title="Dashboard" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition overflow-hidden">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     <span x-show="!sidebarCollapsed" class="font-medium whitespace-nowrap">Dashboard</span>
                 </a>
+                @endif
 
                 <a href="{{ route('admin.pesanan.index') }}" title="Pesanan Masuk" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.pesanan.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition overflow-hidden">
                     <div class="flex items-center gap-3">
@@ -68,6 +70,7 @@
                     @endif
                 </a>
 
+                @if(Auth::user()->role === 'admin')
                 <!-- Master Armada -->
                 <div x-data="{ open: {{ request()->routeIs('admin.komunitas.*') || request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'true' : 'false' }} }">
                     <button @click="if(sidebarCollapsed) { sidebarCollapsed = false; open = true; } else { open = !open }" type="button" title="Mitra Komunitas & Armada" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.komunitas.*') || request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition overflow-hidden">
@@ -79,11 +82,13 @@
                     </button>
                     <div x-show="open && !sidebarCollapsed" style="display: none;" class="relative pl-12 pr-4 py-2 space-y-1 mt-1">
                         <div class="absolute left-[31px] top-0 bottom-4 w-px bg-gray-800"></div>
+                        @if(Auth::user()->role === 'admin')
                         <a href="{{ route('admin.komunitas.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.komunitas.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
                             <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.komunitas.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
                             <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.komunitas.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Kelola Komunitas
                         </a>
+                        @endif
                         <a href="{{ route('admin.jeep.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.jeep.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
                             <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.jeep.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
                             <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.jeep.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
@@ -96,7 +101,9 @@
                         </a>
                     </div>
                 </div>
+                @endif
 
+                @if(Auth::user()->role === 'admin')
                 <!-- Katalog Wisata -->
                 <div x-data="{ open: {{ request()->routeIs('admin.paket-wisata.*') || request()->routeIs('admin.rute-wisata.*') || request()->routeIs('admin.jadwal.*') ? 'true' : 'false' }} }">
                     <button @click="if(sidebarCollapsed) { sidebarCollapsed = false; open = true; } else { open = !open }" type="button" title="Paket Tour & Rute" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.paket-wisata.*') || request()->routeIs('admin.rute-wisata.*') || request()->routeIs('admin.jadwal.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition overflow-hidden">
@@ -125,8 +132,10 @@
                         </a>
                     </div>
                 </div>
+                @endif
 
                 <!-- Konten Website -->
+                @if(Auth::user()->role === 'admin')
                 <div x-data="{ open: {{ request()->routeIs('admin.konten-informasi.*') || request()->routeIs('admin.testimoni.*') ? 'true' : 'false' }} }">
                     <button @click="if(sidebarCollapsed) { sidebarCollapsed = false; open = true; } else { open = !open }" type="button" title="Konten & Informasi" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.konten-informasi.*') || request()->routeIs('admin.testimoni.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition overflow-hidden">
                         <div class="flex items-center gap-3">
@@ -149,7 +158,9 @@
                         </a>
                     </div>
                 </div>
+                @endif
 
+                @if(Auth::user()->role === 'admin')
                 <!-- Laporan -->
                 <div x-data="{ open: {{ request()->routeIs('admin.laporan.*') ? 'true' : 'false' }} }">
                     <button @click="if(sidebarCollapsed) { sidebarCollapsed = false; open = true; } else { open = !open }" type="button" title="Keuangan & Omzet" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.laporan.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition overflow-hidden">
@@ -166,13 +177,16 @@
                             <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.laporan.index') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Rekap Transaksi Masuk
                         </a>
+                        @if(Auth::user()->role === 'admin')
                         <a href="{{ route('admin.laporan.komunitas') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.laporan.komunitas') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
                             <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.laporan.komunitas') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
                             <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.laporan.komunitas') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Pencairan Komunitas
                         </a>
+                        @endif
                     </div>
                 </div>
+                @endif
             </nav>
 
             <div class="p-4 border-t border-gray-800 shrink-0">
@@ -205,14 +219,20 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                     </a>
 
+                    @if(Auth::user()->role === 'admin')
                     <a href="{{ route('admin.pengaturan.index') }}" title="Pengaturan Website" class="p-2.5 text-gray-500 hover:text-emerald-600 bg-gray-50 hover:bg-emerald-50 rounded-full transition border border-gray-100 shadow-sm shrink-0 flex items-center justify-center">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </a>
+                    @endif
 
                     <div class="text-right hidden sm:block border-l border-gray-100 pl-4 ml-1 shrink-0">
                         <p class="text-sm font-bold text-gray-800">{{ Auth::user()->name }}</p>
                         <p class="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded inline-block mt-0.5">
-                            Administrator
+                            @if(Auth::user()->role === 'pengelola')
+                                Pengelola ({{ Auth::user()->komunitas->nama_komunitas ?? '-' }})
+                            @else
+                                Administrator
+                            @endif
                         </p>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold shadow-md shrink-0">

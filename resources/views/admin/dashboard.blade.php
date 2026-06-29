@@ -16,6 +16,7 @@
         </select>
     </div>
 
+    @if(Auth::user()->role !== 'pengelola')
     <div>
         <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Filter Komunitas</label>
         <select name="komunitas_id" class="w-full md:w-64 px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 font-bold text-gray-800 transition">
@@ -25,6 +26,7 @@
             @endforeach
         </select>
     </div>
+    @endif
 
     <div class="flex gap-2">
         <button type="submit" class="px-6 py-2.5 bg-gray-900 text-white font-bold rounded-xl hover:bg-emerald-500 transition shadow-md">Terapkan Filter</button>
@@ -115,6 +117,13 @@
                     <div class="text-right">
                         <!-- Tampilkan Jumlah Armada -->
                         <p class="text-[10px] font-bold text-gray-500 mb-1">{{ $item->armadas->count() }} Jeep Ditugaskan</p>
+                        @if($item->armadas->count() > 0)
+                            <div class="text-[9px] text-gray-600 text-right mt-1 max-w-[200px] truncate space-y-0.5">
+                                @foreach($item->armadas as $armada)
+                                    <div>🚘 {{ $armada->jeep->nama_jeep ?? 'Jeep' }} - 👤 {{ $armada->supir->nama_supir ?? 'Supir' }}</div>
+                                @endforeach
+                            </div>
+                        @endif
                         @if($item->status === 'Pending')
                             <span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold">Menunggu</span>
                         @elseif($item->status === 'DP Lunas')

@@ -26,16 +26,6 @@ class DatabaseSeeder extends Seeder
             'no_hp'        => null,
         ]);
 
-        // 2. Pengelola (komunitas_id null karena komunitas belum dibuat)
-        //    Admin harus buat komunitas dulu, lalu update komunitas_id pengelola ini
-        User::create([
-            'name'         => 'Pengelola Demo',
-            'email'        => 'pengelola@jeepdieng.com',
-            'password'     => Hash::make('password123'),
-            'role'         => 'pengelola',
-            'komunitas_id' => null,
-            'no_hp'        => null,
-        ]);
 
         // 3. Customer
         User::create([

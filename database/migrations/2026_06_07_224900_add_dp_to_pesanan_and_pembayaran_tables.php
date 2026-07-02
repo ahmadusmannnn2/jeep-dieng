@@ -15,7 +15,9 @@ return new class extends Migration
             $table->enum('tipe_pembayaran', ['Lunas', 'DP'])->default('Lunas')->after('total_harga');
         });
 
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE pesanan MODIFY COLUMN status ENUM('Pending', 'Disetujui', 'DP Lunas', 'Lunas', 'Selesai', 'Dibatalkan') DEFAULT 'Pending'");
+        if (config('database.default') !== 'sqlite') {
+            \Illuminate\Support\Facades\DB::statement("ALTER TABLE pesanan MODIFY COLUMN status ENUM('Pending', 'Disetujui', 'DP Lunas', 'Lunas', 'Selesai', 'Dibatalkan') DEFAULT 'Pending'");
+        }
 
         Schema::table('pembayaran', function (Blueprint $table) {
             $table->enum('jenis_pembayaran', ['DP', 'Pelunasan', 'Lunas'])->default('Lunas')->after('pesanan_id');
@@ -27,7 +29,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE pesanan MODIFY COLUMN status ENUM('Pending', 'Disetujui', 'Lunas', 'Selesai', 'Dibatalkan') DEFAULT 'Pending'");
+        if (config('database.default') !== 'sqlite') {
+            \Illuminate\Support\Facades\DB::statement("ALTER TABLE pesanan MODIFY COLUMN status ENUM('Pending', 'Disetujui', 'Lunas', 'Selesai', 'Dibatalkan') DEFAULT 'Pending'");
+        }
 
         Schema::table('pesanan', function (Blueprint $table) {
             $table->dropColumn('tipe_pembayaran');

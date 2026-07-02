@@ -17,6 +17,7 @@ class User extends Authenticatable
         'role',
         'komunitas_id',
         'no_hp',
+        'foto_profil',
     ];
 
     protected $hidden = [

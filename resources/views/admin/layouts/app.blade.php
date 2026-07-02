@@ -125,11 +125,13 @@
                             <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.rute-wisata.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Kelola Rute Destinasi
                         </a>
+                        {{--
                         <a href="{{ route('admin.jadwal.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.jadwal.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
                             <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.jadwal.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
                             <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.jadwal.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Jadwal Keberangkatan
                         </a>
+                        --}}
                     </div>
                 </div>
                 @endif
@@ -235,9 +237,13 @@
                             @endif
                         </p>
                     </div>
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold shadow-md shrink-0">
-                        {{ substr(Auth::user()->name, 0, 1) }}
-                    </div>
+                    @if(Auth::user()->foto_profil)
+                        <img src="{{ \Illuminate\Support\Facades\Storage::url(Auth::user()->foto_profil) }}" alt="{{ Auth::user()->name }}" class="w-10 h-10 rounded-full object-cover shadow-md border-2 border-emerald-100 shrink-0">
+                    @else
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold shadow-md border-2 border-emerald-100 shrink-0">
+                            {{ substr(Auth::user()->name, 0, 1) }}
+                        </div>
+                    @endif
                 </div>
             </header>
 

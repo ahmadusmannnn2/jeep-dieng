@@ -109,6 +109,13 @@
                         <a href="{{ route('admin.pesanan.show', $item->id) }}" class="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition shadow-md">Detail</a>
                         @if(Auth::user()->role === 'admin')
                         <a href="{{ route('admin.pesanan.edit', $item->id) }}" class="px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-xl hover:bg-emerald-600 transition shadow-md">Kelola</a>
+                        @if(!in_array($item->status, ['DP Lunas', 'Lunas', 'Selesai']))
+                        <form action="{{ route('admin.pesanan.destroy', $item->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini? Tindakan ini tidak dapat dibatalkan!');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-xl hover:bg-red-600 transition shadow-md">Hapus</button>
+                        </form>
+                        @endif
                         @endif
                     </td>
                 </tr>

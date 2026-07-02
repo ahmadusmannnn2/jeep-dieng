@@ -242,4 +242,20 @@ class BookingController extends Controller
         $pesanan->load(['paketWisata', 'jadwal', 'armadas.jeep', 'armadas.supir', 'pembayaran', 'pembayarans', 'komunitas']);
         return view('frontend.booking.print', compact('pesanan'));
     }
+
+    // 7. Menghapus Pesanan oleh Customer
+    public function destroy(Pesanan $pesanan)
+    {
+        if ((int) $pesanan->user_id !== (int) Auth::id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        // Jangan izinkan penghapusan jika pesanan sudah dibayar (DP/Lunas) atau selesai
+        if (in_array($pesanan->status, ['DP Lunas', 'Lunas', 'Selesai'])) {
+            return back()->with('error', 'Pesanan yang sudah terbayar atau selesai tidak dapat dibatalkan/dihapus.');
+        }
+
+        $pesanan->delete();
+        return redirect()->route('dashboard')->with('success', 'Pesanan Anda berhasil dihapus.');
+    }
 }

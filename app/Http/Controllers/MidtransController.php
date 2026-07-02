@@ -18,24 +18,28 @@ class MidtransController extends Controller
         \Midtrans\Config::$serverKey    = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = config('midtrans.is_production');
 
-        try {
-            $notification = new \Midtrans\Notification();
-        } catch (\Exception $e) {
-            Log::error('Midtrans notification error: ' . $e->getMessage());
-            return response()->json(['message' => 'Invalid notification'], 400);
-        }
+        $orderId           = $request->input('order_id');         // BKG-{pesanan_id}-{timestamp}
+        $transactionStatus = $request->input('transaction_status');
+        $paymentType       = $request->input('payment_type');
+        $fraudStatus       = $request->input('fraud_status', 'accept');
 
-        $orderId           = $notification->order_id;         // BKG-{pesanan_id}-{timestamp}
-        $transactionStatus = $notification->transaction_status;
-        $paymentType       = $notification->payment_type;
-        $fraudStatus       = $notification->fraud_status ?? 'accept';
+        // Verifikasi Signature Key untuk keamanan webhook
+        $serverKey = config('midtrans.server_key');
+        $localSignature = hash("sha512", $request->input('order_id') . $request->input('status_code') . $request->input('gross_amount') . $serverKey);
+        
+        if ($localSignature !== $request->input('signature_key')) {
+            Log::error("Midtrans: signature key mismatch. Order: {$orderId}, Local: {$localSignature}, Midtrans: " . $request->input('signature_key'));
+            return response()->json(['message' => 'Invalid signature key'], 403);
+        }
 
         // Cari record pembayaran berdasarkan midtrans_order_id
         $pembayaran = Pembayaran::where('midtrans_order_id', $orderId)->first();
 
         if (!$pembayaran) {
+            // Kembalikan status 200 OK meskipun pesanan tidak ditemukan agar Dashboard Midtrans 
+            // tidak menganggap endpoint bermasalah (terutama saat tes mock dari dashboard).
             Log::warning("Midtrans: pembayaran tidak ditemukan untuk order_id: {$orderId}");
-            return response()->json(['message' => 'Order not found'], 404);
+            return response()->json(['message' => 'Payment not found'], 200);
         }
 
         $pesanan = $pembayaran->pesanan;

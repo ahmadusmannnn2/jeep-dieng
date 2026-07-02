@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
 
     // DETAIL RIWAYAT PESANAN / E-TIKET CUSTOMER
     Route::get('/pesanan-saya/{pesanan}', [BookingController::class, 'show'])->name('booking.show');
+    Route::delete('/pesanan-saya/{pesanan}', [BookingController::class, 'destroy'])->name('booking.destroy');
     // RUTE CETAK TIKET
     Route::get('/pesanan-saya/{pesanan}/cetak', [BookingController::class, 'printTicket'])->name('booking.print');
 
@@ -77,6 +78,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('/pesanan/{pesanan}/edit', [PesananController::class, 'edit'])->name('pesanan.edit');
     Route::put('/pesanan/{pesanan}', [PesananController::class, 'update'])->name('pesanan.update');
+    Route::delete('/pesanan/{pesanan}', [PesananController::class, 'destroy'])->name('pesanan.destroy');
 
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');

@@ -156,4 +156,21 @@ class PesananController extends Controller
 
         return redirect()->route('admin.pesanan.show', $pesanan->id)->with('success', 'Status pesanan dan penugasan armada berhasil diperbarui!');
     }
+
+    public function destroy(Pesanan $pesanan)
+    {
+        $user = Auth::user();
+        // Proteksi: Pengelola tidak diizinkan menghapus pesanan
+        if ($user->role === 'pengelola') {
+            abort(403, 'Akses Ditolak: Pengelola tidak diizinkan menghapus data pesanan.');
+        }
+
+        // Jangan izinkan penghapusan jika pesanan sudah dibayar atau selesai
+        if (in_array($pesanan->status, ['DP Lunas', 'Lunas', 'Selesai'])) {
+            return back()->with('error', 'Pesanan yang sudah terbayar atau selesai tidak dapat dihapus.');
+        }
+
+        $pesanan->delete();
+        return back()->with('success', 'Pesanan berhasil dihapus.');
+    }
 }

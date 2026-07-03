@@ -275,11 +275,19 @@
         <!-- ========================== -->
         <!-- FORMULIR KHUSUS PENGELOLA  -->
         <!-- ========================== -->
-        <form action="{{ route('admin.pesanan.update', $pesanan->id) }}" method="POST" class="bg-gray-900 rounded-3xl shadow-xl border border-gray-800 p-6 md:p-8 sticky top-6">
-            @csrf
-            @method('PUT')
-
+        <div class="bg-gray-900 rounded-3xl shadow-xl border border-gray-800 p-6 md:p-8 sticky top-6">
             <h3 class="text-lg font-bold text-white border-b border-gray-700 pb-4 mb-6">Penugasan Armada (Jeep)</h3>
+
+            @if(!in_array($pesanan->status, ['Disetujui', 'DP Lunas']))
+                <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 text-center">
+                    <svg class="w-12 h-12 text-gray-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    <h4 class="text-white font-bold mb-1">Form Penugasan Terkunci</h4>
+                    <p class="text-sm text-gray-400">Pesanan saat ini berstatus <span class="font-bold text-emerald-400">{{ $pesanan->status }}</span>. Anda hanya dapat mengatur armada pada saat statusnya <b>Disetujui</b> atau <b>DP Lunas</b>.</p>
+                </div>
+            @else
+            <form action="{{ route('admin.pesanan.update', $pesanan->id) }}" method="POST">
+                @csrf
+                @method('PUT')
 
             <div class="mb-5">
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Status Pembayaran</label>
@@ -330,7 +338,9 @@
             <p class="text-[10px] text-gray-400 text-center leading-relaxed">
                 <span class="font-bold text-amber-500">Penting:</span> Pastikan Jeep dan Supir yang dipilih sedang dalam kondisi siap jalan. E-Ticket Pelanggan akan valid setelah Anda menetapkan armada ini.
             </p>
-        </form>
+            </form>
+            @endif
+        </div>
         @endif
     </div>
     </div>

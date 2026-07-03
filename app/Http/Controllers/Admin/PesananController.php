@@ -142,7 +142,18 @@ class PesananController extends Controller
                 'supir_id.*' => 'nullable|exists:supir,id',
             ]);
 
-            // VALIDASI DOUBLE BOOKING JEEP
+            // VALIDASI ARMADA/SUPIR GANDA DI FORM YANG SAMA
+            $jeeps = array_filter($request->jeep_id ?? []);
+            if (count($jeeps) !== count(array_unique($jeeps))) {
+                return back()->with('error', 'PENUGASAN DITOLAK: Satu armada Jeep tidak boleh dipilih lebih dari satu kali dalam satu pesanan!');
+            }
+            
+            $supirs = array_filter($request->supir_id ?? []);
+            if (count($supirs) !== count(array_unique($supirs))) {
+                return back()->with('error', 'PENUGASAN DITOLAK: Satu Supir tidak boleh dipilih lebih dari satu kali dalam satu pesanan!');
+            }
+
+            // VALIDASI DOUBLE BOOKING JEEP LINTAS PESANAN
             $tanggalJadwal = $pesanan->tanggal_jadwal;
             if ($request->has('jeep_id')) {
                 foreach ($request->jeep_id as $j_id) {

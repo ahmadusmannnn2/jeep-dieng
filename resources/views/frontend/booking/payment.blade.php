@@ -26,7 +26,7 @@
                     
                     {{-- KARTU 1: DOWN PAYMENT (DP 50%) --}}
                     @php
-                        $isDpPaid = in_array($pesanan->status, ['DP Lunas', 'Lunas', 'Selesai']);
+                        $isDpPaid = in_array($pesanan->status, ['DP Lunas', 'Selesai Perjalanan', 'Lunas', 'Selesai']);
                     @endphp
                     <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border {{ $isDpPaid ? 'border-emerald-200 bg-emerald-50/20' : 'border-gray-100' }} transition relative flex flex-col justify-between h-full">
                         <div>

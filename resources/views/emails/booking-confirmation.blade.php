@@ -58,7 +58,14 @@
             <div class="card-title">📋 Detail Pemesanan</div>
             <div class="detail-row">
                 <span class="detail-label">Paket Wisata</span>
-                <span class="detail-value">{{ $pesanan->paketWisata->nama_paket ?? '-' }}</span>
+                <span class="detail-value">
+                    <span style="display: block;">{{ $pesanan->paketWisata->nama_paket ?? '-' }}</span>
+                    @if(isset($pesanan->paketWisata->rutes) && $pesanan->paketWisata->rutes->count() > 0)
+                        <span style="display: block; font-size: 11px; color: #059669; margin-top: 4px; font-weight: 500;">
+                            📍 Destinasi: {{ $pesanan->paketWisata->rutes->pluck('nama_rute')->implode(', ') }}
+                        </span>
+                    @endif
+                </span>
             </div>
             <div class="detail-row">
                 <span class="detail-label">Penyedia</span>

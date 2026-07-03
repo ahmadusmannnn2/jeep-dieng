@@ -44,129 +44,13 @@
                     <option value="Dibatalkan" {{ $pesanan->status == 'Dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
                 </select>
             </div>
-
-            <!-- PENUGASAN MULTI-ARMADA -->
-            <div class="mb-6">
-                <div class="flex justify-between items-center mb-4">
-                    <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider">Penugasan Armada & Supir</label>
-                    <button type="button" id="btn-tambah-armada" class="px-4 py-2 bg-emerald-100 text-emerald-700 font-bold rounded-lg text-xs hover:bg-emerald-200 transition flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Tambah Armada
-                    </button>
-                </div>
-                
-                <div id="armada-wrapper" class="space-y-4">
-                    @if($pesanan->armadas->count() > 0)
-                        @foreach($pesanan->armadas as $index => $armada)
-                        <div class="armada-row flex gap-4 p-4 bg-gray-50 border border-gray-200 rounded-xl relative">
-                            <div class="flex-1">
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Pilih Jeep</label>
-                                <select name="jeep_id[]" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-emerald-500 text-sm">
-                                    <option value="">-- Kosongkan / Hapus --</option>
-                                    @foreach($jeeps as $j)
-                                        <option value="{{ $j->id }}" {{ $armada->jeep_id == $j->id ? 'selected' : '' }}>{{ $j->nama_jeep }} ({{ $j->nomor_polisi }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="flex-1">
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Pilih Supir</label>
-                                <select name="supir_id[]" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-emerald-500 text-sm">
-                                    <option value="">-- Kosongkan / Hapus --</option>
-                                    @foreach($supirs as $s)
-                                        <option value="{{ $s->id }}" {{ $armada->supir_id == $s->id ? 'selected' : '' }}>{{ $s->nama_supir }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <button type="button" class="btn-hapus-armada absolute top-[-10px] right-[-10px] bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            </button>
-                        </div>
-                        @endforeach
-                    @else
-                        <!-- Form Kosong Pertama Jika Belum Ada -->
-                        <div class="armada-row flex gap-4 p-4 bg-gray-50 border border-gray-200 rounded-xl relative">
-                            <div class="flex-1">
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Pilih Jeep</label>
-                                <select name="jeep_id[]" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-emerald-500 text-sm">
-                                    <option value="">-- Kosongkan --</option>
-                                    @foreach($jeeps as $j)
-                                        <option value="{{ $j->id }}">{{ $j->nama_jeep }} ({{ $j->nomor_polisi }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="flex-1">
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Pilih Supir</label>
-                                <select name="supir_id[]" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-emerald-500 text-sm">
-                                    <option value="">-- Kosongkan --</option>
-                                    @foreach($supirs as $s)
-                                        <option value="{{ $s->id }}">{{ $s->nama_supir }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <button type="button" class="btn-hapus-armada absolute top-[-10px] right-[-10px] bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            </button>
-                        </div>
-                    @endif
-                </div>
-                <p class="text-xs text-gray-500 mt-3 font-medium flex items-center gap-1">
-                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Sistem akan mengabaikan (tidak menyimpan) baris armada jika pilihan dikosongkan.
-                </p>
-            </div>
-
-            <div class="mt-8 flex gap-4">
-                <button type="submit" class="flex-1 px-6 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-emerald-600 transition shadow-lg">Simpan Perubahan</button>
+            <div class="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-100">
+                <a href="{{ route('admin.pesanan.index') }}" class="px-6 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition">Batal</a>
+                <button type="submit" class="px-8 py-3 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30">
+                    Simpan Perubahan
+                </button>
             </div>
         </form>
     </div>
 </div>
-
-<!-- Template HTML untuk Kloning via JavaScript -->
-<div id="armada-template" class="hidden">
-    <div class="armada-row flex gap-4 p-4 bg-gray-50 border border-emerald-300 rounded-xl relative mt-4">
-        <div class="flex-1">
-            <label class="block text-xs font-bold text-gray-500 mb-1">Pilih Jeep</label>
-            <select name="jeep_id[]" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-emerald-500 text-sm">
-                <option value="">-- Kosongkan --</option>
-                @foreach($jeeps as $j)
-                    <option value="{{ $j->id }}">{{ $j->nama_jeep }} ({{ $j->nomor_polisi }})</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="flex-1">
-            <label class="block text-xs font-bold text-gray-500 mb-1">Pilih Supir</label>
-            <select name="supir_id[]" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-emerald-500 text-sm">
-                <option value="">-- Kosongkan --</option>
-                @foreach($supirs as $s)
-                    <option value="{{ $s->id }}">{{ $s->nama_supir }}</option>
-                @endforeach
-            </select>
-        </div>
-        <button type="button" class="btn-hapus-armada absolute top-[-10px] right-[-10px] bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-    </div>
-</div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const wrapper = document.getElementById('armada-wrapper');
-        const btnTambah = document.getElementById('btn-tambah-armada');
-        const template = document.getElementById('armada-template').innerHTML;
-
-        // Fungsi Tambah Row
-        btnTambah.addEventListener('click', function() {
-            wrapper.insertAdjacentHTML('beforeend', template);
-        });
-
-        // Fungsi Hapus Row (Event Delegation)
-        wrapper.addEventListener('click', function(e) {
-            if (e.target.closest('.btn-hapus-armada')) {
-                const row = e.target.closest('.armada-row');
-                row.remove();
-            }
-        });
-    });
-</script>
 @endsection

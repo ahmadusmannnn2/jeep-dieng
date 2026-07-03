@@ -89,10 +89,17 @@
                     <div class="label">Jumlah Peserta</div>
                     <div class="value accent">{{ $pesanan->jumlah_pengunjung }} Orang</div>
                 </div>
-                <div class="ticket-item">
-                    <div class="label">Paket</div>
-                    <div class="value">{{ $pesanan->paketWisata->nama_paket ?? '-' }}</div>
-                </div>
+                <div class="detail-row" style="border: none; padding: 0;">
+                <span class="detail-label" style="color: #6b7280; font-size: 10px; text-transform: uppercase;">Paket Wisata</span>
+                <span class="detail-value" style="color: #e5e7eb; font-size: 13px; text-align: left;">
+                    <span style="display: block;">{{ $pesanan->paketWisata->nama_paket ?? '-' }}</span>
+                    @if(isset($pesanan->paketWisata->rutes) && $pesanan->paketWisata->rutes->count() > 0)
+                        <span style="display: block; font-size: 11px; color: #059669; margin-top: 4px; font-weight: 500;">
+                            📍 Destinasi: {{ $pesanan->paketWisata->rutes->pluck('nama_rute')->implode(', ') }}
+                        </span>
+                    @endif
+                </span>
+            </div>
                 <div class="ticket-item">
                     <div class="label">Tipe Perjalanan</div>
                     <div class="value">{{ $pesanan->tipe_trip ?? 'Private' }} ({{ $pesanan->jumlah_jeep ?? 1 }} Jeep)</div>

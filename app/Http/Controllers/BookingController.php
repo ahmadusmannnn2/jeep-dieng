@@ -85,7 +85,7 @@ class BookingController extends Controller
         $pesanan->load(['paketWisata', 'user']);
 
         // Tentukan jenis & jumlah bayar (Hanya ada DP 50% dan Pelunasan 50%)
-        $jenisPembayaran = ($pesanan->status === 'DP Lunas') ? 'Pelunasan' : 'DP';
+        $jenisPembayaran = in_array($pesanan->status, ['DP Lunas', 'Selesai Perjalanan']) ? 'Pelunasan' : 'DP';
         $jumlahBayar     = (int) ($pesanan->total_harga / 2);
 
         // Order ID unik per sesi pembayaran (DP atau Pelunasan)

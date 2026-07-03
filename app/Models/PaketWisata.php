@@ -21,4 +21,11 @@ class PaketWisata extends Model
     {
         return $this->hasMany(Pesanan::class, 'paket_wisata_id');
     }
+
+    public function rutes()
+    {
+        return $this->belongsToMany(RuteWisata::class, 'paket_rute', 'paket_wisata_id', 'rute_wisata_id')
+                    ->withPivot('urutan')
+                    ->orderByPivot('urutan', 'asc');
+    }
 }

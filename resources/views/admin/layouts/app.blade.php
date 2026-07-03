@@ -22,9 +22,21 @@
 <body class="bg-gray-50 text-gray-800">
 
     @php
-        // Menghitung jumlah pesanan baru (Pending) secara otomatis
-        $pendingQuery = \App\Models\Pesanan::where('status', 'Pending');
-        $pesananPendingCount = $pendingQuery->count();
+        // Notifikasi Admin
+        $pesananPendingCount = \App\Models\Pesanan::where('status', 'Pending')->count();
+        $pesananNeedJeepCount = \App\Models\Pesanan::where('status', 'DP Lunas')->doesntHave('armadas')->count();
+        $adminNotifCount = $pesananPendingCount + $pesananNeedJeepCount;
+
+        // Notifikasi Pengelola
+        $pengelolaNotifCount = 0;
+        $pengelolaOrders = collect();
+        if (Auth::user()->role === 'pengelola') {
+            $pengelolaOrders = \App\Models\Pesanan::where('status', 'DP Lunas')
+                ->where('komunitas_id', Auth::user()->komunitas_id)
+                ->latest()
+                ->get();
+            $pengelolaNotifCount = $pengelolaOrders->count();
+        }
     @endphp
 
     <div x-data="{ mobileSidebarOpen: false, sidebarCollapsed: false }" class="flex h-screen overflow-hidden">
@@ -217,6 +229,52 @@
 
                 <div class="flex items-center gap-3">
                     
+                    <!-- Lonceng Notifikasi Internal -->
+                    <div x-data="{ showInternalNotif: false }" class="relative">
+                        <button @click="showInternalNotif = !showInternalNotif" @click.away="showInternalNotif = false" class="relative p-2.5 text-gray-500 hover:text-emerald-600 bg-gray-50 hover:bg-emerald-50 rounded-full transition border border-gray-100 shadow-sm shrink-0 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                            @if( (Auth::user()->role === 'admin' && $adminNotifCount > 0) || (Auth::user()->role === 'pengelola' && $pengelolaNotifCount > 0) )
+                                <span class="absolute top-0 right-0 flex h-3 w-3">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                                </span>
+                            @endif
+                        </button>
+                        
+                        <div x-show="showInternalNotif" x-transition x-cloak class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                            <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/50">
+                                <h3 class="text-sm font-bold text-gray-900">Pemberitahuan Sistem</h3>
+                            </div>
+                            <div class="max-h-80 overflow-y-auto">
+                                @if(Auth::user()->role === 'admin')
+                                    @if($adminNotifCount == 0)
+                                        <div class="px-4 py-6 text-center text-gray-500 text-sm">Belum ada tugas baru.</div>
+                                    @else
+                                        @if($pesananPendingCount > 0)
+                                            <a href="{{ route('admin.pesanan.index') }}" class="block px-4 py-4 border-b border-gray-50 hover:bg-emerald-50 transition">
+                                                <p class="text-sm text-gray-800 font-medium">Terdapat <strong>{{ $pesananPendingCount }} pesanan</strong> menunggu verifikasi pembayaran.</p>
+                                            </a>
+                                        @endif
+                                        @if($pesananNeedJeepCount > 0)
+                                            <a href="{{ route('admin.pesanan.index') }}" class="block px-4 py-4 border-b border-gray-50 hover:bg-emerald-50 transition">
+                                                <p class="text-sm text-gray-800 font-medium text-amber-600">Ada <strong>{{ $pesananNeedJeepCount }} pesanan</strong> Lunas DP yang belum mendapatkan penugasan Jeep!</p>
+                                            </a>
+                                        @endif
+                                    @endif
+                                @elseif(Auth::user()->role === 'pengelola')
+                                    @forelse($pengelolaOrders as $order)
+                                        <a href="{{ route('admin.pesanan.show', $order->id) }}" class="block px-4 py-4 border-b border-gray-50 hover:bg-emerald-50 transition">
+                                            <p class="text-sm text-gray-800 font-medium">Penugasan baru untuk tiket <strong>#{{ $order->id }}</strong>. Segera cek dan siapkan armada!</p>
+                                            <p class="text-xs text-emerald-600 font-bold mt-1">Klik untuk mencetak Surat Jalan</p>
+                                        </a>
+                                    @empty
+                                        <div class="px-4 py-6 text-center text-gray-500 text-sm">Belum ada penugasan baru.</div>
+                                    @endforelse
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
                     <a href="{{ route('home') }}" target="_blank" title="Pratinjau Halaman Pengunjung" class="p-2.5 text-gray-500 hover:text-emerald-600 bg-gray-50 hover:bg-emerald-50 rounded-full transition border border-gray-100 shadow-sm shrink-0 flex items-center justify-center">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                     </a>

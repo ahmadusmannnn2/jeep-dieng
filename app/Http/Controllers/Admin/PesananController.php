@@ -73,8 +73,10 @@ class PesananController extends Controller
         $supirs = Supir::when($pesanan->komunitas_id, function($q) use ($pesanan) {
             return $q->where('komunitas_id', $pesanan->komunitas_id);
         })->get();
+        
+        $semuaKomunitas = \App\Models\Komunitas::orderBy('nama_komunitas')->get();
 
-        return view('admin.pesanan.show', compact('pesanan', 'jeeps', 'supirs'));
+        return view('admin.pesanan.show', compact('pesanan', 'jeeps', 'supirs', 'semuaKomunitas'));
     }
 
     public function edit(Pesanan $pesanan)
@@ -97,64 +99,115 @@ class PesananController extends Controller
     public function update(Request $request, Pesanan $pesanan)
     {
         $user = Auth::user();
-        // Proteksi: Pengelola tidak diizinkan mengupdate pesanan
-        if ($user->role === 'pengelola') {
-            abort(403, 'Akses Ditolak: Pengelola tidak diizinkan mengubah data pesanan.');
-        }
-
-        // Validasi menggunakan Array untuk mendukung Rombongan
-        $request->validate([
-            'status'     => 'required|in:Pending,Disetujui,DP Lunas,Lunas,Selesai,Dibatalkan',
-            'jeep_id'    => 'nullable|array', 
-            'jeep_id.*'  => 'nullable|exists:jeep,id',
-            'supir_id'   => 'nullable|array',
-            'supir_id.*' => 'nullable|exists:supir,id',
-        ]);
-
         $statusLama = $pesanan->status;
 
-        // 1. Update Status Pesanan
-        $pesanan->update([
-            'status' => $request->status,
-        ]);
+        if ($user->role === 'admin') {
+            // Cabang Admin: Mengelola Status Keuangan dan Memilih Komunitas
+            $request->validate([
+                'status'       => 'required|in:Pending,Disetujui,DP Lunas,Lunas,Selesai,Dibatalkan',
+                'komunitas_id' => 'nullable|exists:komunitas,id',
+            ]);
 
-        // 2. Simpan Multi-Armada ke Tabel Pivot
-        // Hapus data lama terlebih dahulu agar tidak duplikat saat diupdate ulang
-        $pesanan->armadas()->delete(); 
+            $pesanan->update([
+                'status'       => $request->status,
+                'komunitas_id' => $request->has('komunitas_id') ? $request->komunitas_id : $pesanan->komunitas_id,
+            ]);
+
+            // Jika status diubah menjadi Lunas atau DP Lunas, otomatis update status pembayaran
+            if (in_array($request->status, ['Lunas', 'DP Lunas']) && $pesanan->pembayaran) {
+                $pesanan->pembayaran->update(['status' => 'Valid']);
+            }
+
+            // Kirim notifikasi email
+            $pesanan->load(['user', 'paketWisata', 'armadas.jeep', 'armadas.supir', 'komunitas', 'pembayaran']);
+            try {
+                if (in_array($request->status, ['DP Lunas', 'Lunas']) && $statusLama !== $request->status) {
+                    Mail::to($pesanan->user->email)->send(new PaymentConfirmedMail($pesanan));
+
+                    if ($request->status === 'Lunas') {
+                        Mail::to($pesanan->user->email)->send(new EtiketLunasMail($pesanan));
+                    }
+                }
+            } catch (\Exception $e) { }
+
+            return redirect()->route('admin.pesanan.show', $pesanan->id)->with('success', 'Status pesanan dan penugasan komunitas berhasil diperbarui!');
+        } 
         
-        if ($request->has('jeep_id')) {
-            foreach ($request->jeep_id as $index => $j_id) {
-                if (!empty($j_id)) {
-                    PesananArmada::create([
-                        'pesanan_id' => $pesanan->id,
-                        'jeep_id'    => $j_id,
-                        'supir_id'   => $request->supir_id[$index] ?? null,
-                    ]);
+        if ($user->role === 'pengelola') {
+            // Cabang Pengelola: MURNI mengelola penugasan Jeep dan Supir
+            $request->validate([
+                'jeep_id'    => 'nullable|array', 
+                'jeep_id.*'  => 'nullable|exists:jeep,id',
+                'supir_id'   => 'nullable|array',
+                'supir_id.*' => 'nullable|exists:supir,id',
+            ]);
+
+            // VALIDASI DOUBLE BOOKING JEEP
+            $tanggalJadwal = $pesanan->tanggal_jadwal;
+            if ($request->has('jeep_id')) {
+                foreach ($request->jeep_id as $j_id) {
+                    if (!empty($j_id)) {
+                        $isBooked = \App\Models\PesananArmada::where('jeep_id', $j_id)
+                            ->whereHas('pesanan', function($query) use ($tanggalJadwal, $pesanan) {
+                                $query->whereDate('tanggal_jadwal', $tanggalJadwal)
+                                      ->where('id', '!=', $pesanan->id) // Abaikan pesanan ini sendiri
+                                      ->whereIn('status', ['Disetujui', 'DP Lunas', 'Selesai Perjalanan', 'Lunas']); // Status aktif
+                            })
+                            ->exists();
+
+                        if ($isBooked) {
+                            $jeep = \App\Models\Jeep::find($j_id);
+                            return back()->with('error', 'PENUGASAN DITOLAK: Armada Jeep "' . ($jeep->nama_jeep ?? $j_id) . '" sudah dipesan untuk rombongan lain pada tanggal ' . \Carbon\Carbon::parse($tanggalJadwal)->format('d/m/Y') . '. Silakan pilih Jeep yang nganggur.');
+                        }
+                    }
                 }
             }
-        }
 
-        // 3. Jika status diubah menjadi Lunas atau DP Lunas, otomatis update status pembayaran terbaru
-        if (in_array($request->status, ['Lunas', 'DP Lunas']) && $pesanan->pembayaran) {
-            $pesanan->pembayaran->update(['status' => 'Valid']);
-        }
-
-        // 4. 📧 Kirim email berdasarkan perubahan status
-        $pesanan->load(['user', 'paketWisata', 'armadas.jeep', 'armadas.supir', 'komunitas', 'pembayaran']);
-
-        try {
-            if (in_array($request->status, ['DP Lunas', 'Lunas']) && $statusLama !== $request->status) {
-                Mail::to($pesanan->user->email)->send(new PaymentConfirmedMail($pesanan));
-
-                if ($request->status === 'Lunas') {
-                    Mail::to($pesanan->user->email)->send(new EtiketLunasMail($pesanan));
+            $pesanan->armadas()->delete(); 
+            
+            if ($request->has('jeep_id')) {
+                foreach ($request->jeep_id as $index => $j_id) {
+                    if (!empty($j_id)) {
+                        PesananArmada::create([
+                            'pesanan_id' => $pesanan->id,
+                            'jeep_id'    => $j_id,
+                            'supir_id'   => $request->supir_id[$index] ?? null,
+                        ]);
+                    }
                 }
             }
-        } catch (\Exception $e) {
-            // Jangan hentikan proses jika email gagal terkirim
+
+            return redirect()->route('admin.pesanan.show', $pesanan->id)->with('success', 'Penugasan armada Jeep dan Supir berhasil disimpan!');
         }
 
-        return redirect()->route('admin.pesanan.show', $pesanan->id)->with('success', 'Status pesanan dan penugasan armada berhasil diperbarui!');
+        abort(403, 'Akses Ditolak: Peran pengguna tidak dikenali.');
+    }
+
+    public function markSelesaiPerjalanan(Pesanan $pesanan)
+    {
+        $user = Auth::user();
+        
+        // 1. Validasi Multi-Tenant & Peran Pengelola
+        if ($user->role !== 'pengelola') {
+            abort(403, 'Akses Ditolak: Hanya Pengelola Komunitas yang bertugas di lapangan yang dapat menekan tombol Selesai Perjalanan.');
+        }
+
+        if ($pesanan->komunitas_id !== $user->komunitas_id) {
+            abort(403, 'Akses Ditolak: Ini bukan pesanan komunitas Anda.');
+        }
+
+        // 2. Pastikan armada (Jeep) sudah dipilih
+        if ($pesanan->armadas()->count() == 0) {
+            return back()->with('error', 'Gagal: Anda belum menugaskan Armada Jeep untuk trip ini! Silakan pilih Jeep dan tekan Simpan Penugasan Armada terlebih dahulu.');
+        }
+
+        if ($pesanan->status !== 'DP Lunas') {
+            return back()->with('error', 'Hanya pesanan berstatus "DP Lunas" yang dapat ditandai selesai perjalanan.');
+        }
+
+        $pesanan->update(['status' => 'Selesai Perjalanan']);
+
+        return back()->with('success', 'Perjalanan berhasil ditandai selesai! Customer kini mendapat notifikasi untuk melakukan Pelunasan.');
     }
 
     public function destroy(Pesanan $pesanan)
@@ -166,8 +219,8 @@ class PesananController extends Controller
         }
 
         // Jangan izinkan penghapusan jika pesanan sudah dibayar atau selesai
-        if (in_array($pesanan->status, ['DP Lunas', 'Lunas', 'Selesai'])) {
-            return back()->with('error', 'Pesanan yang sudah terbayar atau selesai tidak dapat dihapus.');
+        if (in_array($pesanan->status, ['DP Lunas', 'Selesai Perjalanan', 'Lunas', 'Selesai'])) {
+            return back()->with('error', 'Pesanan yang sudah terbayar atau selesai perjalanannya tidak dapat dihapus.');
         }
 
         $pesanan->delete();

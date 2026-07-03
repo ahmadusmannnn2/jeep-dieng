@@ -12,8 +12,10 @@ class RuteWisata extends Model
     protected $table = 'rute_wisata';
     protected $guarded = ['id'];
 
-    public function komunitas()
+    public function pakets()
     {
-        return $this->belongsTo(Komunitas::class, 'komunitas_id');
+        return $this->belongsToMany(PaketWisata::class, 'paket_rute', 'rute_wisata_id', 'paket_wisata_id')
+                    ->withPivot('urutan')
+                    ->orderByPivot('urutan', 'asc');
     }
 }

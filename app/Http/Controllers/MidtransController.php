@@ -23,6 +23,12 @@ class MidtransController extends Controller
         $paymentType       = $request->input('payment_type');
         $fraudStatus       = $request->input('fraud_status', 'accept');
 
+        // Tangkap "Test Ping" dari Dashboard Midtrans (biasanya tidak ada order_id atau statusnya mock)
+        if (!$request->has('order_id') || $request->input('transaction_status') === 'mock') {
+            Log::info("Midtrans Test Ping diterima dengan sukses.");
+            return response()->json(['message' => 'Test ping successful'], 200);
+        }
+
         // Verifikasi Signature Key untuk keamanan webhook
         $serverKey = config('midtrans.server_key');
         $localSignature = hash("sha512", $request->input('order_id') . $request->input('status_code') . $request->input('gross_amount') . $serverKey);

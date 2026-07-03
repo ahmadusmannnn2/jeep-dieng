@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PaketWisata;
+use App\Models\RuteWisata;
 use App\Models\Komunitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,8 +43,9 @@ class PaketWisataController extends Controller
         $komunitas = $user->role === 'pengelola' 
             ? Komunitas::where('id', $user->komunitas_id)->get() 
             : Komunitas::all();
+        $ruteTersedia = RuteWisata::all();
 
-        return view('admin.paket_wisata.create', compact('komunitas'));
+        return view('admin.paket_wisata.create', compact('komunitas', 'ruteTersedia'));
     }
 
     public function store(Request $request)
@@ -67,7 +69,20 @@ class PaketWisataController extends Controller
             $data['gambar'] = $request->file('gambar')->store('paket_wisata', 'public');
         }
 
-        PaketWisata::create($data);
+        $paket = PaketWisata::create($data);
+
+        // Simpan urutan rute
+        if ($request->filled('rute_ids')) {
+            $ruteIds = explode(',', $request->rute_ids);
+            $syncData = [];
+            foreach ($ruteIds as $index => $ruteId) {
+                if(trim($ruteId) != '') {
+                    $syncData[$ruteId] = ['urutan' => $index + 1];
+                }
+            }
+            $paket->rutes()->sync($syncData);
+        }
+
         return redirect()->route('admin.paket-wisata.index')->with('success', 'Paket wisata berhasil ditambahkan!');
     }
 
@@ -81,8 +96,10 @@ class PaketWisataController extends Controller
         $komunitas = $user->role === 'pengelola' 
             ? Komunitas::where('id', $user->komunitas_id)->get() 
             : Komunitas::all();
+        
+        $ruteTersedia = RuteWisata::all();
 
-        return view('admin.paket_wisata.edit', compact('paketWisata', 'komunitas'));
+        return view('admin.paket_wisata.edit', compact('paketWisata', 'komunitas', 'ruteTersedia'));
     }
 
     public function update(Request $request, PaketWisata $paketWisata)
@@ -114,6 +131,19 @@ class PaketWisataController extends Controller
         }
 
         $paketWisata->update($data);
+
+        // Simpan urutan rute
+        if ($request->has('rute_ids')) {
+            $ruteIds = $request->rute_ids ? explode(',', $request->rute_ids) : [];
+            $syncData = [];
+            foreach ($ruteIds as $index => $ruteId) {
+                if(trim($ruteId) != '') {
+                    $syncData[$ruteId] = ['urutan' => $index + 1];
+                }
+            }
+            $paketWisata->rutes()->sync($syncData);
+        }
+
         return redirect()->route('admin.paket-wisata.index')->with('success', 'Paket wisata berhasil diperbarui!');
     }
 

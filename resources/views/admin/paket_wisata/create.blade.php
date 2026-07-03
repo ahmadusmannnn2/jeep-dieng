@@ -42,15 +42,68 @@
         </div>
 
         <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Rute Perjalanan (Drag & Drop) <span class="text-red-500">*</span></label>
+            <p class="text-xs text-gray-500 mb-3">Klik tombol tambah (+) pada rute di sebelah kiri, lalu geser (drag) kotak rute di sebelah kanan untuk mengatur urutan perjalanannya.</p>
+            
+            <div x-data="ruteManager()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Rute Tersedia -->
+                <div class="border border-gray-200 rounded-xl bg-gray-50 p-4 h-80 flex flex-col shadow-inner">
+                    <h4 class="font-bold text-sm text-gray-700 mb-3 border-b pb-2">Rute Tersedia</h4>
+                    <div class="overflow-y-auto flex-1 pr-2 space-y-2">
+                        <template x-for="rute in ruteTersedia" :key="rute.id">
+                            <div class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-emerald-300 transition">
+                                <span class="font-medium text-sm text-gray-800" x-text="rute.nama_rute"></span>
+                                <button type="button" @click="tambahRute(rute)" class="p-1.5 bg-emerald-100 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded transition">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                </button>
+                            </div>
+                        </template>
+                        <div x-show="ruteTersedia.length === 0" class="text-center text-xs font-bold text-emerald-600 mt-10">
+                            Semua rute telah dimasukkan ke paket!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rute Terpilih (Sortable) -->
+                <div class="border border-emerald-200 rounded-xl bg-emerald-50/50 p-4 h-80 flex flex-col">
+                    <h4 class="font-bold text-sm text-emerald-800 mb-3 border-b border-emerald-100 pb-2 flex justify-between items-center">
+                        <span>Urutan Perjalanan</span>
+                        <span class="text-xs font-bold text-emerald-700 bg-emerald-200 px-2.5 py-0.5 rounded-full" x-text="ruteTerpilih.length + ' Rute'"></span>
+                    </h4>
+                    
+                    <div id="sortable-list" class="overflow-y-auto flex-1 pr-2 space-y-2 pb-10">
+                        <template x-for="(rute, index) in ruteTerpilih" :key="rute.id">
+                            <div :data-id="rute.id" class="sortable-item flex items-center gap-3 p-3 bg-white border border-emerald-300 rounded-lg shadow-sm cursor-grab hover:shadow-md transition">
+                                <div class="text-emerald-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                                </div>
+                                <div class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-sm" x-text="index + 1"></div>
+                                <span class="font-bold text-sm text-gray-800 flex-1" x-text="rute.nama_rute"></span>
+                                <button type="button" @click="hapusRute(rute)" class="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition" title="Keluarkan Rute">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                        </template>
+                        <div x-show="ruteTerpilih.length === 0" class="text-center text-sm font-medium text-emerald-600/50 mt-10">
+                            ← Pilih rute dari daftar di sebelah kiri.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Input hidden untuk controller -->
+                <input type="hidden" name="rute_ids" :value="ruteTerpilih.map(r => r.id).join(',')">
+            </div>
+        </div>
+
+        <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Cover Paket (Opsional)</label>
             <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-2xl bg-gray-50 hover:bg-gray-100 transition relative overflow-hidden" id="drop-area">
                 
                 <div class="space-y-2 text-center z-10 relative" id="upload-placeholder">
                     <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
                     <div class="flex justify-center text-sm text-gray-600">
-                        <label class="relative cursor-pointer bg-white rounded-md font-bold text-emerald-600 hover:text-emerald-500 px-3 py-1 shadow-sm border border-gray-200">
+                        <label for="file-input-paket" class="relative cursor-pointer bg-white rounded-md font-bold text-emerald-600 hover:text-emerald-500 px-3 py-1 shadow-sm border border-gray-200">
                             <span>Pilih File Gambar</span>
-                            <input type="file" name="gambar" id="file-input" accept="image/*" class="sr-only" onchange="previewImage(event)">
                         </label>
                     </div>
                     <p class="text-xs text-gray-500">PNG, JPG, WEBP maks 3MB</p>
@@ -59,12 +112,12 @@
                 <div id="image-preview-container" class="hidden absolute inset-0 z-20 bg-white flex flex-col items-center justify-center p-2">
                     <img id="preview-img" class="h-32 w-auto object-cover rounded-lg shadow-sm border border-gray-200" src="" alt="Preview">
                     <p id="file-name" class="mt-2 text-xs font-bold text-gray-700 truncate w-full text-center px-4"></p>
-                    <label class="mt-2 cursor-pointer text-xs font-bold text-red-500 hover:text-red-700">
+                    <label for="file-input-paket" class="mt-2 cursor-pointer text-xs font-bold text-red-500 hover:text-red-700">
                         Ganti Gambar
-                        <input type="file" name="gambar" accept="image/*" class="sr-only" onchange="previewImage(event)">
                     </label>
                 </div>
 
+                <input type="file" name="gambar" id="file-input-paket" accept="image/*" class="sr-only" onchange="previewImage(event)">
             </div>
         </div>
 
@@ -93,5 +146,46 @@
             reader.readAsDataURL(file);
         }
     }
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('ruteManager', () => ({
+            ruteAsli: @json($ruteTersedia),
+            ruteTersedia: [],
+            ruteTerpilih: [],
+            
+            init() {
+                this.ruteTersedia = [...this.ruteAsli];
+                
+                // Init SortableJS setelah DOM siap
+                this.$nextTick(() => {
+                    const el = document.getElementById('sortable-list');
+                    if (el) {
+                        Sortable.create(el, {
+                            animation: 150,
+                            ghostClass: 'opacity-50',
+                            onEnd: (evt) => {
+                                // Pindahkan item di dalam array saat drag selesai
+                                const item = this.ruteTerpilih.splice(evt.oldIndex, 1)[0];
+                                this.ruteTerpilih.splice(evt.newIndex, 0, item);
+                            }
+                        });
+                    }
+                });
+            },
+            
+            tambahRute(rute) {
+                this.ruteTerpilih.push(rute);
+                this.ruteTersedia = this.ruteTersedia.filter(r => r.id !== rute.id);
+            },
+            
+            hapusRute(rute) {
+                this.ruteTersedia.push(rute);
+                this.ruteTerpilih = this.ruteTerpilih.filter(r => r.id !== rute.id);
+                // Urutkan kembali daftar yang tersedia berdasarkan abjad
+                this.ruteTersedia.sort((a, b) => a.nama_rute.localeCompare(b.nama_rute));
+            }
+        }));
+    });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 @endsection

@@ -5,7 +5,7 @@
 @section('content')
 
 <!-- Wrapper dibersihkan dari x-data bawaan Alpine -->
-<div class="py-12 bg-gray-50 min-h-screen">
+<div x-data="{ showReviewModal: false, reviewFormAction: '', rating: 5, hoveredRating: 0 }" class="py-12 bg-gray-50 min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="mb-10 border-b border-gray-200 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -43,7 +43,9 @@
                                             <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-amber-200">Menunggu Pembayaran</span>
                                         @endif
                                     @elseif($item->status === 'DP Lunas')
-                                        <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-blue-200">DP Lunas</span>
+                                        <span class="px-2.5 py-1 bg-teal-50 text-teal-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-teal-200">DP Lunas (50%)</span>
+                                    @elseif($item->status === 'Selesai Perjalanan')
+                                        <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-blue-200">Selesai Perjalanan (Tunggu Pelunasan)</span>
                                     @elseif($item->status === 'Lunas')
                                         <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-emerald-200">Lunas</span>
                                     @elseif($item->status === 'Selesai')
@@ -78,16 +80,32 @@
                         @php
                             $hasValidPayment = $item->pembayaran && $item->pembayaran->status === 'Valid';
                         @endphp
-                        @if(($item->status === 'Pending' && !$hasValidPayment) || $item->status === 'DP Lunas')
+                        @if(($item->status === 'Pending' && !$hasValidPayment) || $item->status === 'Selesai Perjalanan')
                             <a href="{{ route('booking.payment', $item->id) }}" class="w-full sm:w-auto px-6 py-2.5 bg-gray-900 text-white font-extrabold rounded-xl hover:bg-emerald-500 transition shadow-lg hover:shadow-emerald-500/30 text-sm text-center flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                {{ $item->status === 'DP Lunas' ? 'Bayar Pelunasan' : 'Bayar Sekarang' }}
+                                {{ $item->status === 'Selesai Perjalanan' ? 'Bayar Pelunasan' : 'Bayar Sekarang' }}
                             </a>
+                        @elseif($item->status === 'DP Lunas')
+                            <div class="w-full sm:w-auto px-6 py-2.5 bg-gray-100 text-gray-500 font-bold rounded-xl text-sm text-center flex items-center justify-center gap-2 border border-gray-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Menunggu Perjalanan Selesai
+                            </div>
                         @elseif($item->status === 'Lunas' || $item->status === 'Selesai')
                             <a href="{{ route('booking.print', $item->id) }}" target="_blank" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-500 text-white font-extrabold rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 text-sm text-center flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                                 Cetak E-Tiket
                             </a>
+                            @if(!$item->testimoni)
+                                <button type="button" @click="showReviewModal = true; reviewFormAction = '{{ route('booking.testimoni', $item->id) }}'" class="w-full sm:w-auto px-6 py-2.5 bg-yellow-400 text-yellow-900 font-extrabold rounded-xl hover:bg-yellow-500 transition shadow-lg shadow-yellow-400/30 text-sm text-center flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                    Beri Ulasan
+                                </button>
+                            @else
+                                <div class="w-full sm:w-auto px-6 py-2.5 bg-green-50 text-green-600 font-bold rounded-xl text-sm text-center flex items-center justify-center gap-2 border border-green-200 cursor-not-allowed">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                    Sudah Diulas
+                                </div>
+                            @endif
                         @endif
 
                         @if(!in_array($item->status, ['DP Lunas', 'Lunas', 'Selesai']))
@@ -114,6 +132,64 @@
                     <a href="{{ route('paket') }}" class="px-8 py-3.5 bg-emerald-500 text-white font-extrabold rounded-xl hover:bg-emerald-600 transition shadow-[0_8px_20px_rgba(16,185,129,0.3)] transform hover:-translate-y-1 block sm:inline-block">Cari Paket Wisata</a>
                 </div>
             @endforelse
+        </div>
+    </div>
+
+    <!-- MODAL REVIEW (ALPINE.JS) -->
+    <div x-show="showReviewModal" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+        
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm" @click="showReviewModal = false"></div>
+
+        <!-- Modal Content -->
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-8 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 scale-100" x-transition:leave-end="opacity-0 translate-y-8 scale-95">
+            
+            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="text-xl font-extrabold text-gray-900">Beri Ulasan Perjalanan</h3>
+                <button type="button" @click="showReviewModal = false" class="text-gray-400 hover:text-red-500 transition-colors p-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <form :action="reviewFormAction" method="POST" class="p-6 md:p-8">
+                @csrf
+
+                <!-- Interactive Star Rating -->
+                <div class="mb-6 text-center">
+                    <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Berapa Bintang Untuk Kami?</p>
+                    <div class="flex justify-center gap-2">
+                        <template x-for="i in 5">
+                            <button type="button" 
+                                @mouseenter="hoveredRating = i" 
+                                @mouseleave="hoveredRating = 0" 
+                                @click="rating = i" 
+                                class="focus:outline-none transition-transform hover:scale-110">
+                                <svg class="w-10 h-10 transition-colors duration-200" :class="(hoveredRating ? i <= hoveredRating : i <= rating) ? 'text-yellow-400 drop-shadow-md' : 'text-gray-200'" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                            </button>
+                        </template>
+                    </div>
+                    <input type="hidden" name="rating" :value="rating">
+                </div>
+
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1.5">Asal Kota <span class="text-xs text-gray-400 font-normal">(Opsional)</span></label>
+                        <input type="text" name="asal_kota" placeholder="Contoh: Jakarta" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition bg-gray-50 focus:bg-white text-gray-900">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1.5">Kesan & Pesan <span class="text-red-500">*</span></label>
+                        <textarea name="pesan" rows="4" required placeholder="Ceritakan pengalaman luar biasa Anda selama tour..." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition bg-gray-50 focus:bg-white text-gray-900 resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button type="submit" class="w-full py-3.5 bg-emerald-500 text-white font-extrabold rounded-xl hover:bg-emerald-600 transition shadow-[0_8px_20px_rgba(16,185,129,0.3)] transform hover:-translate-y-0.5">
+                        Kirim Ulasan Sekarang
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

@@ -32,14 +32,14 @@ class TestimoniController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'asal_kota' => 'nullable|string|max:255',
             'pesan' => 'required|string',
             'is_tampil' => 'required|boolean',
         ]);
 
-        Testimoni::create($request->validated());
+        Testimoni::create($validated);
 
         return redirect()->route('admin.testimoni.index')->with('success', 'Testimoni berhasil ditambahkan!');
     }
@@ -51,14 +51,14 @@ class TestimoniController extends Controller
 
     public function update(Request $request, Testimoni $testimoni)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'asal_kota' => 'nullable|string|max:255',
             'pesan' => 'required|string',
             'is_tampil' => 'required|boolean',
         ]);
 
-        $testimoni->update($request->validated());
+        $testimoni->update($validated);
 
         return redirect()->route('admin.testimoni.index')->with('success', 'Testimoni berhasil diperbarui!');
     }

@@ -4,23 +4,24 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\RuteWisata;
-use App\Models\Komunitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class RuteWisataController extends Controller
+class RuteWisataController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:admin', except: ['index']),
+        ];
+    }
+
     public function index(Request $request)
     {
-        $user = Auth::user();
-        $query = RuteWisata::with('komunitas');
-
-        if ($user->role === 'pengelola') {
-            $query->where('komunitas_id', $user->komunitas_id);
-        } elseif ($request->filled('komunitas_id')) {
-            $query->where('komunitas_id', $request->komunitas_id);
-        }
+        $query = RuteWisata::query();
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -28,15 +29,13 @@ class RuteWisataController extends Controller
         }
 
         $ruteWisata = $query->latest()->get();
-        $komunitas = Komunitas::all();
 
-        return view('admin.rute_wisata.index', compact('ruteWisata', 'komunitas'));
+        return view('admin.rute_wisata.index', compact('ruteWisata'));
     }
 
     public function create()
     {
-        $komunitas = Komunitas::all();
-        return view('admin.rute_wisata.create', compact('komunitas'));
+        return view('admin.rute_wisata.create');
     }
 
     public function store(Request $request)
@@ -44,7 +43,6 @@ class RuteWisataController extends Controller
         $request->validate([
             'nama_rute' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'komunitas_id' => 'required|exists:komunitas,id',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072'
         ]);
 
@@ -62,8 +60,7 @@ class RuteWisataController extends Controller
 
     public function edit(RuteWisata $ruteWisata)
     {
-        $komunitas = Komunitas::all();
-        return view('admin.rute_wisata.edit', compact('ruteWisata', 'komunitas'));
+        return view('admin.rute_wisata.edit', compact('ruteWisata'));
     }
 
     public function update(Request $request, RuteWisata $ruteWisata)
@@ -71,7 +68,6 @@ class RuteWisataController extends Controller
         $request->validate([
             'nama_rute' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'komunitas_id' => 'required|exists:komunitas,id',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072'
         ]);
 
@@ -92,10 +88,6 @@ class RuteWisataController extends Controller
 
     public function destroy(RuteWisata $ruteWisata)
     {
-        // Proteksi multi-tenant: pengelola tidak bisa hapus rute komunitas lain
-        if (Auth::user()->role === 'pengelola' && $ruteWisata->komunitas_id !== Auth::user()->komunitas_id) {
-            abort(403, 'Akses Ditolak.');
-        }
 
         if ($ruteWisata->gambar && Storage::disk('public')->exists($ruteWisata->gambar)) {
             Storage::disk('public')->delete($ruteWisata->gambar);

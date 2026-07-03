@@ -53,21 +53,33 @@ Route::middleware('auth')->group(function () {
     Route::delete('/pesanan-saya/{pesanan}', [BookingController::class, 'destroy'])->name('booking.destroy');
     // RUTE CETAK TIKET
     Route::get('/pesanan-saya/{pesanan}/cetak', [BookingController::class, 'printTicket'])->name('booking.print');
+    
+    // RUTE SUBMIT ULASAN (TESTIMONI)
+    Route::post('/pesanan-saya/{pesanan}/ulasan', [BookingController::class, 'storeTestimoni'])->name('booking.testimoni');
 
 });
 
-// RUTE DI AKSES BERSAMA OLEH ADMIN DAN PENGELOLA (Hanya Lihat Pesanan)
+// RUTE DI AKSES BERSAMA OLEH ADMIN DAN PENGELOLA
 Route::middleware(['auth', 'role:admin,pengelola'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    Route::resource('supir', SupirController::class);
+    Route::resource('jeep', JeepController::class);
+
     Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
     Route::get('/pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
+    Route::get('/pesanan/{pesanan}/edit', [PesananController::class, 'edit'])->name('pesanan.edit');
+    Route::put('/pesanan/{pesanan}', [PesananController::class, 'update'])->name('pesanan.update');
+    Route::delete('/pesanan/{pesanan}', [PesananController::class, 'destroy'])->name('pesanan.destroy');
+    Route::patch('/pesanan/{pesanan}/selesai-perjalanan', [PesananController::class, 'markSelesaiPerjalanan'])->name('pesanan.selesai-perjalanan');
+
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
+    Route::get('/laporan/komunitas', [LaporanController::class, 'komunitas'])->name('laporan.komunitas');
 });
 
 // RUTE KHUSUS SUPER ADMIN PUSAT (Bukan Pengelola)
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    Route::resource('supir', SupirController::class);
-    Route::resource('jeep', JeepController::class);
     Route::resource('paket-wisata', PaketWisataController::class)->parameters([
         'paket-wisata' => 'paketWisata'
     ]);
@@ -75,14 +87,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         'rute-wisata' => 'ruteWisata'
     ]);
     Route::resource('jadwal', JadwalKeberangkatanController::class);
-
-    Route::get('/pesanan/{pesanan}/edit', [PesananController::class, 'edit'])->name('pesanan.edit');
-    Route::put('/pesanan/{pesanan}', [PesananController::class, 'update'])->name('pesanan.update');
-    Route::delete('/pesanan/{pesanan}', [PesananController::class, 'destroy'])->name('pesanan.destroy');
-
-    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-    Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
-    Route::get('/laporan/komunitas', [LaporanController::class, 'komunitas'])->name('laporan.komunitas');
 
     Route::resource('komunitas', \App\Http\Controllers\Admin\KomunitasController::class)->parameters([
         'komunitas' => 'komunitas'

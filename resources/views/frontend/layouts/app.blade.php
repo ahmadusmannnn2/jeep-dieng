@@ -76,6 +76,49 @@
 
                 <div class="hidden lg:flex items-center gap-4">
                     @auth
+                        @php
+                            $unpaidTrips = Auth::user()->role !== 'admin' 
+                                ? \App\Models\Pesanan::with('paketWisata')->where('user_id', Auth::id())->where('status', 'Selesai Perjalanan')->get() 
+                                : collect();
+                        @endphp
+
+                        @if(Auth::user()->role !== 'admin')
+                            <!-- Notification Bell (Desktop) -->
+                            <div x-data="{ showNotifications: false }" class="relative">
+                                <button @click="showNotifications = !showNotifications" @click.away="showNotifications = false" class="relative p-2 text-gray-500 hover:text-emerald-500 transition-colors focus:outline-none">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                                    @if($unpaidTrips->count() > 0)
+                                        <span class="absolute top-1 right-1 flex h-3 w-3">
+                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                                        </span>
+                                    @endif
+                                </button>
+
+                                <!-- Dropdown -->
+                                <div x-show="showNotifications" x-transition x-cloak class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                                    <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/50">
+                                        <h3 class="text-sm font-bold text-gray-900">Notifikasi Anda</h3>
+                                    </div>
+                                    <div class="max-h-80 overflow-y-auto">
+                                        @forelse($unpaidTrips as $trip)
+                                            <a href="{{ route('booking.payment', $trip->id) }}" class="block px-4 py-4 border-b border-gray-50 hover:bg-emerald-50 transition">
+                                                <p class="text-sm text-gray-800 font-medium leading-snug">Terima kasih telah bersama kami! Perjalanan trip <strong>{{ $trip->paketWisata->nama_paket ?? 'Jeep Dieng' }}</strong> telah selesai.</p>
+                                                <p class="text-xs text-emerald-600 font-bold mt-2 flex items-center gap-1">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1V8m0 0v1m0 7v1m0-1v-1m0 0v-1"></path></svg>
+                                                    Klik untuk membayar pelunasan
+                                                </p>
+                                            </a>
+                                        @empty
+                                            <div class="px-4 py-6 text-center text-gray-500 text-sm">
+                                                Tidak ada notifikasi baru.
+                                            </div>
+                                        @endforelse
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         @if(Auth::user()->role === 'admin')
                             <a href="{{ route('admin.dashboard') }}" class="px-6 py-2.5 bg-gray-900 text-white font-bold rounded-xl hover:bg-emerald-500 transition shadow-lg hover:shadow-emerald-500/30 flex items-center gap-2 group">
                                 Panel Admin <svg class="w-4 h-4 transform group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
@@ -178,7 +221,15 @@
                 @else
                     <a href="{{ route('dashboard') }}" class="relative flex-1 flex flex-col items-center justify-center h-full text-gray-400 hover:text-emerald-500 transition-colors group px-2 {{ request()->routeIs('dashboard') ? 'text-emerald-600' : '' }}">
                         <div class="absolute inset-0 bg-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl m-1 {{ request()->routeIs('dashboard') ? 'opacity-100' : '' }}"></div>
-                        <svg class="w-6 h-6 relative z-10 transition-transform duration-300 group-hover:-translate-y-2 {{ request()->routeIs('dashboard') ? '-translate-y-2 text-emerald-500' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        <div class="relative z-10 transition-transform duration-300 group-hover:-translate-y-2 {{ request()->routeIs('dashboard') ? '-translate-y-2 text-emerald-500' : '' }}">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                            @if(isset($unpaidTrips) && $unpaidTrips->count() > 0)
+                                <span class="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 border border-white"></span>
+                                </span>
+                            @endif
+                        </div>
                         <span class="absolute bottom-2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none {{ request()->routeIs('dashboard') ? 'opacity-100 text-emerald-600' : '' }}">Riwayat</span>
                     </a>
 

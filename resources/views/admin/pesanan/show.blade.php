@@ -167,24 +167,126 @@
         </div>
     </div>
 
-    <div class="lg:col-span-1 items-start">
+    <div class="lg:col-span-1 items-start space-y-6">
+        @if(Auth::user()->role === 'pengelola' && $pesanan->status === 'DP Lunas')
+            @if($pesanan->armadas()->count() > 0)
+                <form action="{{ route('admin.pesanan.selesai-perjalanan', $pesanan->id) }}" method="POST" class="bg-blue-50 border border-blue-200 rounded-3xl shadow-sm p-6 relative overflow-hidden mb-6" onsubmit="return confirm('Yakin ingin menandai perjalanan ini telah selesai? Customer akan segera ditagih untuk melunasi sisa pembayaran.');">
+                    @csrf
+                    @method('PATCH')
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <svg class="w-24 h-24 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div class="relative z-10">
+                        <h3 class="text-lg font-bold text-blue-900 mb-2">Konfirmasi Selesai Trip</h3>
+                        <p class="text-sm text-blue-700 mb-4">Tekan tombol di bawah jika aktivitas trip Jeep Dieng sudah sepenuhnya selesai dilaksanakan oleh armada Anda.</p>
+                        <button type="submit" class="w-full py-3 bg-blue-600 text-white font-extrabold rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Tandai Selesai Perjalanan
+                        </button>
+                    </div>
+                </form>
+            @else
+                <div class="bg-amber-50 border border-amber-200 rounded-3xl shadow-sm p-6 relative overflow-hidden mb-6">
+                    <div class="relative z-10">
+                        <h3 class="text-lg font-bold text-amber-900 mb-2">Tugaskan Armada Terlebih Dahulu</h3>
+                        <p class="text-sm text-amber-800">Tiket ini sudah "DP Lunas", namun Anda belum menugaskan plat nomor Jeep/Armada. Silakan pilih Jeep pada kotak form di bawah ini agar tombol konfirmasi perjalanan dapat terbuka.</p>
+                    </div>
+                </div>
+            @endif
+        @endif
+
         @if(Auth::user()->role === 'admin')
+        <!-- ======================= -->
+        <!-- FORMULIR KHUSUS ADMIN -->
+        <!-- ======================= -->
         <form action="{{ route('admin.pesanan.update', $pesanan->id) }}" method="POST" class="bg-gray-900 rounded-3xl shadow-xl border border-gray-800 p-6 md:p-8 sticky top-6">
             @csrf
             @method('PUT')
 
-            <h3 class="text-lg font-bold text-white border-b border-gray-700 pb-4 mb-6">Penetapan Armada & Status</h3>
+            <h3 class="text-lg font-bold text-white border-b border-gray-700 pb-4 mb-6">Penetapan Status & Komunitas</h3>
 
             <div class="mb-5">
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Ubah Status</label>
-                <select name="status" class="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800 text-white font-bold focus:ring-2 focus:ring-emerald-500">
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">1. Pilih Komunitas Pengelola</label>
+                <select name="komunitas_id" class="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800 text-white font-bold focus:ring-2 focus:ring-emerald-500 transition">
+                    <option value="">-- Belum Ditentukan --</option>
+                    @foreach($semuaKomunitas as $kom)
+                        <option value="{{ $kom->id }}" {{ $pesanan->komunitas_id == $kom->id ? 'selected' : '' }}>
+                            {{ $kom->nama_komunitas }}
+                        </option>
+                    @endforeach
+                </select>
+                <p class="text-[10px] text-gray-500 mt-2">Komunitas terpilih akan mendapat Lonceng Penugasan Jeep dari sistem.</p>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">2. Ubah Status Tagihan</label>
+                <select name="status" class="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800 text-white font-bold focus:ring-2 focus:ring-emerald-500 transition">
                     <option value="Pending" {{ $pesanan->status === 'Pending' ? 'selected' : '' }}>Menunggu Pembayaran</option>
                     <option value="Disetujui" {{ $pesanan->status === 'Disetujui' ? 'selected' : '' }}>Disetujui</option>
                     <option value="DP Lunas" {{ $pesanan->status === 'DP Lunas' ? 'selected' : '' }}>DP Lunas</option>
+                    <option value="Selesai Perjalanan" {{ $pesanan->status === 'Selesai Perjalanan' ? 'selected' : '' }}>Selesai Perjalanan</option>
                     <option value="Lunas" {{ $pesanan->status === 'Lunas' ? 'selected' : '' }}>Lunas</option>
                     <option value="Selesai" {{ $pesanan->status === 'Selesai' ? 'selected' : '' }}>Selesai</option>
                     <option value="Dibatalkan" {{ $pesanan->status === 'Dibatalkan' ? 'selected' : '' }}>Batal</option>
                 </select>
+            </div>
+
+            <button type="submit" class="w-full py-4 bg-emerald-500 text-white text-base font-extrabold rounded-xl hover:bg-emerald-400 transition shadow-[0_4px_15px_rgba(16,185,129,0.3)] mb-4">
+                Simpan Status & Komunitas
+            </button>
+            
+            <p class="text-[10px] text-gray-400 text-center mb-6 border-b border-gray-700 pb-6">Catatan: Admin tidak lagi menugaskan Jeep. Penugasan akan dilakukan mandiri oleh Pengelola terkait.</p>
+
+            @php
+                $pengelolaUser = \App\Models\User::where('role', 'pengelola')
+                                    ->where('komunitas_id', $pesanan->komunitas_id)
+                                    ->whereNotNull('no_hp')
+                                    ->first();
+                $noHpPengelola = $pengelolaUser ? $pengelolaUser->no_hp : '';
+                
+                if($noHpPengelola && str_starts_with($noHpPengelola, '0')) {
+                    $noHpPengelola = '62' . substr($noHpPengelola, 1);
+                }
+
+                $waText = "Halo Bapak/Ibu Pengelola Komunitas " . ($pesanan->komunitas->nama_komunitas ?? 'Jeep Dieng') . ".\n\n" .
+                          "*Berikut Penugasan Armada Baru:*\n" .
+                          "Kode Booking: #BKG-" . str_pad($pesanan->id, 5, '0', STR_PAD_LEFT) . "\n" .
+                          "Tgl Tour: " . \Carbon\Carbon::parse($pesanan->tanggal_jadwal)->translatedFormat('d M Y') . "\n" .
+                          "Paket: " . ($pesanan->paketWisata->nama_paket ?? '-') . "\n" .
+                          "Titik Jemput: " . $pesanan->titik_jemput . "\n" .
+                          "Total Peserta: " . $pesanan->jumlah_pengunjung . " Orang\n" .
+                          "Jumlah Armada: " . ($pesanan->jumlah_jeep ?? 1) . " Jeep\n" .
+                          "Catatan: " . ($pesanan->catatan ?? '-') . "\n\n" .
+                          "Dimohon kerjasamanya untuk segera mengatur jadwal armada ini. Silakan cek dasbor Pengelola untuk mencetak Surat Jalan. Terima kasih!";
+                
+                $waLink = $noHpPengelola 
+                            ? "https://api.whatsapp.com/send?phone={$noHpPengelola}&text=" . urlencode($waText)
+                            : "https://api.whatsapp.com/send?text=" . urlencode($waText);
+            @endphp
+            
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Instruksi Lapangan</label>
+            <a href="{{ $waLink }}" target="_blank" class="w-full py-3.5 bg-[#25D366] text-white text-sm font-extrabold rounded-xl hover:bg-[#128C7E] transition shadow-md flex justify-center items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                Teruskan Penugasan ke WA Pengelola {{ $pesanan->komunitas->nama_komunitas ?? '' }}
+            </a>
+        </form>
+
+        @elseif(Auth::user()->role === 'pengelola')
+        <!-- ========================== -->
+        <!-- FORMULIR KHUSUS PENGELOLA  -->
+        <!-- ========================== -->
+        <form action="{{ route('admin.pesanan.update', $pesanan->id) }}" method="POST" class="bg-gray-900 rounded-3xl shadow-xl border border-gray-800 p-6 md:p-8 sticky top-6">
+            @csrf
+            @method('PUT')
+
+            <h3 class="text-lg font-bold text-white border-b border-gray-700 pb-4 mb-6">Penugasan Armada (Jeep)</h3>
+
+            <div class="mb-5">
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Status Pembayaran</label>
+                <div class="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800 text-emerald-400 font-bold uppercase tracking-widest text-center cursor-not-allowed">
+                    {{ $pesanan->status }}
+                </div>
+                <p class="text-[10px] text-gray-500 mt-2 text-center">Hanya Admin Pusat yang berwenang mengubah status transaksi.</p>
             </div>
 
             <div class="space-y-4 mb-6">
@@ -196,7 +298,7 @@
                     @php $armadaTerpilih = $pesanan->armadas[$i] ?? null; @endphp
                     
                     <div class="p-4 bg-gray-800 rounded-2xl border border-gray-700">
-                        <p class="text-[11px] font-black text-emerald-500 uppercase tracking-widest mb-3">Tugaskan Armada {{ $i + 1 }}</p>
+                        <p class="text-[11px] font-black text-emerald-500 uppercase tracking-widest mb-3">Pilih Armada {{ $i + 1 }}</p>
                         
                         <div class="space-y-3">
                             <select name="jeep_id[]" class="w-full px-3 py-2.5 rounded-lg border border-gray-700 bg-gray-900 text-white text-sm font-medium focus:ring-2 focus:ring-emerald-500">
@@ -222,61 +324,13 @@
             </div>
 
             <button type="submit" class="w-full py-4 bg-emerald-500 text-white text-base font-extrabold rounded-xl hover:bg-emerald-400 transition shadow-[0_4px_15px_rgba(16,185,129,0.3)] mb-4">
-                Simpan & Validasi
+                Simpan Penugasan Armada
             </button>
             
-            <p class="text-[10px] text-gray-500 text-center mb-6">Jika diubah ke "Lunas" dan armada dipilih, E-Ticket pelanggan otomatis terbit.</p>
-
-            <hr class="border-gray-700 mb-6">
-
-            @php
-                $waText = "Halo, ada pesanan baru masuk untuk komunitas " . ($pesanan->komunitas->nama_komunitas ?? 'Umum') . ".\n\n" .
-                          "*Detail Pesanan:*\n" .
-                          "Kode: #BKG-" . str_pad($pesanan->id, 5, '0', STR_PAD_LEFT) . "\n" .
-                          "Tgl Tour: " . \Carbon\Carbon::parse($pesanan->tanggal_jadwal)->translatedFormat('d M Y') . "\n" .
-                          "Paket: " . ($pesanan->paketWisata->nama_paket ?? '-') . "\n" .
-                          "Titik Jemput: " . $pesanan->titik_jemput . "\n" .
-                          "Total Peserta: " . $pesanan->jumlah_pengunjung . " Orang\n" .
-                          "Jumlah Jeep: " . ($pesanan->jumlah_jeep ?? 1) . " Armada\n" .
-                          "Catatan: " . ($pesanan->catatan ?? '-') . "\n\n" .
-                          "Mohon segera persiapkan armada Jeep. Terima kasih!";
-                $waLink = "https://api.whatsapp.com/send?text=" . urlencode($waText);
-            @endphp
-            
-            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Instruksi Lapangan</label>
-            <a href="{{ $waLink }}" target="_blank" class="w-full py-3.5 bg-[#25D366] text-white text-sm font-extrabold rounded-xl hover:bg-[#128C7E] transition shadow-md flex justify-center items-center gap-2">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-                Teruskan ke Grup WA Komunitas
-            </a>
-
-        </form>
-        @else
-        <!-- Jika Pengelola, hanya tampilkan rincian WA (READ-ONLY) -->
-        <div class="bg-gray-900 rounded-3xl shadow-xl border border-gray-800 p-6 md:p-8 sticky top-6">
-            <h3 class="text-lg font-bold text-white border-b border-gray-700 pb-4 mb-6">Instruksi Lapangan</h3>
-            @php
-                $waText = "Halo, ada pesanan masuk untuk komunitas " . ($pesanan->komunitas->nama_komunitas ?? 'Umum') . ".\n\n" .
-                          "*Detail Pesanan:*\n" .
-                          "Kode: #BKG-" . str_pad($pesanan->id, 5, '0', STR_PAD_LEFT) . "\n" .
-                          "Tgl Tour: " . \Carbon\Carbon::parse($pesanan->tanggal_jadwal)->translatedFormat('d M Y') . "\n" .
-                          "Paket: " . ($pesanan->paketWisata->nama_paket ?? '-') . "\n" .
-                          "Titik Jemput: " . $pesanan->titik_jemput . "\n" .
-                          "Total Peserta: " . $pesanan->jumlah_pengunjung . " Orang\n" .
-                          "Jumlah Jeep: " . ($pesanan->jumlah_jeep ?? 1) . " Armada\n" .
-                          "Catatan: " . ($pesanan->catatan ?? '-') . "\n\n" .
-                          "Terima kasih!";
-                $waLink = "https://api.whatsapp.com/send?text=" . urlencode($waText);
-            @endphp
-            
-            <a href="{{ $waLink }}" target="_blank" class="w-full py-3.5 bg-[#25D366] text-white text-sm font-extrabold rounded-xl hover:bg-[#128C7E] transition shadow-md flex justify-center items-center gap-2 mb-4">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-                Teruskan ke Grup WA Komunitas
-            </a>
-
-            <p class="text-xs text-gray-400 mt-6 leading-relaxed">
-                <span class="font-bold text-amber-500">Info:</span> Anda masuk sebagai Pengelola Komunitas. Form penetapan armada dan ubah status pemesanan hanya dapat diakses oleh Administrator Pusat.
+            <p class="text-[10px] text-gray-400 text-center leading-relaxed">
+                <span class="font-bold text-amber-500">Penting:</span> Pastikan Jeep dan Supir yang dipilih sedang dalam kondisi siap jalan. E-Ticket Pelanggan akan valid setelah Anda menetapkan armada ini.
             </p>
-        </div>
+        </form>
         @endif
     </div>
     </div>

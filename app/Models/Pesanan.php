@@ -61,4 +61,10 @@ class Pesanan extends Model
     {
         return $this->hasMany(PesananArmada::class, 'pesanan_id');
     }
+
+    // Relasi HasOne ke Testimoni
+    public function testimoni()
+    {
+        return $this->hasOne(Testimoni::class, 'pesanan_id');
+    }
 }

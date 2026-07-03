@@ -108,7 +108,24 @@
                     {{-- KONTEN --}}
                     <div class="p-7 flex flex-col flex-grow">
                         <h3 class="text-xl font-extrabold mb-2 text-gray-900 group-hover:text-emerald-600 transition leading-tight">{{ $item->nama_paket }}</h3>
-                        <p class="mb-5 text-sm leading-relaxed text-gray-500 line-clamp-2 flex-grow">{{ $item->deskripsi ?? 'Nikmati petualangan seru di alam Dieng.' }}</p>
+                        <p class="mb-3 text-sm leading-relaxed text-gray-500 line-clamp-2">{{ $item->deskripsi ?? 'Nikmati petualangan seru di alam Dieng.' }}</p>
+                        
+                        {{-- DAFTAR RUTE (ITINERARY) MINI --}}
+                        @if($item->rutes && $item->rutes->count() > 0)
+                        <div class="mb-5 flex-grow">
+                            <h4 class="text-xs font-bold text-gray-900 mb-2 uppercase tracking-wider">Rute Perjalanan:</h4>
+                            <div class="flex flex-wrap gap-1.5">
+                                @foreach($item->rutes as $idx => $rute)
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-700 text-[11px] font-bold rounded border border-emerald-100">
+                                        {{ $idx + 1 }}. {{ $rute->nama_rute }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                        @else
+                        <div class="mb-5 flex-grow"></div>
+                        @endif
+
                         <div class="pt-5 border-t border-gray-100 flex flex-col gap-4">
                             <div>
                                 <p class="text-xs uppercase tracking-wider mb-1 text-gray-400 font-bold">Mulai Dari</p>
@@ -285,11 +302,12 @@
                 @php $style = $testiStyles[$index % 3]; @endphp
                 <div data-aos="fade-up" data-aos-delay="{{ $index * 150 }}" class="{{ $style['bg'] }} p-10 rounded-[2rem] {{ $style['bg'] == 'bg-white' ? 'border border-gray-100 shadow-lg' : '' }} {{ $style['extra'] ?? '' }} hover:shadow-2xl transition duration-300 relative group">
                     <div class="{{ $style['star'] }} mb-6 flex gap-1 transform group-hover:scale-110 transition origin-left">
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        @for($i = 0; $i < ($testi->rating ?? 5); $i++)
+                            <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        @endfor
+                        @for($i = ($testi->rating ?? 5); $i < 5; $i++)
+                            <svg class="w-6 h-6 fill-current text-gray-300 opacity-50" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        @endfor
                     </div>
                     <p class="{{ $style['text'] }} mb-8 italic text-lg font-medium leading-relaxed">"{{ $testi->pesan }}"</p>
                     <div class="flex items-center gap-4 border-t {{ $style['border'] ?? 'border-gray-100' }} pt-6">

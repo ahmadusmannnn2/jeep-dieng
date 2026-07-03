@@ -17,16 +17,45 @@
             <span class="inline-block px-4 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-black tracking-widest uppercase rounded-full mb-4">Pilihan Wisata Terbaik</span>
             <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">Semua Paket Wisata</h1>
             <p class="text-gray-500 text-lg max-w-2xl mx-auto">Jelajahi berbagai pilihan paket wisata seru yang ditawarkan oleh komunitas Jeep Dieng kami.</p>
-            <div class="w-24 h-1.5 bg-emerald-500 mx-auto mt-6 rounded-full"></div>
+            
+            {{-- SEARCH BAR --}}
+            <form action="{{ route('paket') }}" method="GET" class="mt-8 max-w-2xl mx-auto relative">
+                <div class="relative flex items-center w-full h-14 rounded-2xl focus-within:shadow-lg focus-within:border-emerald-300 bg-white overflow-hidden border border-gray-200 transition-all shadow-sm">
+                    <div class="grid place-items-center h-full w-14 text-gray-400">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    </div>
+
+                    <input class="peer h-full w-full outline-none text-gray-700 pr-2 bg-transparent font-medium"
+                           type="text"
+                           name="search"
+                           value="{{ $searchTerm ?? '' }}"
+                           placeholder="Cari nama paket atau rute wisata (misal: Sikunir, Kawah)..." /> 
+                    
+                    <button type="submit" class="h-full px-8 bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition flex items-center gap-2">
+                        Cari
+                    </button>
+                </div>
+                @if(isset($searchTerm) && $searchTerm != '')
+                    <div class="text-left mt-3">
+                        <a href="{{ route('paket') }}" class="text-sm font-medium text-emerald-600 hover:text-emerald-700">Tampilkan semua paket &times;</a>
+                    </div>
+                @endif
+            </form>
+
+            <div class="w-24 h-1.5 bg-emerald-500 mx-auto mt-10 rounded-full"></div>
         </div>
     </div>
 
     {{-- GRID PAKET --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
 
-        @if($paket->count() > 0)
-            <p class="text-sm text-gray-400 font-medium mb-8">Menampilkan <span class="font-black text-gray-700">{{ $paket->count() }}</span> paket wisata tersedia</p>
-        @endif
+        <div class="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+            @if(isset($searchTerm) && $searchTerm != '')
+                <p class="text-gray-600 font-medium">Hasil pencarian untuk: <span class="font-black text-gray-900 text-lg">"{{ $searchTerm }}"</span></p>
+            @else
+                <p class="text-gray-600 font-medium">Menampilkan <span class="font-black text-gray-900">{{ $paket->count() }}</span> paket tersedia</p>
+            @endif
+        </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             @forelse($paket as $index => $item)
@@ -78,9 +107,25 @@
                         <h3 class="text-xl font-extrabold text-gray-900 group-hover:text-emerald-600 transition mb-2 leading-tight">
                             <a href="{{ route('paket.show', $item->id) }}">{{ $item->nama_paket }}</a>
                         </h3>
-                        <p class="text-sm text-gray-500 leading-relaxed line-clamp-2 flex-grow mb-5">
+                        <p class="text-sm text-gray-500 leading-relaxed line-clamp-2 flex-grow mb-3">
                             {{ $item->deskripsi ?? 'Nikmati petualangan seru di alam Dieng bersama supir profesional kami.' }}
                         </p>
+
+                        {{-- DAFTAR RUTE (ITINERARY) MINI --}}
+                        @if($item->rutes && $item->rutes->count() > 0)
+                        <div class="mb-5 flex-grow">
+                            <h4 class="text-xs font-bold text-gray-900 mb-2 uppercase tracking-wider">Rute Perjalanan:</h4>
+                            <div class="flex flex-wrap gap-1.5">
+                                @foreach($item->rutes as $idx => $rute)
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-700 text-[11px] font-bold rounded border border-emerald-100">
+                                        {{ $idx + 1 }}. {{ $rute->nama_rute }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                        @else
+                        <div class="mb-5 flex-grow"></div>
+                        @endif
 
                         {{-- HARGA & TOMBOL --}}
                         <div class="pt-5 border-t border-gray-100">
@@ -111,13 +156,22 @@
                 </div>
 
             @empty
-                <div class="col-span-full py-20 text-center">
-                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
-                        <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-extrabold text-gray-900 mb-2">Belum Ada Paket Wisata</h3>
-                    <p class="text-gray-500 text-sm">Paket wisata belum tersedia. Silakan cek kembali nanti.</p>
-                    <a href="{{ route('home') }}" class="inline-block mt-6 px-6 py-3 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition">Kembali ke Beranda</a>
+                <div class="col-span-full text-center py-20">
+                    <svg class="mx-auto h-24 w-24 text-gray-300 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    @if(isset($searchTerm) && $searchTerm != '')
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Oops! Paket tidak ditemukan</h3>
+                        <p class="text-gray-500 mb-6 max-w-md mx-auto">Kami tidak dapat menemukan paket wisata atau destinasi yang cocok dengan kata kunci <span class="font-bold text-gray-800">"{{ $searchTerm }}"</span>.</p>
+                        <a href="{{ route('paket') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-100 text-emerald-700 font-bold rounded-xl hover:bg-emerald-200 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                            Reset Pencarian
+                        </a>
+                    @else
+                        <h3 class="text-xl font-bold text-gray-700 mb-2">Belum Ada Paket Wisata</h3>
+                        <p class="text-gray-500">Saat ini belum ada paket wisata yang ditambahkan.</p>
+                        <a href="{{ route('home') }}" class="inline-block mt-6 px-6 py-3 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition">Kembali ke Beranda</a>
+                    @endif
                 </div>
             @endforelse
         </div>

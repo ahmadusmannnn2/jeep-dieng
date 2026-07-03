@@ -92,7 +92,9 @@
                         @if($item->status === 'Pending')
                             <span class="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold border border-amber-200">Menunggu Pembayaran</span>
                         @elseif($item->status === 'DP Lunas')
-                            <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-200">DP Lunas</span>
+                            <span class="px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-xs font-bold border border-teal-200">DP Lunas (50%)</span>
+                        @elseif($item->status === 'Selesai Perjalanan')
+                            <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-200">Selesai Perjalanan</span>
                         @elseif($item->status === 'Lunas')
                             <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-200">Lunas</span>
                         @elseif($item->status === 'Selesai')
@@ -109,7 +111,7 @@
                         <a href="{{ route('admin.pesanan.show', $item->id) }}" class="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition shadow-md">Detail</a>
                         @if(Auth::user()->role === 'admin')
                         <a href="{{ route('admin.pesanan.edit', $item->id) }}" class="px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-xl hover:bg-emerald-600 transition shadow-md">Kelola</a>
-                        @if(!in_array($item->status, ['DP Lunas', 'Lunas', 'Selesai']))
+                        @if(!in_array($item->status, ['DP Lunas', 'Selesai Perjalanan', 'Lunas', 'Selesai']))
                         <form action="{{ route('admin.pesanan.destroy', $item->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini? Tindakan ini tidak dapat dibatalkan!');">
                             @csrf
                             @method('DELETE')

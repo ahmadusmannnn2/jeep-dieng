@@ -1,4 +1,4 @@
-﻿@extends('frontend.layouts.app')
+@extends('frontend.layouts.app')
 
 @section('title', $paketWisata->nama_paket . ' - ' . ($pengaturan_website->nama_website ?? 'Jeep Dieng'))
 
@@ -75,7 +75,36 @@
                         <h3 class="text-lg font-bold text-gray-900 mb-2">Detail Perjalanan</h3>
                         <p class="leading-relaxed whitespace-pre-line">{{ $paketWisata->deskripsi ?? 'Nikmati pengalaman tak terlupakan menjelajahi alam Dieng dengan Jeep tangguh kami.' }}</p>
                         
-                        <h3 class="text-lg font-bold text-gray-900 mb-2 mt-6">Fasilitas Termasuk</h3>
+                        @if($paketWisata->rutes && $paketWisata->rutes->count() > 0)
+                        <h3 class="text-xl font-extrabold text-gray-900 mb-6 mt-10 border-b pb-3 border-gray-100">Rute Perjalanan (Itinerary)</h3>
+                        <div class="relative pl-6 border-l-[3px] border-emerald-100 space-y-6 mb-10 ml-2">
+                            @foreach($paketWisata->rutes as $index => $rute)
+                            <div class="relative group">
+                                <div class="absolute -left-[35px] bg-emerald-500 w-6 h-6 rounded-full border-4 border-white shadow-sm group-hover:scale-125 group-hover:bg-emerald-400 transition-all duration-300 flex items-center justify-center">
+                                    <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+                                </div>
+                                <div class="bg-gray-50/50 border border-gray-100 rounded-2xl p-5 hover:bg-emerald-50 hover:border-emerald-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                                    <div class="flex justify-between items-start mb-2 gap-4">
+                                        <h4 class="font-black text-gray-900 text-lg group-hover:text-emerald-700 transition-colors">{{ $rute->nama_rute }}</h4>
+                                        <span class="bg-emerald-100 text-emerald-700 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest shrink-0">Titik {{ $index + 1 }}</span>
+                                    </div>
+                                    @if($rute->deskripsi)
+                                        <p class="text-sm text-gray-500 leading-relaxed">{{ $rute->deskripsi }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                            
+                            <div class="relative mt-8">
+                                <div class="absolute -left-[35px] bg-gray-300 w-6 h-6 rounded-full border-4 border-white shadow-sm flex items-center justify-center">
+                                    <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+                                </div>
+                                <h4 class="font-bold text-gray-400 text-sm ml-2 mt-0.5">Perjalanan Selesai</h4>
+                            </div>
+                        </div>
+                        @endif
+                        
+                        <h3 class="text-lg font-bold text-gray-900 mb-2 mt-8">Fasilitas Termasuk</h3>
                         <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                             <li class="flex items-center gap-2"><svg class="w-5 h-5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> 1 Unit Jeep 4x4 Tangguh</li>
                             <li class="flex items-center gap-2"><svg class="w-5 h-5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Driver Profesional & Berpengalaman</li>

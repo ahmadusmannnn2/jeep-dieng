@@ -18,14 +18,7 @@
         <div class="flex-1">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama rute..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
         </div>
-        <div class="w-full md:w-64">
-            <select name="komunitas_id" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition">
-                <option value="">Semua Komunitas</option>
-                @foreach($komunitas as $kom)
-                    <option value="{{ $kom->id }}" {{ request('komunitas_id') == $kom->id ? 'selected' : '' }}>{{ $kom->nama_komunitas }}</option>
-                @endforeach
-            </select>
-        </div>
+
         <div class="flex gap-2">
             <button type="submit" class="px-5 py-2.5 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition shadow-lg">Filter</button>
             <a href="{{ route('admin.rute-wisata.index') }}" class="px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition">Reset</a>
@@ -40,7 +33,7 @@
                 <tr class="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500">
                     <th class="p-4 font-bold w-24 text-center">Foto</th>
                     <th class="p-4 font-bold">Nama Destinasi / Rute</th>
-                    <th class="p-4 font-bold">Penyelenggara</th>
+
                     <th class="p-4 font-bold text-center">Aksi</th>
                 </tr>
             </thead>
@@ -62,9 +55,7 @@
                         <span class="font-bold text-gray-900 block text-base">{{ $item->nama_rute }}</span>
                         <span class="text-xs text-gray-500 truncate max-w-md block mt-1">{{ Str::limit($item->deskripsi, 80) }}</span>
                     </td>
-                    <td class="p-4">
-                        <span class="font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-xs border border-emerald-100">{{ $item->komunitas->nama_komunitas ?? 'Semua Komunitas' }}</span>
-                    </td>
+
                     <td class="p-4 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <a href="{{ route('admin.rute-wisata.edit', $item->id) }}" class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition" title="Edit">
@@ -81,7 +72,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="4" class="p-8 text-center text-gray-500">Belum ada rute destinasi wisata.</td></tr>
+                <tr><td colspan="3" class="p-8 text-center text-gray-500">Belum ada rute destinasi wisata.</td></tr>
                 @endforelse
             </tbody>
         </table>

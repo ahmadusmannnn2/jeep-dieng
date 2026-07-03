@@ -202,10 +202,10 @@ class BookingController extends Controller
             'status'            => 'Menunggu Verifikasi',
         ]);
 
-        // Jika pesanan sudah DP Lunas dan customer upload pelunasan,
+        // Jika pesanan sudah Selesai Perjalanan dan customer upload pelunasan,
         // ubah status menjadi Pending agar admin bisa verifikasi ulang.
         // Jika pesanan masih Pending biasa (upload DP pertama kali), biarkan statusnya.
-        if ($pesanan->status === 'DP Lunas' && $request->jenis_pembayaran === 'Pelunasan') {
+        if ($pesanan->status === 'Selesai Perjalanan' && $request->jenis_pembayaran === 'Pelunasan') {
             $pesanan->update(['status' => 'Pending']);
         }
 
@@ -257,5 +257,40 @@ class BookingController extends Controller
 
         $pesanan->delete();
         return redirect()->route('dashboard')->with('success', 'Pesanan Anda berhasil dihapus.');
+    }
+
+    // 8. Menyimpan Ulasan / Testimoni dari Customer
+    public function storeTestimoni(Request $request, Pesanan $pesanan)
+    {
+        if ((int) $pesanan->user_id !== (int) Auth::id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        if (!in_array($pesanan->status, ['Lunas', 'Selesai'])) {
+            return back()->with('error', 'Anda hanya bisa memberikan ulasan setelah pesanan Lunas atau Selesai.');
+        }
+
+        // Pastikan pesanan belum diulas
+        if ($pesanan->testimoni()->exists()) {
+            return back()->with('error', 'Anda sudah memberikan ulasan untuk pesanan ini.');
+        }
+
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'pesan' => 'required|string|max:1000',
+            'asal_kota' => 'nullable|string|max:100',
+        ]);
+
+        \App\Models\Testimoni::create([
+            'user_id' => Auth::id(),
+            'pesanan_id' => $pesanan->id,
+            'rating' => $request->rating,
+            'pesan' => $request->pesan,
+            'asal_kota' => $request->asal_kota,
+            'nama' => Auth::user()->name,
+            'is_tampil' => true, // Sesuai kesepakatan, langsung tampil di landing page
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Terima kasih! Ulasan Anda berhasil disimpan dan ditayangkan.');
     }
 }

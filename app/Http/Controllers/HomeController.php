@@ -15,7 +15,7 @@ class HomeController extends Controller
     public function index()
     {
         // Ambil data terbatas untuk ringkasan (etalase) di Home
-        $paket = PaketWisata::with('komunitas')->latest()->take(3)->get();
+        $paket = PaketWisata::with(['komunitas', 'rutes'])->latest()->take(3)->get();
         // Ubah nama variabel menjadi ruteWisata agar seragam
         $ruteWisata = RuteWisata::latest()->take(4)->get(); 
         $promo = KontenInformasi::latest()->take(3)->get();
@@ -25,17 +25,31 @@ class HomeController extends Controller
     }
 
     // Halaman Khusus Daftar Paket Wisata
-    public function paket()
+    public function paket(\Illuminate\Http\Request $request)
     {
-        $paket = PaketWisata::with('komunitas')->latest()->get();
-        return view('frontend.paket', compact('paket'));
+        $query = PaketWisata::with(['komunitas', 'rutes'])->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_paket', 'like', "%{$search}%")
+                  ->orWhereHas('rutes', function($qRute) use ($search) {
+                      $qRute->where('nama_rute', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $paket = $query->get();
+        $searchTerm = $request->search;
+        
+        return view('frontend.paket', compact('paket', 'searchTerm'));
     }
 
     // Halaman Khusus Daftar Rute
     public function rute()
     {
         // PERBAIKAN: Ubah nama variabel menjadi $ruteWisata dan tambahkan with('komunitas')
-        $ruteWisata = RuteWisata::with('komunitas')->latest()->get();
+        $ruteWisata = RuteWisata::latest()->get();
         
         return view('frontend.rute', compact('ruteWisata'));
     }
@@ -58,7 +72,7 @@ class HomeController extends Controller
     public function showPaket(PaketWisata $paketWisata)
     {
         // Muat relasi komunitas agar nama komunitasnya bisa ditampilkan
-        $paketWisata->load('komunitas');
+        $paketWisata->load(['komunitas', 'rutes']);
         
         return view('frontend.paket.show', compact('paketWisata'));
     }

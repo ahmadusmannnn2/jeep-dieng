@@ -62,10 +62,26 @@
                             </div>
                         </div>
 
-                        <div class="lg:text-right bg-gray-50 lg:bg-transparent p-4 lg:p-0 rounded-2xl lg:rounded-none border border-gray-100 lg:border-transparent">
-                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Total Tagihan</p>
-                            <p class="text-2xl font-black text-emerald-600">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</p>
-                            <p class="text-xs text-gray-400 mt-1">Komunitas: {{ $item->komunitas->nama_komunitas ?? 'Umum' }}</p>
+                        <div class="lg:text-right bg-gray-50 lg:bg-transparent p-4 lg:p-0 rounded-2xl lg:rounded-none border border-gray-100 lg:border-transparent min-w-[200px]">
+                            @php
+                                $totalDibayar = $item->pembayarans ? $item->pembayarans->where('status', 'Valid')->sum('jumlah_bayar') : 0;
+                                $sisaTagihan = max(0, $item->total_harga - $totalDibayar);
+                            @endphp
+                            
+                            <div class="flex justify-between lg:justify-end gap-6 text-sm mb-1">
+                                <span class="text-gray-500 font-medium">Total Harga:</span>
+                                <span class="font-bold text-gray-700">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="flex justify-between lg:justify-end gap-6 text-sm mb-2 border-b border-gray-200 pb-2">
+                                <span class="text-emerald-600 font-medium">Telah Dibayar:</span>
+                                <span class="font-bold text-emerald-600">- Rp {{ number_format($totalDibayar, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="flex justify-between lg:justify-end gap-6">
+                                <span class="text-xs text-gray-500 uppercase font-bold mt-1">Sisa Tagihan:</span>
+                                <span class="text-2xl font-black {{ $sisaTagihan > 0 ? 'text-red-500' : 'text-emerald-500' }}">
+                                    Rp {{ number_format($sisaTagihan, 0, ',', '.') }}
+                                </span>
+                            </div>
                         </div>
 
                     </div>
@@ -108,7 +124,7 @@
                             @endif
                         @endif
 
-                        @if(!in_array($item->status, ['DP Lunas', 'Lunas', 'Selesai']))
+                        @if(in_array($item->status, ['Pending', 'Dibatalkan']))
                             <form action="{{ route('booking.destroy', $item->id) }}" method="POST" class="w-full sm:w-auto" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan dan menghapus pesanan ini?');">
                                 @csrf
                                 @method('DELETE')

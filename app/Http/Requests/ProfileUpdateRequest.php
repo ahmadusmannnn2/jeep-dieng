@@ -29,4 +29,18 @@ class ProfileUpdateRequest extends FormRequest
             'foto_profil' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'foto_profil.image' => 'Berkas yang diunggah harus berupa gambar (foto).',
+            'foto_profil.mimes' => 'Format gambar yang didukung hanya: jpeg, png, jpg, atau webp.',
+            'foto_profil.max'   => 'Ukuran maksimal foto profil adalah 2 MB.',
+        ];
+    }
 }

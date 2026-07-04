@@ -199,7 +199,7 @@
         <!-- ======================= -->
         <!-- FORMULIR KHUSUS ADMIN -->
         <!-- ======================= -->
-        <form action="{{ route('admin.pesanan.update', $pesanan->id) }}" method="POST" class="bg-gray-900 rounded-3xl shadow-xl border border-gray-800 p-6 md:p-8 sticky top-6">
+        <form action="{{ route('admin.pesanan.update', $pesanan->id) }}" method="POST" class="bg-gray-900 rounded-3xl shadow-xl border border-gray-800 p-6 md:p-8 sticky top-24 z-10">
             @csrf
             @method('PUT')
 
@@ -275,7 +275,7 @@
         <!-- ========================== -->
         <!-- FORMULIR KHUSUS PENGELOLA  -->
         <!-- ========================== -->
-        <div class="bg-gray-900 rounded-3xl shadow-xl border border-gray-800 p-6 md:p-8 sticky top-6">
+        <div class="bg-gray-900 rounded-3xl shadow-xl border border-gray-800 p-6 md:p-8 sticky top-24 z-10">
             <h3 class="text-lg font-bold text-white border-b border-gray-700 pb-4 mb-6">Penugasan Armada (Jeep)</h3>
 
             @if(!in_array($pesanan->status, ['Disetujui', 'DP Lunas']))

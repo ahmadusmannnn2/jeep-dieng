@@ -346,4 +346,48 @@
     </div>
 
 </div>
+
+@if(Auth::user()->role === 'pengelola')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function updateDropdowns(selector) {
+        const selects = document.querySelectorAll(selector);
+        
+        if (selects.length <= 1) return; // Tidak perlu filter jika armada cuma 1
+        
+        function refreshState() {
+            // Dapatkan semua nilai yang saat ini terpilih (kecuali yang kosong)
+            const selectedValues = Array.from(selects)
+                .map(s => s.value)
+                .filter(v => v !== '');
+
+            selects.forEach(s => {
+                Array.from(s.options).forEach(option => {
+                    if (option.value === '') return;
+                    // Kunci (disable) opsi jika sedang dipakai di dropdown LAIN, 
+                    // tapi biarkan terbuka untuk dropdown yang memang memilihnya.
+                    if (selectedValues.includes(option.value) && s.value !== option.value) {
+                        option.disabled = true;
+                        option.text = option.text.replace(' (Terpakai)', '') + ' (Terpakai)';
+                    } else {
+                        option.disabled = false;
+                        option.text = option.text.replace(' (Terpakai)', '');
+                    }
+                });
+            });
+        }
+
+        selects.forEach(select => {
+            select.addEventListener('change', refreshState);
+        });
+        
+        // Inisialisasi awal saat halaman dimuat
+        refreshState();
+    }
+
+    updateDropdowns('select[name="jeep_id[]"]');
+    updateDropdowns('select[name="supir_id[]"]');
+});
+</script>
+@endif
 @endsection

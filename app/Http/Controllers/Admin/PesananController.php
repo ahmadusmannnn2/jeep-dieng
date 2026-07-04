@@ -66,13 +66,30 @@ class PesananController extends Controller
         // Load relasi armadas yang baru
         $pesanan->load(['user', 'paketWisata', 'armadas.jeep', 'armadas.supir', 'pembayaran', 'komunitas']);
         
+        $tanggalJadwal = $pesanan->tanggal_jadwal;
+
+        // Cari ID Jeep yang sudah dipakai di pesanan aktif lain pada hari yang sama
+        $bookedJeepIds = \App\Models\PesananArmada::whereHas('pesanan', function($q) use ($tanggalJadwal, $pesanan) {
+            $q->whereDate('tanggal_jadwal', $tanggalJadwal)
+              ->where('id', '!=', $pesanan->id)
+              ->whereIn('status', ['Disetujui', 'DP Lunas', 'Selesai Perjalanan', 'Lunas']);
+        })->pluck('jeep_id')->toArray();
+
+        // Cari ID Supir yang sudah dipakai di pesanan aktif lain pada hari yang sama
+        $bookedSupirIds = \App\Models\PesananArmada::whereNotNull('supir_id')
+            ->whereHas('pesanan', function($q) use ($tanggalJadwal, $pesanan) {
+                $q->whereDate('tanggal_jadwal', $tanggalJadwal)
+                  ->where('id', '!=', $pesanan->id)
+                  ->whereIn('status', ['Disetujui', 'DP Lunas', 'Selesai Perjalanan', 'Lunas']);
+        })->pluck('supir_id')->toArray();
+
         $jeeps = Jeep::when($pesanan->komunitas_id, function($q) use ($pesanan) {
             return $q->where('komunitas_id', $pesanan->komunitas_id);
-        })->get();
+        })->whereNotIn('id', $bookedJeepIds)->get();
         
         $supirs = Supir::when($pesanan->komunitas_id, function($q) use ($pesanan) {
             return $q->where('komunitas_id', $pesanan->komunitas_id);
-        })->get();
+        })->whereNotIn('id', $bookedSupirIds)->get();
         
         $semuaKomunitas = \App\Models\Komunitas::orderBy('nama_komunitas')->get();
 

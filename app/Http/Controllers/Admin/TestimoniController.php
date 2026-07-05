@@ -10,7 +10,13 @@ class TestimoniController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Testimoni::query();
+        $query = Testimoni::query()->with('pesanan.komunitas');
+
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'pengelola') {
+            $query->whereHas('pesanan', function($q) {
+                $q->where('komunitas_id', \Illuminate\Support\Facades\Auth::user()->komunitas_id);
+            });
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -27,11 +33,13 @@ class TestimoniController extends Controller
 
     public function create()
     {
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'pengelola') abort(403);
         return view('admin.testimoni.create');
     }
 
     public function store(Request $request)
     {
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'pengelola') abort(403);
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'asal_kota' => 'nullable|string|max:255',
@@ -46,11 +54,13 @@ class TestimoniController extends Controller
 
     public function edit(Testimoni $testimoni)
     {
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'pengelola') abort(403);
         return view('admin.testimoni.edit', compact('testimoni'));
     }
 
     public function update(Request $request, Testimoni $testimoni)
     {
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'pengelola') abort(403);
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'asal_kota' => 'nullable|string|max:255',
@@ -65,12 +75,14 @@ class TestimoniController extends Controller
 
     public function destroy(Testimoni $testimoni)
     {
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'pengelola') abort(403);
         $testimoni->delete();
         return redirect()->route('admin.testimoni.index')->with('success', 'Testimoni berhasil dihapus!');
     }
 
     public function toggle(Testimoni $testimoni)
     {
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'pengelola') abort(403);
         $testimoni->update(['is_tampil' => !$testimoni->is_tampil]);
         return redirect()->route('admin.testimoni.index')->with('success', 'Status testimoni berhasil diubah!');
     }

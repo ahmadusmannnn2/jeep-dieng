@@ -314,7 +314,13 @@
                         <div class="w-12 h-12 bg-gradient-to-br {{ $style['avatar'] }} rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md">{{ strtoupper(substr($testi->nama, 0, 1)) }}</div>
                         <div>
                             <h4 class="font-black {{ $style['name'] }}">{{ $testi->nama }}</h4>
-                            <p class="text-xs font-bold tracking-widest text-emerald-500 uppercase">{{ $testi->asal_kota ?? 'Indonesia' }}</p>
+                            <p class="text-xs font-bold tracking-widest {{ $style['bg'] == 'bg-gray-900' ? 'text-gray-400' : 'text-emerald-500' }} uppercase mb-1.5">{{ $testi->asal_kota ?? 'Indonesia' }}</p>
+                            @if($testi->pesanan && $testi->pesanan->komunitas)
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-600 rounded-md text-[10px] font-bold border border-gray-200">
+                                    <svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    Trip by {{ $testi->pesanan->komunitas->nama_komunitas }}
+                                </span>
+                            @endif
                         </div>
                     </div>
                 </div>

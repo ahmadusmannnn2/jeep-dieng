@@ -19,7 +19,7 @@ class HomeController extends Controller
         // Ubah nama variabel menjadi ruteWisata agar seragam
         $ruteWisata = RuteWisata::latest()->take(4)->get(); 
         $promo = KontenInformasi::latest()->take(3)->get();
-        $testimonis = Testimoni::where('is_tampil', true)->latest()->take(6)->get();
+        $testimonis = Testimoni::with('pesanan.komunitas')->where('is_tampil', true)->latest()->take(6)->get();
         
         return view('frontend.home', compact('paket', 'ruteWisata', 'promo', 'testimonis'));
     }

@@ -7,10 +7,12 @@
 @section('content')
 <div class="flex justify-between items-center mb-6">
     <h3 class="text-xl font-bold text-gray-800">Daftar Testimoni</h3>
+    @if(Auth::user()->role === 'admin')
     <a href="{{ route('admin.testimoni.create') }}" class="px-5 py-2.5 bg-emerald-500 text-white font-medium rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 flex items-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
         Tambah Testimoni
     </a>
+    @endif
 </div>
 
 <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-6 p-6">
@@ -34,7 +36,9 @@
                     <th class="px-6 py-4 text-center">Rating</th>
                     <th class="px-6 py-4">Pesan Ulasan</th>
                     <th class="px-6 py-4 text-center">Status</th>
+                    @if(Auth::user()->role === 'admin')
                     <th class="px-6 py-4 text-center">Aksi</th>
+                    @endif
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
@@ -58,6 +62,7 @@
                         <div class="max-w-md whitespace-normal line-clamp-2">"{{ $item->pesan }}"</div>
                     </td>
                     <td class="px-6 py-4 text-center">
+                        @if(Auth::user()->role === 'admin')
                         <form action="{{ route('admin.testimoni.toggle', $item->id) }}" method="POST">
                             @csrf
                             @method('PATCH')
@@ -65,7 +70,13 @@
                                 {{ $item->is_tampil ? 'Ditampilkan' : 'Disembunyikan' }}
                             </button>
                         </form>
+                        @else
+                            <span class="px-3 py-1 rounded-full text-xs font-bold {{ $item->is_tampil ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600' }}">
+                                {{ $item->is_tampil ? 'Ditampilkan' : 'Disembunyikan' }}
+                            </span>
+                        @endif
                     </td>
+                    @if(Auth::user()->role === 'admin')
                     <td class="px-6 py-4 flex justify-center gap-3">
                         <a href="{{ route('admin.testimoni.edit', $item->id) }}" class="text-amber-500 hover:text-amber-600 font-medium">Edit</a>
                         <form action="{{ route('admin.testimoni.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus testimoni ini?')">
@@ -74,6 +85,7 @@
                             <button type="submit" class="text-red-500 hover:text-red-600 font-medium">Hapus</button>
                         </form>
                     </td>
+                    @endif
                 </tr>
                 @empty
                 <tr>

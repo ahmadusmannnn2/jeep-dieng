@@ -76,6 +76,9 @@ Route::middleware(['auth', 'role:admin,pengelola'])->prefix('admin')->name('admi
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
     Route::get('/laporan/komunitas', [LaporanController::class, 'komunitas'])->name('laporan.komunitas');
+
+    Route::resource('testimoni', \App\Http\Controllers\Admin\TestimoniController::class);
+    Route::patch('testimoni/{testimoni}/toggle', [\App\Http\Controllers\Admin\TestimoniController::class, 'toggle'])->name('testimoni.toggle');
 });
 
 // RUTE KHUSUS SUPER ADMIN PUSAT (Bukan Pengelola)
@@ -92,9 +95,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         'komunitas' => 'komunitas'
     ]);
     Route::resource('konten-informasi', KontenInformasiController::class);
-    
-    Route::resource('testimoni', \App\Http\Controllers\Admin\TestimoniController::class);
-    Route::patch('testimoni/{testimoni}/toggle', [\App\Http\Controllers\Admin\TestimoniController::class, 'toggle'])->name('testimoni.toggle');
 
     // PENGATURAN UMUM WEBSITE
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');

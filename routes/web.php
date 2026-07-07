@@ -99,6 +99,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // PENGATURAN UMUM WEBSITE
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
     Route::put('/pengaturan', [PengaturanController::class, 'update'])->name('pengaturan.update');
+    Route::delete('/pengaturan/hapus-file', [PengaturanController::class, 'deleteFile'])->name('pengaturan.delete-file');
 });
 
 // --- RUTE MIDTRANS ---

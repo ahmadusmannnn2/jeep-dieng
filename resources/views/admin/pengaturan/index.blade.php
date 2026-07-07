@@ -67,13 +67,14 @@
                         <div class="flex items-start gap-4 mt-4">
                             <div class="flex gap-4 overflow-x-auto pb-2 flex-1">
                                 @foreach($pengaturan->hero_images as $img)
-                                    <img src="{{ asset('storage/' . $img) }}" class="w-32 h-20 object-cover rounded-xl border border-gray-200 shadow-sm shrink-0">
+                                    <div class="relative shrink-0 group image-item">
+                                        <img src="{{ asset('storage/' . $img) }}" class="w-32 h-20 object-cover rounded-xl border border-gray-200 shadow-sm shrink-0">
+                                        <button type="button" onclick="deleteFile('{{ $img }}', 'hero_images', this)" class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition shadow-sm" title="Hapus Cover Ini">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </div>
                                 @endforeach
                             </div>
-                            <label class="shrink-0 flex items-center gap-2 bg-red-50 px-3 py-2 rounded-lg border border-red-100 cursor-pointer hover:bg-red-100 transition mt-1">
-                                <input type="checkbox" name="hapus_hero_images" value="1" class="w-4 h-4 text-red-500 rounded border-red-200 focus:ring-red-500 cursor-pointer">
-                                <span class="text-xs font-bold text-red-600 select-none">Hapus Semua Cover</span>
-                            </label>
                         </div>
                     @endif
                 </div>
@@ -102,16 +103,14 @@
                             <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">
                                 Foto tersimpan saat ini: <span class="text-emerald-600">{{ count($pengaturan->gallery_images) }} foto</span>
                             </p>
-                            <label class="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 cursor-pointer hover:bg-red-100 transition">
-                                <input type="checkbox" name="hapus_gallery_images" value="1" class="w-4 h-4 text-red-500 rounded border-red-200 focus:ring-red-500 cursor-pointer">
-                                <span class="text-xs font-bold text-red-600 select-none">Kosongkan Galeri Foto</span>
-                            </label>
                         </div>
                         <div class="flex gap-3 overflow-x-auto pb-2">
                             @foreach($pengaturan->gallery_images as $img)
-                                <div class="relative shrink-0 group">
-                                    <img src="{{ asset('storage/' . $img) }}" class="w-24 h-24 object-cover rounded-xl border-2 border-gray-200 shadow-sm group-hover:border-emerald-400 transition">
-                                    <span class="absolute top-1 right-1 bg-emerald-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase">IMG</span>
+                                <div class="relative shrink-0 group image-item">
+                                    <img src="{{ asset('storage/' . $img) }}" class="w-24 h-24 object-cover rounded-xl border-2 border-gray-200 shadow-sm group-hover:border-red-400 transition">
+                                    <button type="button" onclick="deleteFile('{{ $img }}', 'gallery_images', this)" class="absolute inset-0 m-auto w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg transform hover:scale-110" title="Hapus Foto">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
                                 </div>
                             @endforeach
                         </div>
@@ -140,20 +139,17 @@
                             <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">
                                 Video tersimpan saat ini: <span class="text-purple-600">{{ count($pengaturan->gallery_videos) }} video</span>
                             </p>
-                            <label class="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 cursor-pointer hover:bg-red-100 transition">
-                                <input type="checkbox" name="hapus_gallery_videos" value="1" class="w-4 h-4 text-red-500 rounded border-red-200 focus:ring-red-500 cursor-pointer">
-                                <span class="text-xs font-bold text-red-600 select-none">Kosongkan Galeri Video</span>
-                            </label>
                         </div>
                         <div class="flex gap-3 overflow-x-auto pb-2">
                             @foreach($pengaturan->gallery_videos as $video)
-                                <div class="relative shrink-0 group w-40">
-                                    <video src="{{ asset('storage/' . $video) }}" class="w-40 h-24 object-cover rounded-xl border-2 border-gray-200 shadow-sm group-hover:border-purple-400 transition" muted></video>
+                                <div class="relative shrink-0 group w-40 image-item">
+                                    <video src="{{ asset('storage/' . $video) }}" class="w-40 h-24 object-cover rounded-xl border-2 border-gray-200 shadow-sm group-hover:border-red-400 transition" muted></video>
                                     <span class="absolute top-1 right-1 bg-purple-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase">VIDEO</span>
-                                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                                        <div class="w-8 h-8 bg-black/50 rounded-full flex items-center justify-center">
-                                            <svg class="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                        </div>
+                                    
+                                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 rounded-xl">
+                                        <button type="button" onclick="deleteFile('{{ $video }}', 'gallery_videos', this)" class="w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-lg transform hover:scale-110" title="Hapus Video">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
                                     </div>
                                 </div>
                             @endforeach
@@ -177,13 +173,14 @@
                     <div class="flex items-start gap-4 mt-4">
                         <div class="flex gap-4 overflow-x-auto pb-2 flex-1">
                             @foreach($pengaturan->login_images as $img)
-                                <img src="{{ asset('storage/' . $img) }}" class="w-32 h-20 object-cover rounded-xl border border-gray-200 shadow-sm shrink-0">
+                                <div class="relative shrink-0 group image-item">
+                                    <img src="{{ asset('storage/' . $img) }}" class="w-32 h-20 object-cover rounded-xl border border-gray-200 shadow-sm shrink-0">
+                                    <button type="button" onclick="deleteFile('{{ $img }}', 'login_images', this)" class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition shadow-sm" title="Hapus Slideshow">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                </div>
                             @endforeach
                         </div>
-                        <label class="shrink-0 flex items-center gap-2 bg-red-50 px-3 py-2 rounded-lg border border-red-100 cursor-pointer hover:bg-red-100 transition mt-1">
-                            <input type="checkbox" name="hapus_login_images" value="1" class="w-4 h-4 text-red-500 rounded border-red-200 focus:ring-red-500 cursor-pointer">
-                            <span class="text-xs font-bold text-red-600 select-none">Kosongkan Slideshow</span>
-                        </label>
                     </div>
                 @else
                     <p class="text-xs text-gray-400 mt-3 italic">Belum ada gambar slideshow yang diunggah. Gambar default bertema Jeep akan ditampilkan.</p>
@@ -219,3 +216,45 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function deleteFile(filePath, field, btn) {
+    if(!confirm('Apakah Anda yakin ingin menghapus foto/video ini?')) return;
+    
+    const formData = new FormData();
+    formData.append('file_path', filePath);
+    formData.append('field', field);
+    formData.append('_token', '{{ csrf_token() }}');
+    formData.append('_method', 'DELETE');
+
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = '<svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+    btn.disabled = true;
+
+    fetch('{{ route('admin.pengaturan.delete-file') }}', {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            btn.closest('.image-item').style.transform = 'scale(0)';
+            btn.closest('.image-item').style.opacity = '0';
+            setTimeout(() => btn.closest('.image-item').remove(), 300);
+        } else {
+            alert('Gagal menghapus file: ' + (data.message || 'Error tidak diketahui'));
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan jaringan.');
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+    });
+}
+</script>
+@endpush

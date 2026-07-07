@@ -143,4 +143,37 @@ class PengaturanController extends Controller
 
         return redirect()->back()->with('success', 'Pengaturan website berhasil diperbarui!');
     }
+
+    public function deleteFile(Request $request)
+    {
+        $request->validate([
+            'file_path' => 'required|string',
+            'field' => 'required|in:hero_images,gallery_images,gallery_videos,login_images'
+        ]);
+
+        $pengaturan = Pengaturan::first();
+        if (!$pengaturan) {
+            return response()->json(['success' => false, 'message' => 'Pengaturan tidak ditemukan.']);
+        }
+
+        $field = $request->field;
+        $files = $pengaturan->$field ?? [];
+        
+        $updatedFiles = [];
+        $found = false;
+        foreach($files as $file) {
+            if ($file === $request->file_path && !$found) {
+                if(Storage::disk('public')->exists($file)) {
+                    Storage::disk('public')->delete($file);
+                }
+                $found = true;
+            } else {
+                $updatedFiles[] = $file;
+            }
+        }
+
+        $pengaturan->update([$field => $updatedFiles]);
+
+        return response()->json(['success' => true]);
+    }
 }

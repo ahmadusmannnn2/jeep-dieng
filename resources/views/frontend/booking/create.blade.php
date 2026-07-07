@@ -184,9 +184,14 @@
             altInput: true,
             altFormat: "F j, Y",
             disableMobile: "true",
+            allowInput: true,
             onReady: function(selectedDates, dateStr, instance) {
                 if (instance.element.hasAttribute('required')) {
                     instance.altInput.setAttribute('required', 'required');
+                    // Cegah ketikan keyboard manual agar tetap aman seperti readonly
+                    instance.altInput.addEventListener('keydown', function(e) {
+                        e.preventDefault();
+                    });
                 }
             }
         });

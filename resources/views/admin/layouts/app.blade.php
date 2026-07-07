@@ -233,7 +233,14 @@
                     <button @click="window.innerWidth < 768 ? mobileSidebarOpen = true : sidebarCollapsed = !sidebarCollapsed" class="p-2 text-gray-500 hover:text-emerald-500 focus:outline-none transition bg-gray-50 rounded-lg border border-gray-100 shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
-                    <div>
+
+                    @if(request()->routeIs('*.show') || request()->routeIs('*.edit') || request()->routeIs('*.create'))
+                    <a href="{{ url()->previous() }}" title="Kembali ke Halaman Sebelumnya" class="p-2.5 text-gray-500 hover:text-white hover:bg-gray-800 transition bg-white rounded-lg border border-gray-200 shadow-sm shrink-0 flex items-center justify-center ml-1 group">
+                        <svg class="w-5 h-5 transform transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    </a>
+                    @endif
+
+                    <div class="ml-1">
                         <h2 class="text-xl md:text-2xl font-bold text-gray-800 tracking-tight">@yield('header_title')</h2>
                         <p class="text-xs md:text-sm text-gray-500 hidden sm:block">@yield('header_subtitle')</p>
                     </div>

@@ -158,29 +158,38 @@
     <footer class="bg-gray-900 text-gray-300 py-12 border-t border-gray-800 mt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-10">
             <div>
-                <span class="text-2xl font-extrabold text-white tracking-tight mb-4 block uppercase">{{ $pengaturan_website->nama_website ?? 'JEEP DIENG' }}</span>
+                <div class="flex items-center gap-3 mb-4">
+                    @if(isset($pengaturan_website) && $pengaturan_website->logo)
+                        <img src="{{ asset('storage/' . $pengaturan_website->logo) }}" alt="Logo" class="w-10 h-10 rounded-xl object-contain bg-emerald-500 p-1 shadow-lg shadow-emerald-500/30">
+                    @else
+                        <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                        </div>
+                    @endif
+                    <span class="text-2xl font-extrabold text-white tracking-tight uppercase">{{ $pengaturan_website->nama_website ?? 'JEEP DIENG' }}</span>
+                </div>
                 <p class="text-gray-400 text-sm leading-relaxed mb-6">{{ $pengaturan_website->deskripsi_footer ?? 'Platform penyewaan Jeep resmi dan terpercaya.' }}</p>
                 <p class="text-gray-500 text-xs italic">{{ $pengaturan_website->alamat ?? 'Wonosobo, Jawa Tengah' }}</p>
             </div>
             <div>
                 <h4 class="text-white font-bold mb-4">Akses Cepat</h4>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="{{ route('paket') }}" class="hover:text-emerald-400 transition">Paket Wisata</a></li>
-                    <li><a href="{{ route('rute') }}" class="hover:text-emerald-400 transition">Destinasi & Rute</a></li>
-                    <li><a href="{{ route('promo') }}" class="hover:text-emerald-400 transition">Promo Terbaru</a></li>
-                    <li><a href="{{ route('register') }}" class="hover:text-emerald-400 transition">Daftar Member</a></li>
+                <ul class="space-y-3 text-sm">
+                    <li><a href="{{ route('paket') }}" class="group flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-all duration-300 hover:translate-x-1"><span class="w-1.5 h-1.5 rounded-full bg-gray-700 group-hover:bg-emerald-500 transition-colors shadow-sm"></span>Paket Wisata</a></li>
+                    <li><a href="{{ route('rute') }}" class="group flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-all duration-300 hover:translate-x-1"><span class="w-1.5 h-1.5 rounded-full bg-gray-700 group-hover:bg-emerald-500 transition-colors shadow-sm"></span>Destinasi & Rute</a></li>
+                    <li><a href="{{ route('promo') }}" class="group flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-all duration-300 hover:translate-x-1"><span class="w-1.5 h-1.5 rounded-full bg-gray-700 group-hover:bg-emerald-500 transition-colors shadow-sm"></span>Promo Terbaru</a></li>
+                    <li><a href="{{ route('register') }}" class="group flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-all duration-300 hover:translate-x-1"><span class="w-1.5 h-1.5 rounded-full bg-gray-700 group-hover:bg-emerald-500 transition-colors shadow-sm"></span>Daftar Member</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="text-white font-bold mb-4">Pusat Bantuan</h4>
-                <ul class="space-y-2 text-sm">
-                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg> {{ $pengaturan_website->no_telp ?? '0812-3456-7890' }}</li>
-                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg> {{ $pengaturan_website->email ?? 'support@jeepdieng.com' }}</li>
+                <ul class="space-y-3 text-sm text-gray-400">
+                    <li class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center shrink-0"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg></div> {{ $pengaturan_website->no_telp ?? '0812-3456-7890' }}</li>
+                    <li class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center shrink-0"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div> {{ $pengaturan_website->email ?? 'support@jeepdieng.com' }}</li>
                 </ul>
             </div>
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-gray-800 text-center text-sm text-gray-500 mb-10 md:mb-0">
-            &copy; {{ date('Y') }} Sistem Manajemen {{ $pengaturan_website->nama_website ?? 'Jeep Dieng' }}. Dibuat dengan 💚.
+            &copy; {{ date('Y') }} Sistem Manajemen {{ $pengaturan_website->nama_website ?? 'Jeep Dieng' }}. Abdulloh
         </div>
     </footer>
 

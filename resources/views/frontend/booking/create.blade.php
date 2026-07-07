@@ -183,7 +183,12 @@
             dateFormat: "Y-m-d",
             altInput: true,
             altFormat: "F j, Y",
-            disableMobile: "true"
+            disableMobile: "true",
+            onReady: function(selectedDates, dateStr, instance) {
+                if (instance.element.hasAttribute('required')) {
+                    instance.altInput.setAttribute('required', 'required');
+                }
+            }
         });
 
         // Logika Perhitungan Multi-Jeep

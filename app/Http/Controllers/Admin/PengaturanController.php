@@ -46,17 +46,30 @@ class PengaturanController extends Controller
         ]);
 
         $pengaturan = Pengaturan::firstOrCreate(['id' => 1]);
-        // Kecualikan semua input file, kita proses terpisah
-        $data = $request->except(['hero_images', 'gallery_images', 'gallery_videos', 'login_images']);
+        // Kecualikan semua input file dan flag hapus, kita proses terpisah
+        $data = $request->except([
+            'hero_images', 'gallery_images', 'gallery_videos', 'login_images',
+            'hapus_logo', 'hapus_hero_images', 'hapus_gallery_images', 'hapus_gallery_videos', 'hapus_login_images'
+        ]);
 
-        if ($request->hasFile('logo')) {
+        if ($request->has('hapus_logo') && $pengaturan->logo) {
+            if (Storage::disk('public')->exists($pengaturan->logo)) {
+                Storage::disk('public')->delete($pengaturan->logo);
+            }
+            $data['logo'] = null;
+        } elseif ($request->hasFile('logo')) {
             if ($pengaturan->logo && Storage::disk('public')->exists($pengaturan->logo)) {
                 Storage::disk('public')->delete($pengaturan->logo);
             }
             $data['logo'] = $request->file('logo')->store('pengaturan', 'public');
         }
 
-        if ($request->hasFile('hero_images')) {
+        if ($request->has('hapus_hero_images') && $pengaturan->hero_images) {
+            foreach($pengaturan->hero_images as $oldImage) {
+                if(Storage::disk('public')->exists($oldImage)) { Storage::disk('public')->delete($oldImage); }
+            }
+            $data['hero_images'] = null;
+        } elseif ($request->hasFile('hero_images')) {
             if ($pengaturan->hero_images) {
                 foreach($pengaturan->hero_images as $oldImage) {
                     if(Storage::disk('public')->exists($oldImage)) { Storage::disk('public')->delete($oldImage); }
@@ -70,7 +83,12 @@ class PengaturanController extends Controller
         }
 
         // Proses Multiple Gambar Galeri
-        if ($request->hasFile('gallery_images')) {
+        if ($request->has('hapus_gallery_images') && $pengaturan->gallery_images) {
+            foreach($pengaturan->gallery_images as $oldGalleryImage) {
+                if(Storage::disk('public')->exists($oldGalleryImage)) { Storage::disk('public')->delete($oldGalleryImage); }
+            }
+            $data['gallery_images'] = null;
+        } elseif ($request->hasFile('gallery_images')) {
             if ($pengaturan->gallery_images) {
                 foreach($pengaturan->gallery_images as $oldGalleryImage) {
                     if(Storage::disk('public')->exists($oldGalleryImage)) { Storage::disk('public')->delete($oldGalleryImage); }
@@ -83,9 +101,13 @@ class PengaturanController extends Controller
             $data['gallery_images'] = $galleryPath;
         }
 
-        // Proses Multiple Video Galeri (BARU)
-        if ($request->hasFile('gallery_videos')) {
-            // Hapus video lama dari storage agar hemat ruang
+        // Proses Multiple Video Galeri
+        if ($request->has('hapus_gallery_videos') && $pengaturan->gallery_videos) {
+            foreach($pengaturan->gallery_videos as $oldVideo) {
+                if(Storage::disk('public')->exists($oldVideo)) { Storage::disk('public')->delete($oldVideo); }
+            }
+            $data['gallery_videos'] = null;
+        } elseif ($request->hasFile('gallery_videos')) {
             if ($pengaturan->gallery_videos) {
                 foreach($pengaturan->gallery_videos as $oldVideo) {
                     if(Storage::disk('public')->exists($oldVideo)) { Storage::disk('public')->delete($oldVideo); }
@@ -98,9 +120,13 @@ class PengaturanController extends Controller
             $data['gallery_videos'] = $videoPaths;
         }
 
-        // Proses Multiple Gambar Halaman Login/Register (BARU)
-        if ($request->hasFile('login_images')) {
-            // Hapus gambar lama dari storage
+        // Proses Multiple Gambar Halaman Login/Register
+        if ($request->has('hapus_login_images') && $pengaturan->login_images) {
+            foreach($pengaturan->login_images as $oldLoginImage) {
+                if(Storage::disk('public')->exists($oldLoginImage)) { Storage::disk('public')->delete($oldLoginImage); }
+            }
+            $data['login_images'] = null;
+        } elseif ($request->hasFile('login_images')) {
             if ($pengaturan->login_images) {
                 foreach($pengaturan->login_images as $oldLoginImage) {
                     if(Storage::disk('public')->exists($oldLoginImage)) { Storage::disk('public')->delete($oldLoginImage); }

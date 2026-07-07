@@ -21,8 +21,14 @@
                     <label class="block text-sm font-bold text-gray-700 mb-2">Logo Website</label>
                     <div class="flex items-center gap-4 mb-3">
                         @if($pengaturan->logo)
-                            <div class="w-16 h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center overflow-hidden p-2 shrink-0">
-                                <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="Logo" class="max-w-full max-h-full object-contain">
+                            <div class="flex flex-col items-center gap-2 shrink-0">
+                                <div class="w-16 h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center overflow-hidden p-2">
+                                    <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="Logo" class="max-w-full max-h-full object-contain">
+                                </div>
+                                <label class="flex items-center gap-1.5 cursor-pointer bg-red-50 px-2 py-1 rounded border border-red-100 hover:bg-red-100 transition">
+                                    <input type="checkbox" name="hapus_logo" value="1" class="w-3 h-3 text-red-500 rounded border-red-200 focus:ring-red-500 cursor-pointer">
+                                    <span class="text-[10px] font-bold text-red-600 select-none uppercase tracking-wider">Hapus</span>
+                                </label>
                             </div>
                         @endif
                         <div class="flex-1">
@@ -58,10 +64,16 @@
                     <p class="text-xs text-amber-600 mt-2 font-medium">*Unggah beberapa gambar sekaligus untuk mengganti slider lama.</p>
                     
                     @if($pengaturan->hero_images)
-                        <div class="flex gap-4 mt-4 overflow-x-auto pb-2">
-                            @foreach($pengaturan->hero_images as $img)
-                                <img src="{{ asset('storage/' . $img) }}" class="w-32 h-20 object-cover rounded-xl border border-gray-200 shadow-sm shrink-0">
-                            @endforeach
+                        <div class="flex items-start gap-4 mt-4">
+                            <div class="flex gap-4 overflow-x-auto pb-2 flex-1">
+                                @foreach($pengaturan->hero_images as $img)
+                                    <img src="{{ asset('storage/' . $img) }}" class="w-32 h-20 object-cover rounded-xl border border-gray-200 shadow-sm shrink-0">
+                                @endforeach
+                            </div>
+                            <label class="shrink-0 flex items-center gap-2 bg-red-50 px-3 py-2 rounded-lg border border-red-100 cursor-pointer hover:bg-red-100 transition mt-1">
+                                <input type="checkbox" name="hapus_hero_images" value="1" class="w-4 h-4 text-red-500 rounded border-red-200 focus:ring-red-500 cursor-pointer">
+                                <span class="text-xs font-bold text-red-600 select-none">Hapus Semua Cover</span>
+                            </label>
                         </div>
                     @endif
                 </div>
@@ -86,9 +98,15 @@
 
                 @if($pengaturan->gallery_images && count($pengaturan->gallery_images) > 0)
                     <div class="mt-4">
-                        <p class="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">
-                            Foto tersimpan saat ini: <span class="text-emerald-600">{{ count($pengaturan->gallery_images) }} foto</span>
-                        </p>
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                Foto tersimpan saat ini: <span class="text-emerald-600">{{ count($pengaturan->gallery_images) }} foto</span>
+                            </p>
+                            <label class="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 cursor-pointer hover:bg-red-100 transition">
+                                <input type="checkbox" name="hapus_gallery_images" value="1" class="w-4 h-4 text-red-500 rounded border-red-200 focus:ring-red-500 cursor-pointer">
+                                <span class="text-xs font-bold text-red-600 select-none">Kosongkan Galeri Foto</span>
+                            </label>
+                        </div>
                         <div class="flex gap-3 overflow-x-auto pb-2">
                             @foreach($pengaturan->gallery_images as $img)
                                 <div class="relative shrink-0 group">
@@ -118,9 +136,15 @@
 
                 @if($pengaturan->gallery_videos && count($pengaturan->gallery_videos) > 0)
                     <div class="mt-4">
-                        <p class="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">
-                            Video tersimpan saat ini: <span class="text-purple-600">{{ count($pengaturan->gallery_videos) }} video</span>
-                        </p>
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                Video tersimpan saat ini: <span class="text-purple-600">{{ count($pengaturan->gallery_videos) }} video</span>
+                            </p>
+                            <label class="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 cursor-pointer hover:bg-red-100 transition">
+                                <input type="checkbox" name="hapus_gallery_videos" value="1" class="w-4 h-4 text-red-500 rounded border-red-200 focus:ring-red-500 cursor-pointer">
+                                <span class="text-xs font-bold text-red-600 select-none">Kosongkan Galeri Video</span>
+                            </label>
+                        </div>
                         <div class="flex gap-3 overflow-x-auto pb-2">
                             @foreach($pengaturan->gallery_videos as $video)
                                 <div class="relative shrink-0 group w-40">
@@ -150,10 +174,16 @@
                 <p class="text-xs text-amber-600 mt-2 font-medium">*Unggah beberapa gambar sekaligus untuk mengganti gambar lama.</p>
                 
                 @if($pengaturan->login_images && count($pengaturan->login_images) > 0)
-                    <div class="flex gap-4 mt-4 overflow-x-auto pb-2">
-                        @foreach($pengaturan->login_images as $img)
-                            <img src="{{ asset('storage/' . $img) }}" class="w-32 h-20 object-cover rounded-xl border border-gray-200 shadow-sm shrink-0">
-                        @endforeach
+                    <div class="flex items-start gap-4 mt-4">
+                        <div class="flex gap-4 overflow-x-auto pb-2 flex-1">
+                            @foreach($pengaturan->login_images as $img)
+                                <img src="{{ asset('storage/' . $img) }}" class="w-32 h-20 object-cover rounded-xl border border-gray-200 shadow-sm shrink-0">
+                            @endforeach
+                        </div>
+                        <label class="shrink-0 flex items-center gap-2 bg-red-50 px-3 py-2 rounded-lg border border-red-100 cursor-pointer hover:bg-red-100 transition mt-1">
+                            <input type="checkbox" name="hapus_login_images" value="1" class="w-4 h-4 text-red-500 rounded border-red-200 focus:ring-red-500 cursor-pointer">
+                            <span class="text-xs font-bold text-red-600 select-none">Kosongkan Slideshow</span>
+                        </label>
                     </div>
                 @else
                     <p class="text-xs text-gray-400 mt-3 italic">Belum ada gambar slideshow yang diunggah. Gambar default bertema Jeep akan ditampilkan.</p>

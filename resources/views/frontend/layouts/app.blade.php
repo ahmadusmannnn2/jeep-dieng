@@ -19,6 +19,8 @@
         /* Sembunyikan scrollbar bawaan */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Cegah kedipan pop-up sebelum Alpine.js termuat */
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased flex flex-col min-h-screen pb-20 md:pb-0">

@@ -33,8 +33,13 @@
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Kapasitas (Orang) <span class="text-red-500">*</span></label>
-                <input type="number" name="kapasitas" value="{{ $jeep->kapasitas }}" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Kapasitas Maksimal (Penumpang) <span class="text-red-500">*</span></label>
+                <select name="kapasitas" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+                    <option value="3" {{ $jeep->kapasitas == 3 ? 'selected' : '' }}>3 Penumpang (Longgar)</option>
+                    <option value="4" {{ $jeep->kapasitas == 4 ? 'selected' : '' }}>4 Penumpang (Standar Ideal)</option>
+                    <option value="5" {{ $jeep->kapasitas == 5 ? 'selected' : '' }}>5 Penumpang (Maksimal/Padat)</option>
+                </select>
+                <p class="text-[11px] text-gray-500 mt-1">*Demi keselamatan, Jeep dibatasi max 5 org.</p>
             </div>
         </div>
 

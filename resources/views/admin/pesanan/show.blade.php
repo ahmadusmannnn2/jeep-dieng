@@ -5,6 +5,46 @@
 @section('header_subtitle', 'Validasi pembayaran dan tugaskan armada Jeep')
 
 @section('content')
+
+@if($pesanan->status !== 'Dibatalkan')
+    @php
+        $step1 = true;
+        $step2 = in_array($pesanan->status, ['DP Lunas', 'Selesai Perjalanan', 'Lunas', 'Selesai']);
+        $step3 = in_array($pesanan->status, ['Selesai Perjalanan', 'Lunas', 'Selesai']);
+        $step4 = in_array($pesanan->status, ['Lunas', 'Selesai']);
+        $step5 = $pesanan->testimoni !== null;
+        
+        $steps = [
+            ['label' => 'Booking Dibuat', 'active' => $step1],
+            ['label' => 'DP Terbayar', 'active' => $step2],
+            ['label' => 'Trip Selesai', 'active' => $step3],
+            ['label' => 'Lunas Penuh', 'active' => $step4],
+            ['label' => 'Diulas (Selesai)', 'active' => $step5],
+        ];
+    @endphp
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8 hidden md:block">
+        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest text-center mb-6">Indikator Progres Pesanan</h3>
+        <div class="relative max-w-4xl mx-auto">
+            <!-- Connecting Line Background -->
+            <div class="absolute left-[10%] right-[10%] top-3 -translate-y-1/2 h-1 bg-gray-100 rounded-full z-0"></div>
+            <!-- Connecting Line Active -->
+            <div class="absolute left-[10%] top-3 -translate-y-1/2 h-1 bg-emerald-500 rounded-full z-0 transition-all duration-1000 ease-in-out" 
+                 style="width: {{ $step5 ? '80%' : ($step4 ? '60%' : ($step3 ? '40%' : ($step2 ? '20%' : '0%'))) }};"></div>
+            
+            <div class="flex justify-between relative z-10">
+                @foreach($steps as $idx => $step)
+                    <div class="flex flex-col items-center gap-2 w-1/5">
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors duration-500 {{ $step['active'] ? 'bg-emerald-500 border-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.4)]' : 'bg-white border-gray-200 text-transparent' }}">
+                            <svg class="w-3 h-3 {{ $step['active'] ? 'block animate-fade-in' : 'hidden' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-center {{ $step['active'] ? 'text-emerald-600' : 'text-gray-400' }}">{{ $step['label'] }}</span>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+@endif
+
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
     <div class="lg:col-span-2 space-y-6">

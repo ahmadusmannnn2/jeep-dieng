@@ -341,6 +341,15 @@
                 <span class="font-bold text-amber-500">Penting:</span> Pastikan Jeep dan Supir yang dipilih sedang dalam kondisi siap jalan. E-Ticket Pelanggan akan valid setelah Anda menetapkan armada ini.
             </p>
             </form>
+            
+            @if($pesanan->armadas->count() > 0)
+                <div class="mt-6 pt-6 border-t border-gray-800">
+                    <a href="{{ route('booking.print', $pesanan->id) }}" target="_blank" class="w-full py-3.5 bg-blue-600 text-white text-base font-extrabold rounded-xl hover:bg-blue-500 transition shadow-[0_4px_15px_rgba(37,99,235,0.3)] flex justify-center items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Cetak Surat Jalan / Manifest Armada
+                    </a>
+                </div>
+            @endif
             @endif
         </div>
         @endif

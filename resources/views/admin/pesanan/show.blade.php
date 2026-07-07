@@ -218,9 +218,8 @@
                 <p class="text-[10px] text-gray-500 mt-2">Komunitas terpilih akan mendapat Lonceng Penugasan Jeep dari sistem.</p>
             </div>
 
-            <div class="mb-6" x-data="{ showManualStatus: false }">
-                <!-- Tampilan Status Default (Otomatis) -->
-                <div x-show="!showManualStatus" class="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-between">
+            <div class="mb-6">
+                <div class="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-between">
                     <div>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Status Sistem (Auto-Sync)</p>
                         <div class="flex items-center gap-2">
@@ -231,29 +230,6 @@
                             <p class="text-emerald-400 font-black text-lg uppercase tracking-widest">{{ $pesanan->status }}</p>
                         </div>
                     </div>
-                    <button @click="showManualStatus = true" type="button" class="text-[10px] font-bold bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 px-3 py-1.5 rounded-lg transition shadow-sm">
-                        EDIT DARURAT
-                    </button>
-                </div>
-
-                <!-- Form Ubah Status Manual (Disembunyikan) -->
-                <div x-show="showManualStatus" style="display: none;" class="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10">
-                    <div class="flex justify-between items-center mb-3">
-                        <label class="block text-xs font-bold text-amber-500 uppercase tracking-wider">⚠ Ubah Status Manual</label>
-                        <button @click="showManualStatus = false" type="button" class="text-gray-400 hover:text-white transition">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>
-                    </div>
-                    <select name="status" class="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-900 text-white font-bold focus:ring-2 focus:ring-amber-500 transition">
-                        <option value="Pending" {{ $pesanan->status === 'Pending' ? 'selected' : '' }}>Menunggu Pembayaran</option>
-                        <option value="Disetujui" {{ $pesanan->status === 'Disetujui' ? 'selected' : '' }}>Disetujui</option>
-                        <option value="DP Lunas" {{ $pesanan->status === 'DP Lunas' ? 'selected' : '' }}>DP Lunas</option>
-                        <option value="Selesai Perjalanan" {{ $pesanan->status === 'Selesai Perjalanan' ? 'selected' : '' }}>Selesai Perjalanan</option>
-                        <option value="Lunas" {{ $pesanan->status === 'Lunas' ? 'selected' : '' }}>Lunas</option>
-                        <option value="Selesai" {{ $pesanan->status === 'Selesai' ? 'selected' : '' }}>Selesai</option>
-                        <option value="Dibatalkan" {{ $pesanan->status === 'Dibatalkan' ? 'selected' : '' }}>Batal</option>
-                    </select>
-                    <p class="text-[10px] text-amber-500/80 mt-2 font-medium">Perhatian: Gunakan hanya jika sistem Midtrans gagal memperbarui status secara otomatis.</p>
                 </div>
             </div>
 

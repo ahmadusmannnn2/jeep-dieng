@@ -109,8 +109,8 @@
                     </td>
                     <td class="px-6 py-4 flex justify-center gap-2">
                         <a href="{{ route('admin.pesanan.show', $item->id) }}" class="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition shadow-md">Detail</a>
+                        <a href="{{ route('booking.print', $item->id) }}" target="_blank" class="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-xl hover:bg-blue-600 transition shadow-md">Cetak</a>
                         @if(Auth::user()->role === 'admin')
-                        <a href="{{ route('admin.pesanan.edit', $item->id) }}" class="px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-xl hover:bg-emerald-600 transition shadow-md">Kelola</a>
                         @if(!in_array($item->status, ['DP Lunas', 'Selesai Perjalanan', 'Lunas', 'Selesai']))
                         <form action="{{ route('admin.pesanan.destroy', $item->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini? Tindakan ini tidak dapat dibatalkan!');">
                             @csrf

@@ -235,8 +235,13 @@ class BookingController extends Controller
     // 6. Mencetak E-Tiket Customer
     public function printTicket(Pesanan $pesanan)
     {
-        if ((int) $pesanan->user_id !== (int) Auth::id()) {
-            abort(403, 'Akses ditolak. Ini bukan tiket Anda.');
+        $user = Auth::user();
+        if ((int) $pesanan->user_id !== (int) $user->id) {
+            if ($user->role === 'pengelola' && $pesanan->komunitas_id !== $user->komunitas_id) {
+                abort(403, 'Akses ditolak.');
+            } elseif (!in_array($user->role, ['admin', 'pengelola'])) {
+                abort(403, 'Akses ditolak. Ini bukan tiket Anda.');
+            }
         }
 
         $pesanan->load(['paketWisata', 'jadwal', 'armadas.jeep', 'armadas.supir', 'pembayaran', 'pembayarans', 'komunitas']);

@@ -207,7 +207,7 @@
                         <a href="{{ route('admin.laporan.komunitas') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.laporan.komunitas') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
                             <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.laporan.komunitas') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
                             <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.laporan.komunitas') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
-                            Pencairan Komunitas
+                            Laporan Komunitas
                         </a>
                         @endif
                     </div>

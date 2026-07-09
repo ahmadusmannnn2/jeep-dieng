@@ -95,6 +95,10 @@
                                 </div>
                             </div>
                             <p class="text-[10px] text-gray-400 mt-1.5 font-medium">Kapasitas nyaman: 1 Jeep maksimal 4 orang.</p>
+                            <div id="capacity_warning_container" class="mt-3 hidden items-start gap-2 text-xs font-semibold p-3 rounded-xl">
+                                <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p id="capacity_warning_text"></p>
+                            </div>
                         </div>
 
                         {{-- Lokasi Penjemputan --}}
@@ -149,7 +153,7 @@
                         <span class="text-[10px] text-gray-500">*Tarif dihitung per Jeep (Rp {{ number_format($paketWisata->harga, 0, ',', '.') }} / Jeep)</span>
                     </div>
 
-                    <button type="submit" class="w-full py-4 bg-emerald-500 text-white text-lg font-extrabold rounded-2xl hover:bg-emerald-400 transition shadow-lg flex items-center justify-center gap-2 transform hover:-translate-y-1 relative z-10">
+                    <button type="submit" id="btn_submit_pesanan" class="w-full py-4 bg-emerald-500 text-white text-lg font-extrabold rounded-2xl hover:bg-emerald-400 transition shadow-lg flex items-center justify-center gap-2 transform hover:-translate-y-1 relative z-10 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:bg-emerald-500">
                         Buat Pesanan
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
@@ -193,8 +197,39 @@
                         e.preventDefault();
                     });
                 }
+            },
+            onChange: function(selectedDates, dateStr, instance) {
+                // Saat tanggal berubah, cek kapasitas ke backend
+                checkCapacity(dateStr);
             }
         });
+
+        const komunitasId = {{ $paketWisata->komunitas_id ?? 'null' }};
+        let currentAvailablePax = null; // null = belum dicek / unlimited as default
+        let currentAvailableJeeps = null;
+
+        const warningContainer = document.getElementById('capacity_warning_container');
+        const warningText = document.getElementById('capacity_warning_text');
+        const btnSubmit = document.getElementById('btn_submit_pesanan');
+
+        function checkCapacity(dateStr) {
+            if(!komunitasId || !dateStr) return;
+
+            fetch(`{{ route('booking.check-capacity') }}?komunitas_id=${komunitasId}&tanggal_jadwal=${dateStr}`)
+                .then(response => response.json())
+                .then(data => {
+                    if(data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+                    
+                    currentAvailableJeeps = data.available_jeeps;
+                    currentAvailablePax = data.available_pax;
+                    
+                    hitungKalkulasi(); // re-evaluasi kapasitas setelah fetch
+                })
+                .catch(error => console.error('Error fetching capacity:', error));
+        }
 
         // Logika Perhitungan Multi-Jeep
         const hargaPerJeep = {{ $paketWisata->harga }};
@@ -219,6 +254,35 @@
             // Hitung Jeep (Asumsi nyaman 1 Jeep = 4 orang)
             let butuhJeep = Math.ceil(pengunjung / 4);
             let totalBiaya = butuhJeep * hargaPerJeep;
+
+            // Validasi Kapasitas
+            if (currentAvailablePax !== null) {
+                warningContainer.classList.remove('hidden');
+                
+                if (currentAvailableJeeps === 0) {
+                    // Penuh total
+                    warningContainer.className = 'mt-3 items-start gap-2 text-xs font-bold p-3 rounded-xl flex bg-red-50 text-red-600 border border-red-200';
+                    warningText.innerText = '⚠️ Maaf, seluruh armada Jeep kami sudah habis dipesan pada tanggal ini. Silakan pilih tanggal lain.';
+                    btnSubmit.disabled = true;
+                    btnSubmit.innerText = 'Armada Penuh';
+                } else if (butuhJeep > currentAvailableJeeps) {
+                    // Sisa ada, tapi tidak cukup untuk rombongan ini
+                    warningContainer.className = 'mt-3 items-start gap-2 text-xs font-bold p-3 rounded-xl flex bg-red-50 text-red-600 border border-red-200';
+                    warningText.innerText = `⚠️ Sisa armada tidak mencukupi untuk rombongan Anda. Sisa armada: ${currentAvailableJeeps} Jeep (Maksimal ${currentAvailablePax} orang).`;
+                    btnSubmit.disabled = true;
+                    btnSubmit.innerText = 'Armada Tidak Mencukupi';
+                } else {
+                    // Aman
+                    warningContainer.className = 'mt-3 items-start gap-2 text-xs font-bold p-3 rounded-xl flex bg-emerald-50 text-emerald-600 border border-emerald-100';
+                    warningText.innerText = `✅ Tersedia! Sisa armada: ${currentAvailableJeeps} Jeep (Bisa untuk rombongan s/d ${currentAvailablePax} orang).`;
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = 'Buat Pesanan <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
+                }
+            } else {
+                warningContainer.classList.add('hidden');
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = 'Buat Pesanan <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
+            }
 
             // Update UI
             textJumlahJeep.innerText = butuhJeep + (butuhJeep > 1 ? ' Jeeps' : ' Jeep');

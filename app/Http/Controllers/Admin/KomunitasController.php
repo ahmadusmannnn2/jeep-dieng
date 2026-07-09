@@ -47,7 +47,7 @@ class KomunitasController extends Controller
         ]);
 
         // 1. Simpan Data Komunitas
-        $komunitas = Komunitas::create($request->only(['nama_komunitas', 'ketua', 'no_hp', 'alamat']));
+        $komunitas = Komunitas::create($request->only(['nama_komunitas', 'ketua', 'no_hp', 'alamat', 'nama_bank', 'no_rekening', 'atas_nama']));
 
         // 2. Buatkan Akun User Pengelola
         User::create([
@@ -87,7 +87,7 @@ class KomunitasController extends Controller
         ]);
 
         // 1. Update Data Komunitas
-        $komunitas->update($request->only(['nama_komunitas', 'ketua', 'no_hp', 'alamat']));
+        $komunitas->update($request->only(['nama_komunitas', 'ketua', 'no_hp', 'alamat', 'nama_bank', 'no_rekening', 'atas_nama']));
 
         // 2. Update atau Buat Akun Pengelola
         if ($pengelola) {

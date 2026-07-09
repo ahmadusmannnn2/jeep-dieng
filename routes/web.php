@@ -42,11 +42,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Rute Booking untuk Customer
+    Route::get('/booking/check-capacity', [BookingController::class, 'checkCapacity'])->name('booking.check-capacity');
     Route::get('/booking/{paketWisata}', [BookingController::class, 'create'])->name('booking.create');
     Route::post('/booking/{paketWisata}', [BookingController::class, 'store'])->name('booking.store');
 
     Route::get('/pesanan/{pesanan}/bayar', [BookingController::class, 'payment'])->name('booking.payment');
-    Route::post('/pesanan/{pesanan}/bayar', [BookingController::class, 'paymentStore'])->name('booking.payment.store');
+    // POST bayar manual dihapus — semua pembayaran customer melalui Midtrans otomatis
 
     // DETAIL RIWAYAT PESANAN / E-TIKET CUSTOMER
     Route::get('/pesanan-saya/{pesanan}', [BookingController::class, 'show'])->name('booking.show');
@@ -62,9 +63,13 @@ Route::middleware('auth')->group(function () {
 // RUTE DI AKSES BERSAMA OLEH ADMIN DAN PENGELOLA
 Route::middleware(['auth', 'role:admin,pengelola'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/notifications/read', [DashboardController::class, 'markNotificationsAsRead'])->name('notifications.read');
     
     Route::resource('supir', SupirController::class);
     Route::resource('jeep', JeepController::class);
+    Route::resource('paket-wisata', PaketWisataController::class)->parameters([
+        'paket-wisata' => 'paketWisata'
+    ]);
 
     Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
     Route::get('/pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
@@ -75,7 +80,13 @@ Route::middleware(['auth', 'role:admin,pengelola'])->prefix('admin')->name('admi
 
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
+    Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan.export_excel');
     Route::get('/laporan/komunitas', [LaporanController::class, 'komunitas'])->name('laporan.komunitas');
+
+    // PENARIKAN SALDO
+    Route::get('/penarikan-saldo', [\App\Http\Controllers\Admin\PenarikanSaldoController::class, 'index'])->name('penarikan-saldo.index');
+    Route::post('/penarikan-saldo', [\App\Http\Controllers\Admin\PenarikanSaldoController::class, 'store'])->name('penarikan-saldo.store');
+    Route::put('/penarikan-saldo/{penarikanSaldo}', [\App\Http\Controllers\Admin\PenarikanSaldoController::class, 'update'])->name('penarikan-saldo.update');
 
     Route::resource('testimoni', \App\Http\Controllers\Admin\TestimoniController::class);
     Route::patch('testimoni/{testimoni}/toggle', [\App\Http\Controllers\Admin\TestimoniController::class, 'toggle'])->name('testimoni.toggle');
@@ -83,9 +94,6 @@ Route::middleware(['auth', 'role:admin,pengelola'])->prefix('admin')->name('admi
 
 // RUTE KHUSUS SUPER ADMIN PUSAT (Bukan Pengelola)
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('paket-wisata', PaketWisataController::class)->parameters([
-        'paket-wisata' => 'paketWisata'
-    ]);
     Route::resource('rute-wisata', RuteWisataController::class)->parameters([
         'rute-wisata' => 'ruteWisata'
     ]);

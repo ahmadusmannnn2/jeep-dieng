@@ -10,7 +10,6 @@ use App\Models\Pembayaran;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingConfirmationMail;
-use App\Mail\PaymentUploadedMail;
 
 class BookingController extends Controller
 {
@@ -43,6 +42,22 @@ class BookingController extends Controller
         $jumlahPengunjung = $request->jumlah_pengunjung;
         $jumlahJeep = ceil($jumlahPengunjung / 4);
         $totalHarga = $jumlahJeep * $paketWisata->harga;
+
+        // VALIDASI KAPASITAS JEEP BACKEND (LAPIS KEDUA)
+        $totalJeeps = \App\Models\Jeep::where('komunitas_id', $paketWisata->komunitas_id)
+            ->whereIn('status', ['Tersedia', 'Disewa'])
+            ->count();
+            
+        $bookedJeeps = \App\Models\Pesanan::where('komunitas_id', $paketWisata->komunitas_id)
+            ->whereDate('tanggal_jadwal', $request->tanggal_jadwal)
+            ->whereIn('status', ['Disetujui', 'DP Lunas', 'Selesai Perjalanan', 'Lunas', 'Selesai'])
+            ->sum('jumlah_jeep');
+            
+        $availableJeeps = max(0, $totalJeeps - $bookedJeeps);
+        
+        if ($jumlahJeep > $availableJeeps) {
+            return back()->with('error', 'Maaf, sisa armada Jeep pada tanggal tersebut tidak mencukupi untuk jumlah rombongan Anda. Sisa armada: ' . $availableJeeps . ' Jeep (Maks: ' . ($availableJeeps * 4) . ' orang).')->withInput();
+        }
 
         $catatanAkhir = "Jam Jemput: " . $request->waktu_jemput . "\n" . "Catatan Tambahan: " . $request->catatan;
 
@@ -163,63 +178,6 @@ class BookingController extends Controller
         return view('frontend.booking.payment', compact('pesanan', 'snapToken', 'jenisPembayaran', 'jumlahBayar'));
     }
 
-    // 4. Proses Simpan Bukti Bayar
-    public function paymentStore(Request $request, Pesanan $pesanan)
-    {
-        if ((int) $pesanan->user_id !== (int) Auth::id()) {
-            abort(403, 'Akses Ditolak.');
-        }
-
-        $request->validate([
-            'bukti_pembayaran'  => 'required|image|mimes:jpeg,png,jpg,webp|max:3072',
-            'metode_pembayaran' => 'required|string',
-            'jenis_pembayaran'  => 'required|in:DP,Pelunasan,Lunas',
-        ]);
-
-        $path = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
-
-        // Hitung jumlah bayar berdasarkan jenis pembayaran
-        if ($request->jenis_pembayaran === 'DP') {
-            // DP = 50% dari total harga
-            $jumlahBayar = $pesanan->total_harga / 2;
-            $pesanan->update(['tipe_pembayaran' => 'DP']);
-        } elseif ($request->jenis_pembayaran === 'Pelunasan') {
-            // Pelunasan = sisa 50% yang belum dibayar
-            $jumlahBayar = $pesanan->total_harga / 2;
-            $pesanan->update(['tipe_pembayaran' => 'Lunas']);
-        } else {
-            // Lunas sekaligus = 100% total harga
-            $jumlahBayar = $pesanan->total_harga;
-            $pesanan->update(['tipe_pembayaran' => 'Lunas']);
-        }
-
-        Pembayaran::create([
-            'pesanan_id'        => $pesanan->id,
-            'jumlah_bayar'      => $jumlahBayar,
-            'bukti_bayar'       => $path,
-            'metode_pembayaran' => $request->metode_pembayaran,
-            'jenis_pembayaran'  => $request->jenis_pembayaran,
-            'status'            => 'Menunggu Verifikasi',
-        ]);
-
-        // Jika pesanan sudah Selesai Perjalanan dan customer upload pelunasan,
-        // ubah status menjadi Pending agar admin bisa verifikasi ulang.
-        // Jika pesanan masih Pending biasa (upload DP pertama kali), biarkan statusnya.
-        if ($pesanan->status === 'Selesai Perjalanan' && $request->jenis_pembayaran === 'Pelunasan') {
-            $pesanan->update(['status' => 'Pending']);
-        }
-
-        // 📧 Kirim email notifikasi bukti pembayaran diterima
-        $pesanan->load(['user', 'paketWisata', 'pembayaran']);
-        try {
-            Mail::to($pesanan->user->email)->send(new PaymentUploadedMail($pesanan));
-        } catch (\Exception $e) {
-            // Jangan hentikan proses jika email gagal terkirim
-        }
-
-        return redirect()->route('dashboard')->with('success', 'Bukti pembayaran berhasil diunggah! Mohon tunggu konfirmasi dari Admin kami.');
-    }
-
     // 5. Menampilkan Detail Riwayat Pesanan / E-Tiket Customer
     public function show(Pesanan $pesanan)
     {
@@ -297,5 +255,37 @@ class BookingController extends Controller
         ]);
 
         return redirect()->route('dashboard')->with('success', 'Terima kasih! Ulasan Anda berhasil disimpan dan ditayangkan.');
+    }
+
+    // 9. Mengecek Ketersediaan Armada Jeep Secara Real-time (AJAX)
+    public function checkCapacity(Request $request)
+    {
+        $kom_id = $request->komunitas_id;
+        $tanggal = $request->tanggal_jadwal;
+
+        if (!$kom_id || !$tanggal) {
+            return response()->json(['error' => 'Data tidak lengkap'], 400);
+        }
+
+        // Total seluruh Jeep milik komunitas (Tersedia / Sedang Disewa di lapangan)
+        $totalJeeps = \App\Models\Jeep::where('komunitas_id', $kom_id)
+            ->whereIn('status', ['Tersedia', 'Disewa'])
+            ->count();
+            
+        // Total kebutuhan Jeep (berdasarkan seluruh pesanan yang belum dibatalkan pada tanggal tsb)
+        $bookedJeeps = \App\Models\Pesanan::where('komunitas_id', $kom_id)
+            ->whereDate('tanggal_jadwal', $tanggal)
+            ->whereIn('status', ['Disetujui', 'DP Lunas', 'Selesai Perjalanan', 'Lunas', 'Selesai'])
+            ->sum('jumlah_jeep');
+            
+        $availableJeeps = max(0, $totalJeeps - $bookedJeeps);
+        $availablePax = $availableJeeps * 4;
+
+        return response()->json([
+            'available_jeeps' => $availableJeeps,
+            'available_pax' => $availablePax,
+            'total_jeeps' => $totalJeeps,
+            'booked_jeeps' => $bookedJeeps
+        ]);
     }
 }

@@ -103,6 +103,15 @@
                             <span class="px-3 py-1 bg-red-50 text-red-700 rounded-full text-xs font-bold border border-red-200">Batal</span>
                         @endif
 
+                        @if($item->penarikan_id)
+                            <div class="mt-2">
+                                <span class="px-2 py-1 bg-purple-50 text-purple-700 rounded-md text-[10px] font-black border border-purple-200 flex items-center gap-1 w-max" title="Dana dari pesanan ini sudah dicairkan ke pengelola">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    TELAH DICAIRKAN
+                                </span>
+                            </div>
+                        @endif
+
                         @if($item->pembayaran && $item->pembayaran->status === 'Menunggu Verifikasi')
                             <span class="block mt-1 text-[10px] text-emerald-600 font-bold animate-pulse">Menunggu Validasi!</span>
                         @endif

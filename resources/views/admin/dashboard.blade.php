@@ -40,6 +40,7 @@
     <h3 class="text-xl font-black text-gray-800">Menampilkan Data: <span class="text-emerald-500">{{ $namaKomunitasFilter }}</span> (Tahun {{ $tahun }})</h3>
 </div>
 
+@if(Auth::user()->role === 'admin')
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <a href="{{ route('admin.laporan.index') }}" class="block bg-gradient-to-br from-gray-900 to-gray-800 text-white p-6 rounded-3xl shadow-sm relative overflow-hidden group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
         <div class="absolute right-[-10px] bottom-[-10px] text-white/5 transform group-hover:scale-110 transition duration-300">
@@ -91,6 +92,87 @@
         </div>
     </a>
 </div>
+@else
+<!-- KARTU KHUSUS PENGELOLA -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <a href="{{ route('admin.laporan.index') }}" class="block bg-gradient-to-br from-emerald-600 to-emerald-800 text-white p-6 rounded-3xl shadow-sm relative overflow-hidden group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+        <div class="absolute right-[-10px] bottom-[-10px] text-white/5 transform group-hover:scale-110 transition duration-300">
+            <svg class="w-32 h-32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <p class="text-xs uppercase tracking-widest font-bold text-emerald-200 mb-1 group-hover:text-white transition">Pendapatan Bersih</p>
+        <h4 class="text-3xl font-black text-white">Rp {{ number_format($pengelolaPendapatanBersih, 0, ',', '.') }}</h4>
+        <div class="mt-4 pt-4 border-t border-emerald-500/30 flex justify-between text-xs text-emerald-100">
+            <span>Kotor: Rp {{ number_format($pengelolaPendapatanKotor, 0, ',', '.') }}</span>
+            <span class="text-red-200">-10% (Rp {{ number_format($pengelolaPotonganAdmin, 0, ',', '.') }})</span>
+        </div>
+    </a>
+
+    <a href="{{ route('admin.pesanan.index') }}" class="block bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:border-amber-300 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <p class="text-xs uppercase tracking-widest font-bold text-gray-400 group-hover:text-gray-600 transition">Perlu Penugasan Armada</p>
+                @if($pengelolaPesananNeedJeep > 0)
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                @endif
+            </div>
+            <h4 class="text-3xl font-black text-gray-900">{{ $pengelolaPesananNeedJeep }}</h4>
+            <p class="text-[11px] text-amber-600 font-bold mt-2">Pesanan siap jalan (Lunas DP)</p>
+        </div>
+        <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+    </a>
+
+    <a href="{{ route('admin.jeep.index') }}" class="block bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:border-emerald-300 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+        <div>
+            <p class="text-xs uppercase tracking-widest font-bold text-gray-400 mb-1 group-hover:text-gray-600 transition">Total Armada & Supir</p>
+            <div class="flex gap-4 mt-2">
+                <div>
+                    <h4 class="text-2xl font-black text-gray-900">{{ $totalJeep }}</h4>
+                    <p class="text-[10px] font-bold text-emerald-600">Jeep</p>
+                </div>
+                <div class="w-px bg-gray-200"></div>
+                <div>
+                    <h4 class="text-2xl font-black text-gray-900">{{ $totalSupir }}</h4>
+                    <p class="text-[10px] font-bold text-emerald-600">Supir</p>
+                </div>
+            </div>
+        </div>
+        <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        </div>
+    </a>
+</div>
+@endif
+
+@if(Auth::user()->role === 'admin')
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+    <a href="{{ route('admin.penarikan-saldo.index') }}" class="block bg-indigo-50 p-6 rounded-3xl shadow-sm border border-indigo-100 flex items-center justify-between group hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+        <div>
+            <p class="text-xs uppercase tracking-widest font-bold text-indigo-500 mb-1">Total Penarikan (Bulan Ini)</p>
+            <h4 class="text-3xl font-black text-indigo-900">Rp {{ number_format($adminTotalPenarikan ?? 0, 0, ',', '.') }}</h4>
+            <p class="text-[11px] text-indigo-600 font-medium mt-2">Dana yang telah ditransfer ke Pengelola</p>
+        </div>
+        <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+        </div>
+    </a>
+
+    <a href="{{ route('admin.penarikan-saldo.index') }}" class="block bg-emerald-50 p-6 rounded-3xl shadow-sm border border-emerald-100 flex items-center justify-between group hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+        <div>
+            <p class="text-xs uppercase tracking-widest font-bold text-emerald-500 mb-1">Pendapatan Platform 10% (Bulan Ini)</p>
+            <h4 class="text-3xl font-black text-emerald-900">Rp {{ number_format($adminPendapatanFee ?? 0, 0, ',', '.') }}</h4>
+            <p class="text-[11px] text-emerald-600 font-medium mt-2">Pemasukan bersih untuk Admin</p>
+        </div>
+        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+    </a>
+</div>
+@endif
 
 <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
     <div class="xl:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
@@ -108,35 +190,41 @@
         
         <div class="space-y-4">
             @forelse($pesananTerbaru as $item)
-                <div class="flex justify-between items-center p-3 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition">
-                    <div>
-                        <p class="font-bold text-sm text-gray-900">#BKG-{{ str_pad($item->id, 5, '0', STR_PAD_LEFT) }}</p>
-                        <p class="text-xs text-emerald-600 font-bold mb-0.5">Tour: {{ \Carbon\Carbon::parse($item->tanggal_jadwal)->format('d M Y') }}</p>
-                        <p class="text-[11px] text-gray-500 truncate max-w-[150px]">{{ $item->user->name }} - {{ $item->komunitas->nama_komunitas ?? 'Umum' }}</p>
+                <a href="{{ route('admin.pesanan.show', $item->id) }}" class="block p-3 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-sm text-gray-900">#BKG-{{ str_pad($item->id, 5, '0', STR_PAD_LEFT) }}</p>
+                            <p class="text-xs text-emerald-600 font-bold mb-0.5">Tour: {{ \Carbon\Carbon::parse($item->tanggal_jadwal)->format('d M Y') }}</p>
+                            <p class="text-[11px] text-gray-500 truncate max-w-[150px]">{{ $item->user->name }} - {{ $item->komunitas->nama_komunitas ?? 'Umum' }}</p>
+                        </div>
+                        <div class="text-right">
+                            <!-- Tampilkan Jumlah Armada yang Dipesan User -->
+                            @if($item->jumlah_jeep)
+                                <p class="text-[10px] font-bold text-amber-600 mb-1">Dibutuhkan: {{ $item->jumlah_jeep }} Jeep</p>
+                            @endif
+
+                            <p class="text-[10px] font-bold text-gray-500 mb-1">{{ $item->armadas->count() }} Ditugaskan</p>
+                            @if($item->armadas->count() > 0)
+                                <div class="text-[9px] text-gray-600 text-right mt-1 max-w-[200px] truncate space-y-0.5">
+                                    @foreach($item->armadas as $armada)
+                                        <div>🚘 {{ $armada->jeep->nama_jeep ?? 'Jeep' }} - 👤 {{ $armada->supir->nama_supir ?? 'Supir' }}</div>
+                                    @endforeach
+                                </div>
+                            @endif
+                            @if($item->status === 'Pending')
+                                <span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold">Menunggu</span>
+                            @elseif($item->status === 'DP Lunas')
+                                <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold">DP Lunas</span>
+                            @elseif($item->status === 'Lunas')
+                                <span class="px-2 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-bold">Lunas</span>
+                            @elseif($item->status === 'Selesai')
+                                <span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold">Selesai</span>
+                            @else
+                                <span class="px-2 py-1 bg-red-50 text-red-700 rounded-lg text-[10px] font-bold">Batal</span>
+                            @endif
+                        </div>
                     </div>
-                    <div class="text-right">
-                        <!-- Tampilkan Jumlah Armada -->
-                        <p class="text-[10px] font-bold text-gray-500 mb-1">{{ $item->armadas->count() }} Jeep Ditugaskan</p>
-                        @if($item->armadas->count() > 0)
-                            <div class="text-[9px] text-gray-600 text-right mt-1 max-w-[200px] truncate space-y-0.5">
-                                @foreach($item->armadas as $armada)
-                                    <div>🚘 {{ $armada->jeep->nama_jeep ?? 'Jeep' }} - 👤 {{ $armada->supir->nama_supir ?? 'Supir' }}</div>
-                                @endforeach
-                            </div>
-                        @endif
-                        @if($item->status === 'Pending')
-                            <span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold">Menunggu</span>
-                        @elseif($item->status === 'DP Lunas')
-                            <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold">DP Lunas</span>
-                        @elseif($item->status === 'Lunas')
-                            <span class="px-2 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-bold">Lunas</span>
-                        @elseif($item->status === 'Selesai')
-                            <span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold">Selesai</span>
-                        @else
-                            <span class="px-2 py-1 bg-red-50 text-red-700 rounded-lg text-[10px] font-bold">Batal</span>
-                        @endif
-                    </div>
-                </div>
+                </a>
             @empty
                 <p class="text-sm text-gray-400 text-center py-4">Belum ada pesanan.</p>
             @endforelse
@@ -148,28 +236,26 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const ctx = document.getElementById('grafikPendapatan').getContext('2d');
-        const dataPHP = @json($dataGrafik);
-        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, '#10b981');
-        gradient.addColorStop(1, '#6ee7b7');
+        const datasetsPHP = @json($datasetsGrafik);
 
         new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                datasets: [{
-                    label: 'Pendapatan (Rp)',
-                    data: dataPHP,
-                    backgroundColor: gradient,
-                    borderRadius: 8,
-                    borderSkipped: false,
-                }]
+                datasets: datasetsPHP
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
+                    legend: { 
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8
+                        }
+                    },
                     tooltip: {
                         callbacks: {
                             label: function(context) {

@@ -25,17 +25,19 @@
         // Notifikasi Admin
         $pesananPendingCount = \App\Models\Pesanan::where('status', 'Pending')->count();
         $pesananNeedJeepCount = \App\Models\Pesanan::where('status', 'DP Lunas')->doesntHave('armadas')->count();
-        $adminNotifCount = $pesananPendingCount + $pesananNeedJeepCount;
+        $dbNotifs = Auth::user()->unreadNotifications;
+        $adminNotifCount = $pesananPendingCount + $pesananNeedJeepCount + (Auth::user()->role === 'admin' ? $dbNotifs->count() : 0);
 
         // Notifikasi Pengelola
-        $pengelolaNotifCount = 0;
         $pengelolaOrders = collect();
         if (Auth::user()->role === 'pengelola') {
             $pengelolaOrders = \App\Models\Pesanan::where('status', 'DP Lunas')
                 ->where('komunitas_id', Auth::user()->komunitas_id)
                 ->latest()
                 ->get();
-            $pengelolaNotifCount = $pengelolaOrders->count();
+            $pengelolaNotifCount = $pengelolaOrders->count() + $dbNotifs->count();
+        } else {
+            $pengelolaNotifCount = 0;
         }
     @endphp
 
@@ -62,12 +64,10 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto no-scrollbar px-4 py-6 space-y-2">
-                @if(Auth::user()->role === 'admin')
                 <a href="{{ route('admin.dashboard') }}" title="Dashboard" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition overflow-hidden">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     <span x-show="!sidebarCollapsed" class="font-medium whitespace-nowrap">Dashboard</span>
                 </a>
-                @endif
 
                 <a href="{{ route('admin.pesanan.index') }}" title="Pesanan Masuk" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.pesanan.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition overflow-hidden">
                     <div class="flex items-center gap-3">
@@ -82,8 +82,7 @@
                     @endif
                 </a>
 
-                @if(Auth::user()->role === 'admin')
-                <!-- Master Armada -->
+                <!-- Master Armada (Bisa diakses Pengelola & Admin) -->
                 <div x-data="{ open: {{ request()->routeIs('admin.komunitas.*') || request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'true' : 'false' }} }">
                     <button @click="if(sidebarCollapsed) { sidebarCollapsed = false; open = true; } else { open = !open }" type="button" title="Mitra Komunitas & Armada" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.komunitas.*') || request()->routeIs('admin.jeep.*') || request()->routeIs('admin.supir.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition overflow-hidden">
                         <div class="flex items-center gap-3">
@@ -113,10 +112,8 @@
                         </a>
                     </div>
                 </div>
-                @endif
 
-                @if(Auth::user()->role === 'admin')
-                <!-- Katalog Wisata -->
+                <!-- Katalog Wisata (Bisa diakses Pengelola & Admin) -->
                 <div x-data="{ open: {{ request()->routeIs('admin.paket-wisata.*') || request()->routeIs('admin.rute-wisata.*') || request()->routeIs('admin.jadwal.*') ? 'true' : 'false' }} }">
                     <button @click="if(sidebarCollapsed) { sidebarCollapsed = false; open = true; } else { open = !open }" type="button" title="Paket Tour & Rute" class="w-full flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.paket-wisata.*') || request()->routeIs('admin.rute-wisata.*') || request()->routeIs('admin.jadwal.*') ? 'text-white' : 'text-gray-400' }} hover:text-emerald-400 hover:bg-gray-800 rounded-xl transition overflow-hidden">
                         <div class="flex items-center gap-3">
@@ -132,21 +129,15 @@
                             <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.paket-wisata.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Paket Wisata Utama
                         </a>
+                        @if(Auth::user()->role === 'admin')
                         <a href="{{ route('admin.rute-wisata.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.rute-wisata.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
                             <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.rute-wisata.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
                             <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.rute-wisata.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
                             Kelola Rute Destinasi
                         </a>
-                        {{--
-                        <a href="{{ route('admin.jadwal.index') }}" class="flex items-center relative py-2 px-3 rounded-xl text-sm {{ request()->routeIs('admin.jadwal.*') ? 'text-emerald-400 font-bold bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition-all">
-                            <span class="absolute -left-[17px] w-3 h-px {{ request()->routeIs('admin.jadwal.*') ? 'bg-emerald-400' : 'bg-gray-800' }}"></span>
-                            <span class="absolute -left-[19px] w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.jadwal.*') ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-transparent' }}"></span>
-                            Jadwal Keberangkatan
-                        </a>
-                        --}}
+                        @endif
                     </div>
                 </div>
-                @endif
 
                 <!-- Konten Website -->
                 @if(Auth::user()->role === 'admin')
@@ -211,6 +202,15 @@
                     </div>
                 </div>
                 @endif
+
+                <!-- Penarikan Saldo -->
+                <a href="{{ route('admin.penarikan-saldo.index') }}" title="Penarikan Saldo" class="flex items-center justify-between px-4 py-3 {{ request()->routeIs('admin.penarikan-saldo.*') ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-400 hover:text-emerald-400 hover:bg-gray-800' }} rounded-xl transition overflow-hidden">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span x-show="!sidebarCollapsed" class="font-medium whitespace-nowrap">Penarikan Saldo</span>
+                    </div>
+                </a>
+                
             </nav>
 
             <div class="p-4 border-t border-gray-800 shrink-0">
@@ -259,8 +259,14 @@
                         </button>
                         
                         <div x-show="showInternalNotif" x-transition x-cloak class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
-                            <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/50">
+                            <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
                                 <h3 class="text-sm font-bold text-gray-900">Pemberitahuan Sistem</h3>
+                                @if(Auth::user()->unreadNotifications->count() > 0)
+                                    <form action="{{ route('admin.notifications.read') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="text-[11px] px-2 py-1 bg-emerald-100 text-emerald-600 hover:bg-emerald-200 hover:text-emerald-700 font-bold rounded-lg transition-colors cursor-pointer" title="Bersihkan semua notifikasi">Tandai Dibaca</button>
+                                    </form>
+                                @endif
                             </div>
                             <div class="max-h-80 overflow-y-auto">
                                 @if(Auth::user()->role === 'admin')
@@ -277,24 +283,41 @@
                                                 <p class="text-sm text-gray-800 font-medium text-amber-600">Ada <strong>{{ $pesananNeedJeepCount }} pesanan</strong> Lunas DP yang belum mendapatkan penugasan Jeep!</p>
                                             </a>
                                         @endif
+                                        @foreach($dbNotifs as $notification)
+                                            <a href="{{ $notification->data['url'] ?? '#' }}" class="block px-4 py-4 border-b border-gray-50 hover:bg-emerald-50 transition bg-emerald-50/30">
+                                                <p class="text-sm text-gray-800 font-medium">{{ $notification->data['message'] }}</p>
+                                                <span class="text-xs text-gray-500">{{ $notification->created_at->diffForHumans() }}</span>
+                                            </a>
+                                        @endforeach
                                     @endif
                                 @elseif(Auth::user()->role === 'pengelola')
-                                    @forelse($pengelolaOrders as $order)
-                                        <a href="{{ route('admin.pesanan.show', $order->id) }}" class="block px-4 py-4 border-b border-gray-50 hover:bg-emerald-50 transition">
-                                            <p class="text-sm text-gray-800 font-medium">Penugasan baru untuk tiket <strong>#{{ $order->id }}</strong>. Segera cek dan siapkan armada!</p>
-                                            <p class="text-xs text-emerald-600 font-bold mt-1">Klik untuk mencetak Surat Jalan</p>
-                                        </a>
-                                    @empty
-                                        <div class="px-4 py-6 text-center text-gray-500 text-sm">Belum ada penugasan baru.</div>
-                                    @endforelse
+                                    @if($pengelolaNotifCount == 0)
+                                        <div class="px-4 py-6 text-center text-gray-500 text-sm">Belum ada pemberitahuan baru.</div>
+                                    @else
+                                        @forelse($pengelolaOrders as $order)
+                                            <a href="{{ route('admin.pesanan.show', $order->id) }}" class="block px-4 py-4 border-b border-gray-50 hover:bg-emerald-50 transition">
+                                                <p class="text-sm text-gray-800 font-medium">Penugasan baru untuk tiket <strong>#{{ $order->id }}</strong>. Segera cek dan siapkan armada!</p>
+                                                <p class="text-xs text-emerald-600 font-bold mt-1">Klik untuk mencetak Surat Jalan</p>
+                                            </a>
+                                        @empty
+                                        @endforelse
+                                        @foreach($dbNotifs as $notification)
+                                            <a href="{{ $notification->data['url'] ?? '#' }}" class="block px-4 py-4 border-b border-gray-50 hover:bg-emerald-50 transition bg-emerald-50/30">
+                                                <p class="text-sm text-gray-800 font-medium">{{ $notification->data['message'] }}</p>
+                                                <span class="text-xs text-gray-500">{{ $notification->created_at->diffForHumans() }}</span>
+                                            </a>
+                                        @endforeach
+                                    @endif
                                 @endif
                             </div>
                         </div>
                     </div>
 
+                    @if(Auth::user()->role === 'admin')
                     <a href="{{ route('home') }}" target="_blank" title="Pratinjau Halaman Pengunjung" class="p-2.5 text-gray-500 hover:text-emerald-600 bg-gray-50 hover:bg-emerald-50 rounded-full transition border border-gray-100 shadow-sm shrink-0 flex items-center justify-center">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                     </a>
+                    @endif
 
                     @if(Auth::user()->role === 'admin')
                     <a href="{{ route('admin.pengaturan.index') }}" title="Pengaturan Website" class="p-2.5 text-gray-500 hover:text-emerald-600 bg-gray-50 hover:bg-emerald-50 rounded-full transition border border-gray-100 shadow-sm shrink-0 flex items-center justify-center">

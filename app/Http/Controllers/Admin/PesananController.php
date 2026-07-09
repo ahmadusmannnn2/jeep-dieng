@@ -64,7 +64,7 @@ class PesananController extends Controller
         }
 
         // Load relasi armadas yang baru
-        $pesanan->load(['user', 'paketWisata', 'armadas.jeep', 'armadas.supir', 'pembayaran', 'komunitas']);
+        $pesanan->load(['user', 'paketWisata', 'armadas.jeep', 'armadas.supir', 'pembayaran', 'pembayarans', 'komunitas']);
         
         $tanggalJadwal = $pesanan->tanggal_jadwal;
 
@@ -115,6 +115,10 @@ class PesananController extends Controller
 
     public function update(Request $request, Pesanan $pesanan)
     {
+        if ($pesanan->penarikan_id) {
+            return back()->with('error', 'Akses Ditolak: Dana pesanan ini telah dicairkan/diajukan untuk penarikan ke pengelola. Pesanan tidak dapat dimodifikasi lagi.');
+        }
+
         $user = Auth::user();
         $statusLama = $pesanan->status;
 
@@ -170,8 +174,10 @@ class PesananController extends Controller
                 return back()->with('error', 'PENUGASAN DITOLAK: Satu Supir tidak boleh dipilih lebih dari satu kali dalam satu pesanan!');
             }
 
-            // VALIDASI DOUBLE BOOKING JEEP LINTAS PESANAN
+            // VALIDASI DOUBLE BOOKING JEEP & SUPIR LINTAS PESANAN
             $tanggalJadwal = $pesanan->tanggal_jadwal;
+            
+            // Validasi Jeep
             if ($request->has('jeep_id')) {
                 foreach ($request->jeep_id as $j_id) {
                     if (!empty($j_id)) {
@@ -186,6 +192,26 @@ class PesananController extends Controller
                         if ($isBooked) {
                             $jeep = \App\Models\Jeep::find($j_id);
                             return back()->with('error', 'PENUGASAN DITOLAK: Armada Jeep "' . ($jeep->nama_jeep ?? $j_id) . '" sudah dipesan untuk rombongan lain pada tanggal ' . \Carbon\Carbon::parse($tanggalJadwal)->format('d/m/Y') . '. Silakan pilih Jeep yang nganggur.');
+                        }
+                    }
+                }
+            }
+
+            // Validasi Supir
+            if ($request->has('supir_id')) {
+                foreach ($request->supir_id as $s_id) {
+                    if (!empty($s_id)) {
+                        $isBooked = \App\Models\PesananArmada::where('supir_id', $s_id)
+                            ->whereHas('pesanan', function($query) use ($tanggalJadwal, $pesanan) {
+                                $query->whereDate('tanggal_jadwal', $tanggalJadwal)
+                                      ->where('id', '!=', $pesanan->id)
+                                      ->whereIn('status', ['Disetujui', 'DP Lunas', 'Selesai Perjalanan', 'Lunas']);
+                            })
+                            ->exists();
+
+                        if ($isBooked) {
+                            $supir = \App\Models\Supir::find($s_id);
+                            return back()->with('error', 'PENUGASAN DITOLAK: Supir "' . ($supir->nama_supir ?? $s_id) . '" sudah ditugaskan untuk rombongan lain pada tanggal tersebut. Silakan pilih Supir lain.');
                         }
                     }
                 }
@@ -241,6 +267,11 @@ class PesananController extends Controller
     public function destroy(Pesanan $pesanan)
     {
         $user = Auth::user();
+        
+        if ($pesanan->penarikan_id) {
+            return back()->with('error', 'Pesanan ini tidak dapat dihapus karena dananya sudah dicairkan.');
+        }
+
         // Proteksi: Pengelola tidak diizinkan menghapus pesanan
         if ($user->role === 'pengelola') {
             abort(403, 'Akses Ditolak: Pengelola tidak diizinkan menghapus data pesanan.');

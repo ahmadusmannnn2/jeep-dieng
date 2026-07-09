@@ -67,4 +67,9 @@ class Pesanan extends Model
     {
         return $this->hasOne(Testimoni::class, 'pesanan_id');
     }
+
+    public function penarikanSaldo()
+    {
+        return $this->belongsTo(PenarikanSaldo::class, 'penarikan_id');
+    }
 }

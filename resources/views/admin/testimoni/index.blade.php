@@ -48,7 +48,14 @@
                         <span class="font-bold text-gray-800 block">{{ $item->nama }}</span>
                         <span class="text-xs text-gray-500">{{ $item->asal_kota ?? '-' }}</span>
                         @if($item->pesanan_id)
-                            <a href="{{ route('admin.pesanan.show', $item->pesanan_id) }}" class="text-[10px] text-blue-500 hover:underline block mt-1">Order #{{ $item->pesanan_id }}</a>
+                            <div class="flex items-center gap-2 mt-1.5">
+                                <a href="{{ route('admin.pesanan.show', $item->pesanan_id) }}" class="text-[10px] text-blue-500 hover:underline font-bold">Order #{{ $item->pesanan_id }}</a>
+                                @if($item->pesanan && $item->pesanan->komunitas)
+                                    <span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded text-[9px] font-black uppercase tracking-wider">
+                                        {{ $item->pesanan->komunitas->nama_komunitas }}
+                                    </span>
+                                @endif
+                            </div>
                         @endif
                     </td>
                     <td class="px-6 py-4 text-center">

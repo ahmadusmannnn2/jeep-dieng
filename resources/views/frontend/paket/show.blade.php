@@ -53,7 +53,7 @@
                 <div class="lg:col-span-7 flex flex-col h-full">
                     
                     <div class="border-b border-gray-100 pb-6 mb-6">
-                        <div class="flex items-center gap-3 mb-4">
+                        <div class="flex flex-wrap items-center gap-3 mb-4">
                             <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-emerald-100 text-emerald-700">
                                 {{ $paketWisata->komunitas->nama_komunitas ?? 'Umum' }}
                             </span>
@@ -61,6 +61,12 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 {{ $paketWisata->durasi ?? 'Estimasi 4-6 Jam' }}
                             </div>
+                            @if($paketWisata->komunitas && $paketWisata->komunitas->review_count > 0)
+                            <div class="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-100 shadow-sm" title="Rating kepuasan pelanggan untuk {{ $paketWisata->komunitas->nama_komunitas }}">
+                                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                {{ number_format($paketWisata->komunitas->average_rating, 1) }} ({{ $paketWisata->komunitas->review_count }} Ulasan)
+                            </div>
+                            @endif
                         </div>
                         <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">{{ $paketWisata->nama_paket }}</h1>
                         

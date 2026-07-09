@@ -273,11 +273,9 @@
                 </div>
             </div>
 
-            <button type="submit" class="w-full py-4 bg-emerald-500 text-white text-base font-extrabold rounded-xl hover:bg-emerald-400 transition shadow-[0_4px_15px_rgba(16,185,129,0.3)] mb-4">
+            <button type="submit" class="w-full py-4 bg-emerald-500 text-white text-base font-extrabold rounded-xl hover:bg-emerald-400 transition shadow-[0_4px_15px_rgba(16,185,129,0.3)] mb-6 border-b border-gray-700 pb-6">
                 Simpan Status & Komunitas
             </button>
-            
-            <p class="text-[10px] text-gray-400 text-center mb-6 border-b border-gray-700 pb-6">Catatan: Admin tidak lagi menugaskan Jeep. Penugasan akan dilakukan mandiri oleh Pengelola terkait.</p>
 
             @php
                 $pengelolaUser = \App\Models\User::where('role', 'pengelola')

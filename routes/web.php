@@ -87,6 +87,7 @@ Route::middleware(['auth', 'role:admin,pengelola'])->prefix('admin')->name('admi
     Route::get('/penarikan-saldo', [\App\Http\Controllers\Admin\PenarikanSaldoController::class, 'index'])->name('penarikan-saldo.index');
     Route::post('/penarikan-saldo', [\App\Http\Controllers\Admin\PenarikanSaldoController::class, 'store'])->name('penarikan-saldo.store');
     Route::put('/penarikan-saldo/{penarikanSaldo}', [\App\Http\Controllers\Admin\PenarikanSaldoController::class, 'update'])->name('penarikan-saldo.update');
+    Route::put('/penarikan-saldo/{penarikanSaldo}/confirm', [\App\Http\Controllers\Admin\PenarikanSaldoController::class, 'confirm'])->name('penarikan-saldo.confirm');
 
     Route::resource('testimoni', \App\Http\Controllers\Admin\TestimoniController::class);
     Route::patch('testimoni/{testimoni}/toggle', [\App\Http\Controllers\Admin\TestimoniController::class, 'toggle'])->name('testimoni.toggle');

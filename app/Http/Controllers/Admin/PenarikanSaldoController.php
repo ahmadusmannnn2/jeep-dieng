@@ -127,7 +127,7 @@ class PenarikanSaldoController extends Controller
             $path = $request->file('bukti_transfer')->store('bukti_transfer', 'public');
             
             $penarikanSaldo->update([
-                'status' => 'Selesai',
+                'status' => 'Ditransfer',
                 'bukti_transfer' => $path
             ]);
 
@@ -135,9 +135,27 @@ class PenarikanSaldoController extends Controller
             $pengelolas = User::where('role', 'pengelola')->where('komunitas_id', $penarikanSaldo->komunitas_id)->get();
             \Illuminate\Support\Facades\Notification::send($pengelolas, new PenarikanSelesai($penarikanSaldo));
 
-            return back()->with('success', 'Penarikan berhasil diproses dan bukti transfer telah diunggah.');
+            return back()->with('success', 'Bukti transfer berhasil diunggah. Menunggu konfirmasi penerimaan dari Pengelola.');
         }
 
         return back()->with('error', 'Gagal mengunggah bukti transfer.');
+    }
+
+    public function confirm(Request $request, PenarikanSaldo $penarikanSaldo)
+    {
+        $user = Auth::user();
+        if ($user->role !== 'pengelola' || $penarikanSaldo->komunitas_id !== $user->komunitas_id) {
+            abort(403);
+        }
+
+        if ($penarikanSaldo->status !== 'Ditransfer') {
+            return back()->with('error', 'Status penarikan tidak valid untuk dikonfirmasi.');
+        }
+
+        $penarikanSaldo->update([
+            'status' => 'Selesai'
+        ]);
+
+        return back()->with('success', 'Terima kasih, Anda telah mengonfirmasi penerimaan dana penarikan.');
     }
 }

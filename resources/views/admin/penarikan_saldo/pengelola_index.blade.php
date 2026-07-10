@@ -126,7 +126,14 @@
                         </td>
                         <td class="py-4 px-6 text-center">
                             @if($riwayat->status == 'Diajukan')
-                                <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">Diajukan</span>
+                                <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">Menunggu Transfer</span>
+                            @elseif($riwayat->status == 'Ditransfer')
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">Dana Ditransfer</span>
+                                <form action="{{ route('penarikan-saldo.confirm', $riwayat->id) }}" method="POST" class="mt-2" onsubmit="return confirm('Apakah Anda yakin telah menerima dana penarikan ini sesuai bukti transfer?');">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-lg shadow-sm w-full transition">Konfirmasi Terima</button>
+                                </form>
                             @elseif($riwayat->status == 'Selesai')
                                 <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">Selesai</span>
                             @else

@@ -47,6 +47,8 @@
                     <td class="py-4 px-6 text-center">
                         @if($item->status == 'Diajukan')
                             <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">Menunggu Transfer</span>
+                        @elseif($item->status == 'Ditransfer')
+                            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">Menunggu Konfirmasi</span>
                         @elseif($item->status == 'Selesai')
                             <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">Selesai</span>
                         @else

@@ -56,10 +56,11 @@ class PaketWisataController extends Controller
             'durasi' => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
             'komunitas_id' => 'required|exists:komunitas,id',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072'
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+            'galeri.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072'
         ]);
 
-        $data = $request->except('gambar'); 
+        $data = $request->except(['gambar', 'galeri']); 
 
         if (Auth::user()->role === 'pengelola') {
             $data['komunitas_id'] = Auth::user()->komunitas_id;
@@ -68,6 +69,14 @@ class PaketWisataController extends Controller
         if ($request->hasFile('gambar')) {
             $data['gambar'] = $request->file('gambar')->store('paket_wisata', 'public');
         }
+
+        $galeriPaths = [];
+        if ($request->hasFile('galeri')) {
+            foreach ($request->file('galeri') as $file) {
+                $galeriPaths[] = $file->store('paket_wisata/galeri', 'public');
+            }
+        }
+        $data['galeri'] = count($galeriPaths) > 0 ? $galeriPaths : null;
 
         $paket = PaketWisata::create($data);
 
@@ -114,10 +123,12 @@ class PaketWisataController extends Controller
             'durasi' => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
             'komunitas_id' => 'required|exists:komunitas,id',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072'
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+            'galeri.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+            'hapus_galeri' => 'nullable|array'
         ]);
 
-        $data = $request->except('gambar');
+        $data = $request->except(['gambar', 'galeri', 'hapus_galeri']);
 
         if (Auth::user()->role === 'pengelola') {
             $data['komunitas_id'] = Auth::user()->komunitas_id;
@@ -129,6 +140,28 @@ class PaketWisataController extends Controller
             }
             $data['gambar'] = $request->file('gambar')->store('paket_wisata', 'public');
         }
+
+        $galeriLama = $paketWisata->galeri ?? [];
+        
+        if ($request->has('hapus_galeri')) {
+            foreach ($request->hapus_galeri as $index) {
+                if (isset($galeriLama[$index])) {
+                    if (Storage::disk('public')->exists($galeriLama[$index])) {
+                        Storage::disk('public')->delete($galeriLama[$index]);
+                    }
+                    unset($galeriLama[$index]);
+                }
+            }
+            $galeriLama = array_values($galeriLama);
+        }
+
+        if ($request->hasFile('galeri')) {
+            foreach ($request->file('galeri') as $file) {
+                $galeriLama[] = $file->store('paket_wisata/galeri', 'public');
+            }
+        }
+        
+        $data['galeri'] = count($galeriLama) > 0 ? $galeriLama : null;
 
         $paketWisata->update($data);
 

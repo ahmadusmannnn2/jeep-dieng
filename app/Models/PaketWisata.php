@@ -12,6 +12,10 @@ class PaketWisata extends Model
     protected $table = 'paket_wisata';
     protected $guarded = ['id']; // Menggunakan guarded agar kolom 'gambar' otomatis diizinkan masuk
 
+    protected $casts = [
+        'galeri' => 'array',
+    ];
+
     public function komunitas()
     {
         return $this->belongsTo(Komunitas::class, 'komunitas_id');

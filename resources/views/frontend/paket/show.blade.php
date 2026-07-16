@@ -8,15 +8,35 @@
     // Menggunakan gambar paket jika ada, jika tidak gunakan placeholder
     $mainImage = $paketWisata->gambar ? asset('storage/' . $paketWisata->gambar) : asset('images/placeholder-landscape.svg');
     
-    // Mengambil gambar galeri website sebagai thumbnail "suasana"
-    $thumbnails = (isset($pengaturan_website) && !empty($pengaturan_website->gallery_images)) 
-        ? array_slice(array_map(function($img) { return asset('storage/' . $img); }, $pengaturan_website->gallery_images), 0, 4)
-        : [
+    // Mengambil gambar galeri paket wisata (diupload admin)
+    $thumbnails = [];
+    if($paketWisata->galeri && count($paketWisata->galeri) > 0) {
+        $thumbnails = array_map(function($img) { return asset('storage/' . $img); }, $paketWisata->galeri);
+    } else {
+        // Fallback ke gambar rute jika galeri paket belum diisi
+        if($paketWisata->rutes) {
+            foreach($paketWisata->rutes as $rute) {
+                if($rute->gambar) {
+                    $thumbnails[] = asset('storage/' . $rute->gambar);
+                }
+            }
+        }
+        
+        // Jika masih kurang dari 4, fallback ke pengaturan web
+        if(count($thumbnails) < 4 && isset($pengaturan_website) && !empty($pengaturan_website->gallery_images)) {
+            $fallback = array_map(function($img) { return asset('storage/' . $img); }, $pengaturan_website->gallery_images);
+            $thumbnails = array_merge($thumbnails, $fallback);
+        }
+    }
+
+    if (empty($thumbnails)) {
+        $thumbnails = [
             asset('images/placeholder-square.svg'),
             asset('images/placeholder-square.svg'),
             asset('images/placeholder-square.svg'),
             asset('images/placeholder-square.svg')
         ];
+    }
 @endphp
 
 <div class="bg-gray-50 py-10 min-h-screen">
@@ -89,14 +109,21 @@
                                 <div class="absolute -left-[35px] bg-emerald-500 w-6 h-6 rounded-full border-4 border-white shadow-sm group-hover:scale-125 group-hover:bg-emerald-400 transition-all duration-300 flex items-center justify-center">
                                     <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
                                 </div>
-                                <div class="bg-gray-50/50 border border-gray-100 rounded-2xl p-5 hover:bg-emerald-50 hover:border-emerald-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                                    <div class="flex justify-between items-start mb-2 gap-4">
-                                        <h4 class="font-black text-gray-900 text-lg group-hover:text-emerald-700 transition-colors">{{ $rute->nama_rute }}</h4>
-                                        <span class="bg-emerald-100 text-emerald-700 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest shrink-0">Titik {{ $index + 1 }}</span>
-                                    </div>
-                                    @if($rute->deskripsi)
-                                        <p class="text-sm text-gray-500 leading-relaxed">{{ $rute->deskripsi }}</p>
+                                <div class="bg-gray-50/50 border border-gray-100 rounded-2xl overflow-hidden hover:bg-emerald-50 hover:border-emerald-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                                    @if($rute->gambar)
+                                        <div class="w-full h-36 overflow-hidden">
+                                            <img src="{{ asset('storage/' . $rute->gambar) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $rute->nama_rute }}">
+                                        </div>
                                     @endif
+                                    <div class="p-5">
+                                        <div class="flex justify-between items-start mb-2 gap-4">
+                                            <h4 class="font-black text-gray-900 text-lg group-hover:text-emerald-700 transition-colors">{{ $rute->nama_rute }}</h4>
+                                            <span class="bg-emerald-100 text-emerald-700 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest shrink-0">Titik {{ $index + 1 }}</span>
+                                        </div>
+                                        @if($rute->deskripsi)
+                                            <p class="text-sm text-gray-500 leading-relaxed">{{ $rute->deskripsi }}</p>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                             @endforeach

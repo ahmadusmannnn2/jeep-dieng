@@ -9,23 +9,23 @@
 <div class="bg-gray-50 py-20 min-h-screen font-sans overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div class="text-center max-w-3xl mx-auto mb-20" data-aos="fade-down" data-aos-duration="1000">
-            <span class="text-emerald-500 font-black tracking-widest uppercase text-sm bg-emerald-50 px-5 py-2 rounded-full border border-emerald-100 shadow-sm">
+        <div class="text-center max-w-3xl mx-auto mb-16" data-aos="fade-down" data-aos-duration="1000">
+            <span class="text-emerald-600 font-bold tracking-wider uppercase text-xs bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100 shadow-sm">
                 Perjalanan Kami
             </span>
-            <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 mt-6 mb-4 tracking-tight">Eksplorasi Jalur Dieng</h1>
-            <p class="text-gray-500 text-lg leading-relaxed">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 mt-5 mb-4 tracking-tight">Eksplorasi Jalur Dieng</h1>
+            <p class="text-gray-500 md:text-lg leading-relaxed px-4">
                 Dari titik kumpul hingga puncak tertinggi. Ikuti alur perjalanan Jeep kami menyusuri keajaiban alam Dataran Tinggi Dieng yang memukau.
             </p>
         </div>
 
         <div class="relative container mx-auto px-4 sm:px-0">
             
-            <div class="hidden md:block absolute z-0 w-1.5 h-full left-1/2 transform -translate-x-1/2 rounded-full bg-gradient-to-b from-emerald-200 via-emerald-400 to-teal-600 opacity-50"></div>
+            <div class="hidden md:block absolute z-0 w-1 h-full left-1/2 transform -translate-x-1/2 rounded-full bg-gradient-to-b from-emerald-100 via-emerald-300 to-teal-500 opacity-50"></div>
             
-            <div class="block md:hidden absolute z-0 w-1.5 h-full left-8 rounded-full bg-gradient-to-b from-emerald-200 via-emerald-400 to-teal-600 opacity-50"></div>
+            <div class="block md:hidden absolute z-0 w-1 h-full left-8 rounded-full bg-gradient-to-b from-emerald-100 via-emerald-300 to-teal-500 opacity-50"></div>
 
-            <div class="space-y-16 md:space-y-24">
+            <div class="space-y-12 md:space-y-16">
                 @forelse($ruteWisata as $index => $rute)
                     @php
                         // Logika Zig-Zag: Genap di Kiri, Ganjil di Kanan
@@ -36,41 +36,38 @@
                     <div class="relative z-10 flex flex-col md:flex-row items-center w-full group">
                         
                         <div class="absolute left-8 md:left-1/2 transform -translate-x-1/2 flex flex-col items-center justify-center z-20" data-aos="zoom-in" data-aos-delay="200">
-                            <div class="hidden md:block absolute top-1/2 w-16 h-0.5 bg-emerald-300 border-dashed {{ $isEven ? 'right-full' : 'left-full' }} -z-10"></div>
+                            <div class="hidden md:block absolute top-1/2 w-12 h-px bg-emerald-300 border-dashed {{ $isEven ? 'right-full' : 'left-full' }} -z-10"></div>
                             
-                            <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white border-4 border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 transition-all duration-500">
-                                <span class="text-emerald-500 group-hover:text-white text-xl font-black transition-colors">{{ $index + 1 }}</span>
+                            <div class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-white border-[3px] border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)] flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 transition-all duration-500">
+                                <span class="text-emerald-500 group-hover:text-white text-lg font-bold transition-colors">{{ $index + 1 }}</span>
                             </div>
-                            <span class="mt-2 text-[10px] font-black tracking-widest text-emerald-600 uppercase bg-white px-2 py-0.5 rounded shadow-sm border border-emerald-100 hidden md:block group-hover:-translate-y-1 transition-transform">
-                                Perhentian
-                            </span>
                         </div>
 
-                        <div class="w-full md:w-1/2 pl-20 md:pl-0 {{ $isEven ? 'md:pr-20 text-left md:text-right' : 'md:pl-20 md:ml-auto text-left' }}" 
+                        <div class="w-full md:w-1/2 pl-20 md:pl-0 {{ $isEven ? 'md:pr-16 text-left md:text-right' : 'md:pl-16 md:ml-auto text-left' }}" 
                              data-aos="{{ $isEven ? 'fade-right' : 'fade-left' }}" 
                              data-aos-duration="1000">
                             
-                            <div class="bg-white rounded-[2rem] p-4 shadow-xl border border-gray-100 hover:shadow-2xl hover:border-emerald-200 transition-all duration-500 transform hover:-translate-y-2 relative overflow-hidden group/card">
+                            <div class="bg-white rounded-3xl p-4 shadow-md border border-gray-100 hover:shadow-xl hover:border-emerald-200 transition-all duration-500 transform hover:-translate-y-1 relative overflow-hidden group/card">
                                 
-                                <div class="absolute top-6 {{ $isEven ? 'right-6 md:left-6 md:right-auto' : 'right-6' }} z-20">
-                                    <span class="md:hidden px-3 py-1 bg-emerald-500 text-white text-xs font-black rounded-xl shadow-lg uppercase tracking-widest">Ke-{{ $index + 1 }}</span>
+                                <div class="absolute top-5 {{ $isEven ? 'right-5 md:left-5 md:right-auto' : 'right-5' }} z-20">
+                                    <span class="md:hidden px-3 py-1 bg-emerald-500 text-white text-[10px] font-bold rounded-lg shadow-sm uppercase tracking-wider">Ke-{{ $index + 1 }}</span>
                                 </div>
 
-                                <div class="w-full h-56 md:h-64 rounded-2xl overflow-hidden mb-6 relative">
-                                    <img src="{{ $gambarRute }}" alt="{{ $rute->nama_rute }}" class="w-full h-full object-cover transform group-hover/card:scale-110 transition duration-700 ease-in-out">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent"></div>
+                                <div class="w-full h-48 md:h-56 rounded-2xl overflow-hidden mb-5 relative">
+                                    <img src="{{ $gambarRute }}" alt="{{ $rute->nama_rute }}" class="w-full h-full object-cover transform group-hover/card:scale-105 transition duration-700 ease-in-out">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-gray-900/10 to-transparent"></div>
                                     
-                                    <div class="absolute bottom-5 {{ $isEven ? 'md:right-5 left-5 md:left-auto' : 'left-5' }}">
+                                    <div class="absolute bottom-4 {{ $isEven ? 'md:right-4 left-4 md:left-auto' : 'left-4' }}">
                                         @if($rute->komunitas)
-                                            <span class="px-3 py-1 bg-emerald-500/80 backdrop-blur-sm text-white text-[10px] font-black rounded-lg uppercase tracking-widest shadow-sm">
+                                            <span class="px-2.5 py-1 bg-emerald-500/90 backdrop-blur-sm text-white text-[10px] font-bold rounded-md uppercase tracking-wider shadow-sm">
                                                 {{ $rute->komunitas?->nama_komunitas }}
                                             </span>
                                         @endif
                                     </div>
                                 </div>
 
-                                <div class="px-2 md:px-4 pb-2">
-                                    <h3 class="text-2xl font-black text-gray-900 mb-3">{{ $rute->nama_rute }}</h3>
+                                <div class="px-2 md:px-3 pb-2">
+                                    <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-2">{{ $rute->nama_rute }}</h3>
                                     <p class="text-gray-500 text-sm leading-relaxed">
                                         {{ $rute->deskripsi ?? 'Abadikan momen terbaik Anda bersama keluarga dan kerabat di destinasi menakjubkan ini. Rasakan sejuknya udara pegunungan Dieng.' }}
                                     </p>

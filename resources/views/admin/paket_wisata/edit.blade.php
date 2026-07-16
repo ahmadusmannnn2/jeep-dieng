@@ -46,46 +46,46 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">Rute Perjalanan (Drag & Drop) <span class="text-red-500">*</span></label>
             <p class="text-xs text-gray-500 mb-3">Klik tombol tambah (+) pada rute di sebelah kiri, lalu geser (drag) kotak rute di sebelah kanan untuk mengatur urutan perjalanannya.</p>
             
-            <div x-data="ruteManager()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div x-data="ruteManager()" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <!-- Rute Tersedia -->
-                <div class="border border-gray-200 rounded-xl bg-gray-50 p-4 h-80 flex flex-col shadow-inner">
-                    <h4 class="font-bold text-sm text-gray-700 mb-3 border-b pb-2">Rute Tersedia</h4>
-                    <div class="overflow-y-auto flex-1 pr-2 space-y-2">
+                <div class="border border-gray-200 rounded-xl bg-gray-50 p-3 h-64 flex flex-col shadow-inner">
+                    <h4 class="font-bold text-xs text-gray-700 mb-2 border-b pb-2">Rute Tersedia</h4>
+                    <div class="overflow-y-auto flex-1 pr-1 space-y-1.5">
                         <template x-for="rute in ruteTersedia" :key="rute.id">
-                            <div class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-emerald-300 transition">
-                                <span class="font-medium text-sm text-gray-800" x-text="rute.nama_rute"></span>
-                                <button type="button" @click="tambahRute(rute)" class="p-1.5 bg-emerald-100 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded transition">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <div class="flex items-center justify-between px-2.5 py-1.5 bg-white border border-gray-200 rounded shadow-sm hover:border-emerald-300 transition">
+                                <span class="font-medium text-xs text-gray-800" x-text="rute.nama_rute"></span>
+                                <button type="button" @click="tambahRute(rute)" class="p-1 bg-emerald-100 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                 </button>
                             </div>
                         </template>
-                        <div x-show="ruteTersedia.length === 0" class="text-center text-xs font-bold text-emerald-600 mt-10">
+                        <div x-show="ruteTersedia.length === 0" class="text-center text-[10px] font-bold text-emerald-600 mt-6">
                             Semua rute telah dimasukkan ke paket!
                         </div>
                     </div>
                 </div>
 
                 <!-- Rute Terpilih (Sortable) -->
-                <div class="border border-emerald-200 rounded-xl bg-emerald-50/50 p-4 h-80 flex flex-col">
-                    <h4 class="font-bold text-sm text-emerald-800 mb-3 border-b border-emerald-100 pb-2 flex justify-between items-center">
+                <div class="border border-emerald-200 rounded-xl bg-emerald-50/50 p-3 h-64 flex flex-col">
+                    <h4 class="font-bold text-xs text-emerald-800 mb-2 border-b border-emerald-100 pb-2 flex justify-between items-center">
                         <span>Urutan Perjalanan</span>
-                        <span class="text-xs font-bold text-emerald-700 bg-emerald-200 px-2.5 py-0.5 rounded-full" x-text="ruteTerpilih.length + ' Rute'"></span>
+                        <span class="text-[10px] font-bold text-emerald-700 bg-emerald-200 px-2 py-0.5 rounded-full" x-text="ruteTerpilih.length + ' Rute'"></span>
                     </h4>
                     
-                    <div id="sortable-list" class="overflow-y-auto flex-1 pr-2 space-y-2 pb-10">
+                    <div id="sortable-list" class="overflow-y-auto flex-1 pr-1 space-y-1.5 pb-4">
                         <template x-for="(rute, index) in ruteTerpilih" :key="rute.id">
-                            <div :data-id="rute.id" class="sortable-item flex items-center gap-3 p-3 bg-white border border-emerald-300 rounded-lg shadow-sm cursor-grab hover:shadow-md transition">
+                            <div :data-id="rute.id" class="sortable-item flex items-center gap-2 px-2.5 py-1.5 bg-white border border-emerald-300 rounded shadow-sm cursor-grab hover:shadow-md transition">
                                 <div class="text-emerald-400">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                                 </div>
-                                <div class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-sm" x-text="index + 1"></div>
-                                <span class="font-bold text-sm text-gray-800 flex-1" x-text="rute.nama_rute"></span>
-                                <button type="button" @click="hapusRute(rute)" class="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition" title="Keluarkan Rute">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                <div class="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white font-black text-[10px] flex items-center justify-center shrink-0 shadow-sm" x-text="index + 1"></div>
+                                <span class="font-bold text-xs text-gray-800 flex-1" x-text="rute.nama_rute"></span>
+                                <button type="button" @click="hapusRute(rute)" class="p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition" title="Keluarkan Rute">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                 </button>
                             </div>
                         </template>
-                        <div x-show="ruteTerpilih.length === 0" class="text-center text-sm font-medium text-emerald-600/50 mt-10">
+                        <div x-show="ruteTerpilih.length === 0" class="text-center text-xs font-medium text-emerald-600/50 mt-6">
                             ← Pilih rute dari daftar di sebelah kiri.
                         </div>
                     </div>
@@ -111,7 +111,7 @@
                     <h5 id="file-name" class="text-sm font-bold text-gray-800 truncate mb-1">
                         {{ $paketWisata->gambar ? 'Gambar tersimpan.' : 'Belum ada gambar.' }}
                     </h5>
-                    <p class="text-xs text-gray-500 mb-3">Kosongkan jika tidak ingin mengubah gambar.</p>
+                    <p class="text-xs text-gray-500 mb-3">Kosongkan jika tidak ingin mengubah gambar cover.</p>
                     
                     <label for="file-input-edit-paket" class="cursor-pointer inline-block bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-gray-100 hover:text-emerald-600 transition shadow-sm">
                         <span>Pilih Gambar Baru</span>
@@ -119,6 +119,34 @@
                     <input type="file" name="gambar" id="file-input-edit-paket" accept="image/*" class="sr-only" onchange="previewImage(event)">
                 </div>
 
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Galeri Paket Wisata (Opsional)</label>
+            
+            @if($paketWisata->galeri && count($paketWisata->galeri) > 0)
+                <div class="mb-4 p-4 bg-gray-50 rounded-2xl border border-gray-200">
+                    <p class="text-xs text-gray-500 font-bold mb-3">Gambar Galeri Saat Ini <span class="font-normal text-red-500">(Centang untuk menghapus)</span></p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        @foreach($paketWisata->galeri as $index => $img)
+                            <div class="relative group rounded-xl overflow-hidden border border-gray-200 shadow-sm aspect-square bg-white">
+                                <img src="{{ asset('storage/' . $img) }}" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                                    <label class="flex items-center gap-2 text-white text-xs font-bold cursor-pointer">
+                                        <input type="checkbox" name="hapus_galeri[]" value="{{ $index }}" class="rounded text-red-500 focus:ring-red-500">
+                                        Hapus
+                                    </label>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <div class="mt-1 flex flex-col p-4 border-2 border-gray-300 border-dashed rounded-2xl bg-gray-50 transition">
+                <input type="file" name="galeri[]" multiple accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                <p class="text-xs text-gray-500 mt-2">Pilih beberapa foto sekaligus dengan menahan tombol Ctrl/Shift. Gambar baru akan ditambahkan ke galeri yang sudah ada.</p>
             </div>
         </div>
 

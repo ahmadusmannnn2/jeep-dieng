@@ -120,3 +120,9 @@ Route::get('/midtrans/unfinish', [\App\Http\Controllers\MidtransController::clas
 Route::get('/midtrans/error',    [\App\Http\Controllers\MidtransController::class, 'error'])->name('midtrans.error');
 
 require __DIR__ . '/auth.php';
+
+// Rute Bantuan cPanel (Nanti bisa dihapus jika sudah sukses online)
+Route::get('/buat-storage', function () {
+    \Illuminate\Support\Facades\Artisan::call('storage:link');
+    return 'Storage berhasil dilink!';
+});

@@ -15,7 +15,7 @@
     <div class="bg-white border-b border-gray-100 py-12 md:py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <span class="inline-block px-4 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-black tracking-widest uppercase rounded-full mb-4">Pilihan Wisata Terbaik</span>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">Semua Paket Wisata</h1>
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-4">Semua Paket Wisata</h1>
             <p class="text-gray-500 text-lg max-w-2xl mx-auto">Jelajahi berbagai pilihan paket wisata seru yang ditawarkan oleh komunitas Jeep Dieng kami.</p>
             
             {{-- SEARCH BAR --}}

@@ -13,7 +13,7 @@
             <span class="text-emerald-600 font-bold tracking-wider uppercase text-xs bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100 shadow-sm">
                 Perjalanan Kami
             </span>
-            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 mt-5 mb-4 tracking-tight">Eksplorasi Jalur Dieng</h1>
+            <h1 class="text-3xl font-extrabold text-gray-900 mt-5 mb-4 tracking-tight">Eksplorasi Jalur Dieng</h1>
             <p class="text-gray-500 md:text-lg leading-relaxed px-4">
                 Dari titik kumpul hingga puncak tertinggi. Ikuti alur perjalanan Jeep kami menyusuri keajaiban alam Dataran Tinggi Dieng yang memukau.
             </p>

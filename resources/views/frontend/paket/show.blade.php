@@ -8,34 +8,10 @@
     // Menggunakan gambar paket jika ada, jika tidak gunakan placeholder
     $mainImage = $paketWisata->gambar ? asset('storage/' . $paketWisata->gambar) : asset('images/placeholder-landscape.svg');
     
-    // Mengambil gambar galeri paket wisata (diupload admin)
+    // Mengambil HANYA gambar galeri paket wisata yang diupload admin secara spesifik
     $thumbnails = [];
     if($paketWisata->galeri && count($paketWisata->galeri) > 0) {
         $thumbnails = array_map(function($img) { return asset('storage/' . $img); }, $paketWisata->galeri);
-    } else {
-        // Fallback ke gambar rute jika galeri paket belum diisi
-        if($paketWisata->rutes) {
-            foreach($paketWisata->rutes as $rute) {
-                if($rute->gambar) {
-                    $thumbnails[] = asset('storage/' . $rute->gambar);
-                }
-            }
-        }
-        
-        // Jika masih kurang dari 4, fallback ke pengaturan web
-        if(count($thumbnails) < 4 && isset($pengaturan_website) && !empty($pengaturan_website->gallery_images)) {
-            $fallback = array_map(function($img) { return asset('storage/' . $img); }, $pengaturan_website->gallery_images);
-            $thumbnails = array_merge($thumbnails, $fallback);
-        }
-    }
-
-    if (empty($thumbnails)) {
-        $thumbnails = [
-            asset('images/placeholder-square.svg'),
-            asset('images/placeholder-square.svg'),
-            asset('images/placeholder-square.svg'),
-            asset('images/placeholder-square.svg')
-        ];
     }
 @endphp
 
@@ -59,13 +35,17 @@
                     </div>
                     
                     <div class="grid grid-cols-5 gap-2 md:gap-4">
+                        @if($paketWisata->gambar)
                         <button @click="mainPhoto = '{{ $mainImage }}'" class="aspect-square rounded-xl overflow-hidden border-2 focus:outline-none transition" :class="mainPhoto === '{{ $mainImage }}' ? 'border-emerald-500 opacity-100' : 'border-transparent opacity-60 hover:opacity-100'">
                             <img src="{{ $mainImage }}" class="w-full h-full object-cover">
                         </button>
+                        @endif
                         @foreach($thumbnails as $thumb)
+                            @if(!str_contains($thumb, 'placeholder-square.svg'))
                             <button @click="mainPhoto = '{{ $thumb }}'" class="aspect-square rounded-xl overflow-hidden border-2 focus:outline-none transition" :class="mainPhoto === '{{ $thumb }}' ? 'border-emerald-500 opacity-100' : 'border-transparent opacity-60 hover:opacity-100'">
                                 <img src="{{ $thumb }}" class="w-full h-full object-cover">
                             </button>
+                            @endif
                         @endforeach
                     </div>
                 </div>
